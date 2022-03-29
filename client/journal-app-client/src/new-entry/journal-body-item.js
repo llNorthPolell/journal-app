@@ -4,7 +4,7 @@ import RemoveButton from '../util/components/remove-button'
 
 function JournalBodyItem(props){
     const remove = (id) => {
-        props.removeFromUsedTopics(props.topic);
+        props.removeFromUsedTopics(undefined,props.topic);
         props.removeFromBody(id);
     }
 
@@ -16,11 +16,11 @@ function JournalBodyItem(props){
                         <div className="col">
                             <h5 className="card-title">{props.topic}</h5>
                         </div>
-                        <RemoveButton id={props.id} remove={remove} moreClasses="float-end"></RemoveButton>
+                        <RemoveButton id={props.id} remove={remove} className="btn btn-secondary float-end"></RemoveButton>
                     </div>   
                 </div>
                 <div className="card-body">
-                    <p className="card-text">{props.comment}</p>
+                    <p className="card-text">{props.description}</p>
                     {
                         props.records.map(record => (
                             <div id={"Record_"+record.id} key={record.id} className="container row mb-3">

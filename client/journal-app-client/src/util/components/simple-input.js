@@ -6,7 +6,7 @@ function SimpleInput(props){
             <div className="mb-3">
                 {
                     (props.displayName !== undefined )?
-                        <label htmlFor={props.fieldName} className="form-label">{props.displayName}</label> : <></>
+                        <label htmlFor={props.fieldName} className="form-label">{props.displayName}</label> : null
                 }
                 
                 {
@@ -22,7 +22,7 @@ function SimpleInput(props){
                                 }
                             </select>
                         ) : 
-                        (<input id={props.fieldName} type={props.type} className="form-control" name={props.fieldName} defaultValue={props.value} onChange={props.handleUpdate} placeholder={props.placeholder}></input>)
+                        (<input id={props.fieldName} type={props.type} className="form-control" name={props.fieldName} value={props.value} onChange={props.handleUpdate} placeholder={props.placeholder}></input>)
                 }
             </div>
             <br/>

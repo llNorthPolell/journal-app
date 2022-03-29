@@ -10,7 +10,14 @@ function RemoveButton(props){
 
     return (
         <div className="col">
-            <button id={"delete_"+props.id} className={"btn btn-secondary "+props.moreClasses} onClick={handleDelete}><FontAwesomeIcon icon={faTrashCan} /></button>
+            <button id={"delete_"+props.id} className={props.className} onClick={handleDelete}>
+                {
+                    (props.inner===undefined)?
+                        <FontAwesomeIcon icon={faTrashCan} /> :
+                        props.inner
+                }
+                        
+            </button>
         </div>
     );
 

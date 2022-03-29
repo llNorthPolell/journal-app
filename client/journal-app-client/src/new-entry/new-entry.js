@@ -1,9 +1,12 @@
-import React, {useState} from 'react';
+import React from 'react';
 import JournalBodyItemForm from './journal-body-item-form';
 import JournalBodyItem from './journal-body-item';
-import {v4 as uuidv4} from 'uuid';
 import SimpleInput from '../util/components/simple-input';
 import useSimpleState from '../util/hooks/useSimpleState';
+import useListState from '../util/hooks/useListState';
+
+import {v4 as uuidv4} from 'uuid';
+
 
 function NewEntryPage(){
   // for defaulting date field to today
@@ -12,37 +15,76 @@ function NewEntryPage(){
   const month = ((today.getMonth()>9)?'':'0') + (today.getMonth() +1);
   const year = today.getFullYear();
 
-  const [topicList,setTopicList]= useState([]);
-  const [journalBodyItems,setJournalBodyItems] = useState([]);
-  const [usedTopics,setUsedTopics]= useState([]);
-
   // Simple States
-  const [journalCollection,handleChangeJournalCollection] = useSimpleState("Select Collection");
-  const [summary,handleChangeSummary] = useSimpleState("Hello World!");
-  const [dateOfEntry,handleChangeDateOfEntry] = useSimpleState(year+"-"+month+"-"+day);
-  const [overview,handleChangeOverview] = useSimpleState("");
+  const [journalCollection,setJournalCollection,handleChangeJournalCollection] = useSimpleState("");
+  const [summary,setSummary,handleChangeSummary] = useSimpleState("");
+  const [dateOfEntry,setDateOfEntry,handleChangeDateOfEntry] = useSimpleState(year+"-"+month+"-"+day);
+  const [overview,setOverview,handleChangeOverview] = useSimpleState("");
+  const [topic,setTopic,handleChangeTopic] = useSimpleState("");
+  const [newTopic,setNewTopic,handleChangeNewTopic] = useSimpleState("");
+  const [description,setDescription,handleChangeDescription] = useSimpleState("");
 
-  const addToBody = (topic,comment,records) => {
-    setJournalBodyItems([...journalBodyItems, {id:uuidv4(), topic: topic, comment: comment, records: records }]);
+  // List States
+  const [topicList,setTopicList,saveTopic,topicInTopicList]= useListState([]);
+  const [journalBodyItems,setJournalBodyItems, addToBody,,removeFromBody] = useListState([]);
+  const [,setUsedTopics,addToUsedTopics,,removeFromUsedTopics,topicIsUsed] = useListState([]);
+  const [recordList, setRecordList, insertNewRecord, updateRecord, removeRecord] = useListState([]);
+
+
+  const resetAll = e => {
+    e.preventDefault();
+    setJournalCollection("");
+    setSummary("");
+    setDateOfEntry(year+"-"+month+"-"+day);
+    setOverview("");
+    setJournalBodyItems([]);
+    setUsedTopics([]);
+    setTopicList([]);
+
+    resetJournalBodyForm();
   }
 
-  const removeFromBody = (id) => {
-    const updatedJournalBodyItemsList = journalBodyItems.filter(journalBodyItem => journalBodyItem.id!==id);
-    setJournalBodyItems(updatedJournalBodyItemsList);
+
+  const resetJournalBodyForm = () => {
+    setTopic("");
+    setDescription("");
+    setNewTopic("");
+    setRecordList([]);
   }
 
-  const saveTopic = (newTopic) =>{ 
-    setTopicList([...topicList,newTopic]);
+  const saveJournalBodyItem = () =>{
+    let topicToSubmit = "";
+
+    if (topic=="" && newTopic==""){
+        console.log("Cannot submit blank Topic...")
+        return;
+    }
+    else if (topic=="" && newTopic!="") {
+        if (topicIsUsed(newTopic)){
+          console.log("Topic is already used...");
+          return;
+        }
+
+        topicToSubmit = newTopic;
+
+        if (!topicInTopicList(newTopic))
+          saveTopic(newTopic);
+    }
+    else {
+        if (topicIsUsed(topic)){
+          console.log("Topic is already used...");
+          return;
+        }
+        
+        topicToSubmit = topic;
+    }
+
+    addToBody({id:uuidv4(),topic:topicToSubmit,description:description,records:recordList});
+    addToUsedTopics(topicToSubmit);
+    resetJournalBodyForm();
   }
 
-  const addToUsedTopics = (usedTopic) => {
-    setUsedTopics([...usedTopics,usedTopic]);
-  }
 
-  const removeFromUsedTopics = (topic) => {
-    const updatedUsedTopics = usedTopics.filter(usedTopic => usedTopic!==topic);
-    setUsedTopics(updatedUsedTopics);
-  }
 
   return (
     <div id="newEntryFormDiv" className="container">
@@ -78,12 +120,22 @@ function NewEntryPage(){
 
         <label htmlFor="journalBodyDiv" className="form-label">Body</label>
         <div id="journalBodyDiv"> 
-          <JournalBodyItemForm 
-            addToBody={addToBody} 
-            saveTopic={saveTopic} 
+          <JournalBodyItemForm
             topicList={topicList} 
-            usedTopics={usedTopics} 
-            addToUsedTopics={addToUsedTopics}>
+            // new
+            topic={topic}
+            newTopic={newTopic}
+            description={description}
+            recordList={recordList}
+            saveJournalBodyItem={saveJournalBodyItem}
+            resetJournalBodyForm={resetJournalBodyForm}
+            handleChangeTopic={handleChangeTopic}
+            handleChangeNewTopic={handleChangeNewTopic}
+            handleChangeDescription={handleChangeDescription}
+            insertNewRecord={insertNewRecord}
+            updateRecord={updateRecord}
+            removeRecord={removeRecord}
+            >
           </JournalBodyItemForm>
           <br/>
             {
@@ -92,7 +144,7 @@ function NewEntryPage(){
                   id={journalBodyItem.id} 
                   key={journalBodyItem.id} 
                   topic={journalBodyItem.topic} 
-                  comment={journalBodyItem.comment} 
+                  description={journalBodyItem.description} 
                   records={journalBodyItem.records}
                   removeFromBody={removeFromBody}
                   removeFromUsedTopics={removeFromUsedTopics}
@@ -100,9 +152,16 @@ function NewEntryPage(){
                 </JournalBodyItem>
               ))
             }
-          
         </div>
       </form>
+      <div className="mb-3 row">
+          <div className="col">
+              <button id="clearEntryFormButton" className="btn btn-danger" onClick={resetAll}>Clear</button> 
+          </div>
+          <div className="col">
+              <button id="postEntry" className="btn btn-primary float-end" onClick={resetAll}>Post</button> 
+          </div>                   
+      </div>
     </div>
   );
 

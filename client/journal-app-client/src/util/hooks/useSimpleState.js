@@ -10,7 +10,7 @@ const useSimpleState = initValue => {
     const overrideValue = newValue => {
         setValue(newValue);
     }
-    return [value, handleUpdate, overrideValue];
+    return [value, overrideValue, handleUpdate];
 }
 
 export default useSimpleState;
