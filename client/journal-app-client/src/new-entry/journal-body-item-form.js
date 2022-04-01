@@ -4,12 +4,12 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import RecordForm from './record-form/record-form';
 import {v4 as uuidv4} from 'uuid';
 import SimpleInput from '../util/components/simple-input';
-
+import listUtil from '../util/functions/list-util';
 
 function JournalBodyItemForm(props){
     const handleInsertNewRecord = e => {
         e.preventDefault();
-        props.insertNewRecord({id:uuidv4(), key:"", value:""});
+        listUtil(props.data.recordList,props.setRecordList,{type:"INSERT",payload:{id:uuidv4(), key:"", value:""}});
     }
 
     const handleSubmit = e => {
@@ -27,7 +27,7 @@ function JournalBodyItemForm(props){
             <div className="card-header">
                 <div className="row mb-3">
                     <div className="col">
-                        <select id="topicDropdown" className="form-select" name="topic" value={props.topic} onChange={props.handleChangeTopic}>
+                        <select id="topicDropdown" className="form-select" name="topic" value={props.data.topic} onChange={props.handleChangeTopic}>
                             <option value="">New Topic</option>
                             {
                                 props.topicList.map(topicListItem => (
@@ -38,7 +38,7 @@ function JournalBodyItemForm(props){
                     </div>
                     <div className="col">
                         {
-                            (props.topic=="")?
+                            (props.data.topic=="")?
                                 <input id="newTopicField" className="form-control" name="newTopic" value={props.newTopic} onChange={props.handleChangeNewTopic} placeholder="New Topic Name"/>
                                 :
                                 null
@@ -50,7 +50,7 @@ function JournalBodyItemForm(props){
             <div className="card-body">
                 <SimpleInput 
                     id="descriptionField" 
-                    value={props.description} 
+                    value={props.data.description} 
                     displayName = "Description"
                     fieldName="description" 
                     type="textarea" 
@@ -69,9 +69,9 @@ function JournalBodyItemForm(props){
                 
                 <div id="recordsDiv">
                 {
-                    props.recordList.map(
+                    props.data.recordList.map(
                         record => (
-                            <RecordForm id={record.id} key={record.id} recordKey={record.key} recordValue={record.value} updateRecord={props.updateRecord} removeRecord={props.removeRecord}></RecordForm>
+                            <RecordForm key={record.id} data={{id: record.id, key: record.key, value: record.value}} setRecordList={props.setRecordList} recordList={props.data.recordList}></RecordForm>
                         )
                     )
                 }

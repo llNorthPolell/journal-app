@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import JournalBodyItemForm from './journal-body-item-form';
 import JournalBodyItem from './journal-body-item';
 import SimpleInput from '../util/components/simple-input';
 import useSimpleState from '../util/hooks/useSimpleState';
 import useListState from '../util/hooks/useListState';
+import listUtil from '../util/functions/list-util';
 
 import {v4 as uuidv4} from 'uuid';
 
@@ -25,10 +26,11 @@ function NewEntryPage(){
   const [description,setDescription,handleChangeDescription] = useSimpleState("");
 
   // List States
-  const [topicList,setTopicList,saveTopic,topicInTopicList]= useListState([]);
-  const [journalBodyItems,setJournalBodyItems, addToBody,,removeFromBody] = useListState([]);
-  const [,setUsedTopics,addToUsedTopics,,removeFromUsedTopics,topicIsUsed] = useListState([]);
-  const [recordList, setRecordList, insertNewRecord, updateRecord, removeRecord] = useListState([]);
+  const [topicList,setTopicList]=useState([]);
+  const [journalBodyItems,setJournalBodyItems]=useState([]);
+  const [usedTopics,setUsedTopics]=useState([]);
+  const [recordList,setRecordList]=useState([]);
+  //const [recordList, setRecordList, insertNewRecord, updateRecord, removeRecord] = useListState([]);
 
 
   const resetAll = e => {
@@ -37,9 +39,9 @@ function NewEntryPage(){
     setSummary("");
     setDateOfEntry(year+"-"+month+"-"+day);
     setOverview("");
-    setJournalBodyItems([]);
-    setUsedTopics([]);
-    setTopicList([]);
+    listUtil(journalBodyItems,setJournalBodyItems,{type:"TRUNCATE"});
+    listUtil(usedTopics,setUsedTopics,{type:"TRUNCATE"});
+    listUtil(topicList,setTopicList,{type:"TRUNCATE"});
 
     resetJournalBodyForm();
   }
@@ -49,7 +51,7 @@ function NewEntryPage(){
     setTopic("");
     setDescription("");
     setNewTopic("");
-    setRecordList([]);
+    listUtil(recordList,setRecordList,{type:"TRUNCATE"});
   }
 
   const saveJournalBodyItem = () =>{
@@ -60,27 +62,30 @@ function NewEntryPage(){
         return;
     }
     else if (topic=="" && newTopic!="") {
-        if (topicIsUsed(newTopic)){
-          console.log("Topic is already used...");
-          return;
-        }
-
         topicToSubmit = newTopic;
 
-        if (!topicInTopicList(newTopic))
-          saveTopic(newTopic);
+        if(!listUtil(topicList,setTopicList,{type:"CONTAINS",payload:newTopic}))
+          listUtil(topicList,setTopicList,{type:"INSERT",payload:newTopic});
     }
-    else {
-        if (topicIsUsed(topic)){
-          console.log("Topic is already used...");
-          return;
-        }
-        
+    else 
         topicToSubmit = topic;
+    
+        
+    if(listUtil(usedTopics,setUsedTopics,{type:"CONTAINS",payload:topicToSubmit})){
+      console.log("Topic is already used...");
+      return;
     }
 
-    addToBody({id:uuidv4(),topic:topicToSubmit,description:description,records:recordList});
-    addToUsedTopics(topicToSubmit);
+
+    listUtil(journalBodyItems,setJournalBodyItems,{
+      type:"INSERT", 
+      payload:{
+        id:uuidv4(),
+        topic:topicToSubmit,
+        description:description,
+        records:recordList}
+      });
+    listUtil(usedTopics,setUsedTopics,{type:"INSERT",payload:topicToSubmit});
     resetJournalBodyForm();
   }
 
@@ -122,46 +127,41 @@ function NewEntryPage(){
         <div id="journalBodyDiv"> 
           <JournalBodyItemForm
             topicList={topicList} 
-            // new
-            topic={topic}
             newTopic={newTopic}
-            description={description}
-            recordList={recordList}
+            data={{topic: topic, description: description, recordList: recordList}}
             saveJournalBodyItem={saveJournalBodyItem}
             resetJournalBodyForm={resetJournalBodyForm}
             handleChangeTopic={handleChangeTopic}
             handleChangeNewTopic={handleChangeNewTopic}
             handleChangeDescription={handleChangeDescription}
-            insertNewRecord={insertNewRecord}
-            updateRecord={updateRecord}
-            removeRecord={removeRecord}
+            setRecordList={setRecordList}
             >
           </JournalBodyItemForm>
           <br/>
             {
               journalBodyItems.map(journalBodyItem => (
                 <JournalBodyItem 
-                  id={journalBodyItem.id} 
+                  data = {journalBodyItem}
                   key={journalBodyItem.id} 
-                  topic={journalBodyItem.topic} 
-                  description={journalBodyItem.description} 
-                  records={journalBodyItem.records}
-                  removeFromBody={removeFromBody}
-                  removeFromUsedTopics={removeFromUsedTopics}
+                  removeFromBody={()=> listUtil(journalBodyItems,setJournalBodyItems,{type:"DELETE",id:journalBodyItem.id})}
+                  removeFromUsedTopics={()=> listUtil(usedTopics,setUsedTopics,{type:"DELETE",payload:journalBodyItem.topic})}
                   >
                 </JournalBodyItem>
               ))
             }
         </div>
       </form>
-      <div className="mb-3 row">
-          <div className="col">
-              <button id="clearEntryFormButton" className="btn btn-danger" onClick={resetAll}>Clear</button> 
-          </div>
-          <div className="col">
-              <button id="postEntry" className="btn btn-primary float-end" onClick={resetAll}>Post</button> 
-          </div>                   
+      <div id="formControlButtonsDiv" className="container fixed-bottom">
+        <div className="mb-3 row">
+            <div className="col">
+                <button id="clearEntryFormButton" className="btn btn-danger" onClick={resetAll}>Clear</button> 
+            </div>
+            <div className="col">
+                <button id="postEntry" className="btn btn-primary float-end" onClick={resetAll}>Post</button> 
+            </div>                   
+        </div>
       </div>
+
     </div>
   );
 
