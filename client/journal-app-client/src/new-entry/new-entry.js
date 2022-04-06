@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
-import JournalBodyItemForm from './journal-body-item-form';
 import JournalBodyItem from './journal-body-item';
 import SimpleInput from '../util/components/simple-input';
 import useSimpleState from '../util/hooks/useSimpleState';
-import useListState from '../util/hooks/useListState';
 import listUtil from '../util/functions/list-util';
 
 import {v4 as uuidv4} from 'uuid';
@@ -12,7 +10,7 @@ import {v4 as uuidv4} from 'uuid';
 function NewEntryPage(){
   // for defaulting date field to today
   const today = new Date();
-  const day = today.getDate();
+  const day = ((today.getDate()>9)?'':'0') + today.getDate();
   const month = ((today.getMonth()>9)?'':'0') + (today.getMonth() +1);
   const year = today.getFullYear();
 
@@ -30,8 +28,9 @@ function NewEntryPage(){
   const [journalBodyItems,setJournalBodyItems]=useState([]);
   const [usedTopics,setUsedTopics]=useState([]);
   const [recordList,setRecordList]=useState([]);
-  //const [recordList, setRecordList, insertNewRecord, updateRecord, removeRecord] = useListState([]);
 
+  // Other
+  const [editId, setEditId] = useState("");
 
   const resetAll = e => {
     e.preventDefault();
@@ -83,12 +82,25 @@ function NewEntryPage(){
         id:uuidv4(),
         topic:topicToSubmit,
         description:description,
-        records:recordList}
+        recordList:recordList}
       });
     listUtil(usedTopics,setUsedTopics,{type:"INSERT",payload:topicToSubmit});
     resetJournalBodyForm();
   }
 
+
+  const takeEdit = (id) => {
+    if (editId==""){
+      setEditId(id);
+      return;
+    }
+ 
+    setEditId(id);
+  }
+
+  const releaseEdit = () => {
+    setEditId("");
+  }
 
 
   return (
@@ -99,7 +111,7 @@ function NewEntryPage(){
           value={journalCollection} 
           fieldName="collection" 
           type="select" 
-          optionList={["Select Collection", "Test Collection"]} 
+          optionList={["Select Collection"]} 
           handleUpdate={handleChangeJournalCollection}></SimpleInput>  
         <SimpleInput 
           id="summaryField" 
@@ -124,8 +136,8 @@ function NewEntryPage(){
           handleUpdate={handleChangeOverview}></SimpleInput>
 
         <label htmlFor="journalBodyDiv" className="form-label">Body</label>
-        <div id="journalBodyDiv"> 
-          <JournalBodyItemForm
+        <div id="journalBodyDiv">
+          <JournalBodyItem 
             topicList={topicList} 
             newTopic={newTopic}
             data={{topic: topic, description: description, recordList: recordList}}
@@ -135,18 +147,22 @@ function NewEntryPage(){
             handleChangeNewTopic={handleChangeNewTopic}
             handleChangeDescription={handleChangeDescription}
             setRecordList={setRecordList}
-            >
-          </JournalBodyItemForm>
+            mode={"NEW"}></JournalBodyItem>
           <br/>
             {
               journalBodyItems.map(journalBodyItem => (
-                <JournalBodyItem 
-                  data = {journalBodyItem}
-                  key={journalBodyItem.id} 
-                  removeFromBody={()=> listUtil(journalBodyItems,setJournalBodyItems,{type:"DELETE",id:journalBodyItem.id})}
-                  removeFromUsedTopics={()=> listUtil(usedTopics,setUsedTopics,{type:"DELETE",payload:journalBodyItem.topic})}
-                  >
-                </JournalBodyItem>
+                <div> 
+                  <JournalBodyItem 
+                    mode={(editId==journalBodyItem.id)? "EDIT":"VIEW"}
+                    data = {journalBodyItem}
+                    key={journalBodyItem.id} 
+                    removeFromBody={()=> listUtil(journalBodyItems,setJournalBodyItems,{type:"DELETE",id:journalBodyItem.id})}
+                    removeFromUsedTopics={()=> listUtil(usedTopics,setUsedTopics,{type:"DELETE",payload:journalBodyItem.topic})}
+                    updateJournalBodyItem={newJournalBodyItem=> listUtil(journalBodyItems,setJournalBodyItems,{type:"UPDATE",id:journalBodyItem.id,payload:newJournalBodyItem})}
+                    takeEdit={takeEdit}
+                    releaseEdit={releaseEdit}></JournalBodyItem>
+                    <br/>
+                </div>
               ))
             }
         </div>

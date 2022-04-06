@@ -1,43 +1,123 @@
-import React from 'react';
-
-import RemoveButton from '../util/components/remove-button'
+import React, {useState} from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPencil } from '@fortawesome/free-solid-svg-icons'
+import TopicField from './topic-field/topic-field';
+import DescriptionField from './description-field/description-field';
+import RecordGrid from './record-grid/record-grid';
+import RemoveButton from '../util/components/remove-button';
+import useSimpleState from '../util/hooks/useSimpleState';
 
 function JournalBodyItem(props){
+    const [editDescription,setEditDescription,handleEditDescription] = useSimpleState("");
+    const [editRecordList,setEditRecordList]=useState([]);
+
+    const handleSubmit = e => {
+        e.preventDefault();
+
+        if (props.mode=="NEW")
+            props.saveJournalBodyItem();
+        else if (props.mode=="EDIT"){
+            props.updateJournalBodyItem({
+                id:props.data.id,
+                topic:props.data.topic,
+                description:editDescription,
+                recordList:editRecordList
+            });
+            props.releaseEdit();
+        }
+    }
+
+    const handleReset = e => {
+        e.preventDefault();
+        props.resetJournalBodyForm();
+    }
+
     const remove = (id) => {
         props.removeFromUsedTopics(undefined,props.data.topic);
         props.removeFromBody(id);
     }
 
-    return(
-        <div>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row">
+    const handleCancelEdit = e => {
+        e.preventDefault();
+        setEditRecordList([...props.data.recordList]);
+        props.releaseEdit();
+    }
+
+    const handleEdit = e => {
+        e.preventDefault();
+        setEditDescription(props.data.description);
+        setEditRecordList([...props.data.recordList]);
+        props.takeEdit(props.data.id);
+    }
+
+    return(   
+        <div className="card">
+            <div className="card-header">
+                <TopicField 
+                    topic={props.data.topic} 
+                    newTopic={props.newTopic}
+                    handleChangeTopic={props.handleChangeTopic} 
+                    topicList={props.topicList}
+                    handleChangeNewTopic={props.handleChangeNewTopic}
+                    mode={props.mode}></TopicField>
+
+                {
+                    (props.mode=="VIEW")?
                         <div className="col">
-                            <h5 className="card-title">{props.data.topic}</h5>
+                            <RemoveButton id={props.data.id} remove={remove} className="btn btn-secondary float-end"></RemoveButton>
+                            <button id={"edit_"+props.data.id} className="btn btn-secondary float-end" onClick={handleEdit}><FontAwesomeIcon icon={faPencil} /></button>
                         </div>
-                        <RemoveButton id={props.data.id} remove={remove} className="btn btn-secondary float-end"></RemoveButton>
-                    </div>   
-                </div>
-                <div className="card-body">
-                    <p className="card-text">{props.data.description}</p>
-                    {
-                        props.data.records.map(record => (
-                            <div id={"Record_"+record.id} key={record.id} className="container row mb-3">
-                                <div className="col">
-                                    <input id={"recordKeyField_"+record.id} className="form-control" defaultValue={record.key} disabled/>
-                                </div>
-                                <div className="col">
-                                    <input id={"recordValueField_"+record.id} className="form-control" defaultValue={record.value} disabled/>
-                                </div>     
-                            </div>
-                        ))
-                    }
-                </div>
+                    :
+                    null
+                }    
+                
             </div>
-            <br/>
-        </div>
+            
+            <div className="card-body">
+                <DescriptionField 
+                    description={(props.mode=="EDIT")? editDescription : props.data.description} 
+                    handleChangeDescription={(props.mode=="EDIT")? handleEditDescription : props.handleChangeDescription} 
+                    mode={props.mode}></DescriptionField>
+
+
+                <RecordGrid 
+                    recordList={(props.mode=="EDIT")? editRecordList : props.data.recordList} 
+                    setRecordList={(props.mode=="EDIT")? setEditRecordList : props.setRecordList}
+                    mode={props.mode}></RecordGrid>
+
+                    <div className="mb-3 row">
+                        {
+                            (props.mode=="NEW")?
+                                <div className="col">
+                                    <button id="clearBodyFormBtn" className="btn btn-outline-secondary" onClick={handleReset}>Clear</button> 
+                                </div>
+                            :
+                                null
+                        }
+
+                        {
+                            (props.mode=="EDIT")?
+                                <div className="col">
+                                    <button id="cancelEditBodyFormBtn" className="btn btn-outline-secondary" onClick={handleCancelEdit}>Cancel</button> 
+                                </div>
+                            :
+                                null
+                        }
+
+
+                        {
+                            (props.mode=="VIEW")?
+                                null 
+                            :
+                                <div className="col">
+                                    <button id="addToBodyBtn" className="btn btn-primary float-end" onClick={handleSubmit}>Save</button> 
+                                </div> 
+                        }                 
+                    </div>
+            </div>  
+        </div>      
     );
 
 }
+
 export default JournalBodyItem;

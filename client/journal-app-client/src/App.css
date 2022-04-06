@@ -1,10 +1,10 @@
 html, body{
-    padding: 2% !important;
+    padding-top: 2% !important;
+    padding-bottom: 2% !important;
     margin: 0 !important;
 }
 
 
 #formControlButtonsDiv {
     background-color: white;
-    padding-top: 2%;
 }
