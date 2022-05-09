@@ -1,13 +1,16 @@
 import logo from './logo.svg';
 import './App.css';
-import NewEntryPage from './new-entry/new-entry';
+import JournalEntryPage from './journal-entry/journal-entry';
+import DashboardPage from './dashboard/dashboard';
 
 function App() {
   return (
+    //<div>
+    //  <JournalEntryPage></JournalEntryPage>
+    //</div>
     <div>
-      <NewEntryPage></NewEntryPage>
+      <DashboardPage></DashboardPage>
     </div>
-    
   );
 }
 
