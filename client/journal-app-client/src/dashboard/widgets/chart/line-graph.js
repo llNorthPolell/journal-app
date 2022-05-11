@@ -32,36 +32,28 @@ function LineGraphWidget(props) {
             y:
             {
                 title: {
-                    display: true,
-                    text: 'BPM'
+                    display: props.labels !== undefined,
+                    text: props.labels !== undefined && props.labels.y !== undefined? props.labels.y : null
                 }
             },
             x:
             {
                 title: {
-                    display: true,
-                    text: 'Date'
+                    display: props.labels !== undefined,
+                    text: props.labels !== undefined && props.labels.x !== undefined? props.labels.x : null
                 }
             }
         }
     };
 
     const data = {
-        labels:['March 1, 2022', 'March 2, 2022', 'March 3, 2022', 'March 4, 2022', 'March 5, 2022', 'March 8, 2022','March 10, 2022','March 11, 2022'],
-        datasets:[
-            {
-                label: 'Dataset 1',
-                data:[120,120,124,124,124,128,128,135],
-                borderColor:'#88234d',
-                backgroundColor: '#88234d'
-            }
-        ]
-        
+        labels: props.data.x,
+        datasets: props.data.y
     };
 
     return(
         <div className="card dashboard-widget">
-            <h3 className="card-header">Scale Speed</h3>
+            <h3 className="card-header">{props.title}</h3>
             <div className="card-body">
                 <Line
                     options={options}
