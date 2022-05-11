@@ -7,26 +7,23 @@ import listUtil from '../util/functions/list-util';
 import {v4 as uuidv4} from 'uuid';
 
 
-function JournalEntryPage(){
-  // for defaulting date field to today
-  const today = new Date();
-  const day = ((today.getDate()>9)?'':'0') + today.getDate();
-  const month = ((today.getMonth()>9)?'':'0') + (today.getMonth() +1);
-  const year = today.getFullYear();
+function JournalEntryPage(props){
+  const data = props.data;
+  const initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
 
   // Simple States
-  const [journalCollection,setJournalCollection,handleChangeJournalCollection] = useSimpleState("");
-  const [summary,setSummary,handleChangeSummary] = useSimpleState("");
-  const [dateOfEntry,setDateOfEntry,handleChangeDateOfEntry] = useSimpleState(year+"-"+month+"-"+day);
-  const [overview,setOverview,handleChangeOverview] = useSimpleState("");
+  const [journalCollection,setJournalCollection,handleChangeJournalCollection] = useSimpleState(data.journalCollection);
+  const [summary,setSummary,handleChangeSummary] = useSimpleState(data.summary);
+  const [dateOfEntry,setDateOfEntry,handleChangeDateOfEntry] = useSimpleState(data.dateOfEntry);
+  const [overview,setOverview,handleChangeOverview] = useSimpleState(data.overview);
   const [topic,setTopic,handleChangeTopic] = useSimpleState("");
   const [newTopic,setNewTopic,handleChangeNewTopic] = useSimpleState("");
   const [description,setDescription,handleChangeDescription] = useSimpleState("");
 
   // List States
-  const [topicList,setTopicList]=useState([]);
-  const [journalBodyItems,setJournalBodyItems]=useState([]);
-  const [usedTopics,setUsedTopics]=useState([]);
+  const [topicList,setTopicList]=useState(props.topicList);
+  const [journalBodyItems,setJournalBodyItems]=useState(data.journalBodyItems);
+  const [usedTopics,setUsedTopics]=useState(initUsedTopics);
   const [recordList,setRecordList]=useState([]);
 
   // Other
@@ -34,13 +31,13 @@ function JournalEntryPage(){
 
   const resetAll = e => {
     e.preventDefault();
-    setJournalCollection("");
-    setSummary("");
-    setDateOfEntry(year+"-"+month+"-"+day);
-    setOverview("");
-    listUtil(journalBodyItems,setJournalBodyItems,{type:"TRUNCATE"});
-    listUtil(usedTopics,setUsedTopics,{type:"TRUNCATE"});
-    listUtil(topicList,setTopicList,{type:"TRUNCATE"});
+    setJournalCollection(data.journalCollection);
+    setSummary(data.summary);
+    setDateOfEntry(data.dateOfEntry);
+    setOverview(data.overview);
+    setJournalBodyItems([...data.journalBodyItems]);
+    setUsedTopics([...initUsedTopics]);
+    setTopicList([...props.topicList]);
 
     resetJournalBodyForm();
   }
@@ -123,7 +120,7 @@ function JournalEntryPage(){
           value={journalCollection} 
           fieldName="collection" 
           type="select" 
-          optionList={["Select Collection"]} 
+          optionList={props.journalCollections} 
           handleUpdate={handleChangeJournalCollection}></SimpleInput>  
         <SimpleInput 
           id="summaryField" 
