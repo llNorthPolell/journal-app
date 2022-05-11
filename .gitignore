@@ -50,7 +50,7 @@ build
 npm-debug.log
 testem.log
 /typings
-*/assets
+assets
 
 # e2e
 /e2e/*.js
