@@ -5,6 +5,9 @@ html, body{
     margin: 0 !important;
 }
 
+p {
+    white-space: pre-wrap;
+}
 
 /* Dashboard */
 .dashboard-widget {
@@ -14,7 +17,7 @@ html, body{
     padding:0;
 }
 
-.card-text{
+.card-dashboard-widget-text{
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: break-word;
@@ -51,4 +54,8 @@ html, body{
 /*Journal Entry Page */
 #formControlButtonsDiv {
     background-color: white;
+}
+
+#recordGridLabel{
+    text-decoration: underline;
 }

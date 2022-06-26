@@ -5,7 +5,7 @@ function LastEntryWidget(props){
         <div className="card dashboard-widget">
             <h3 className="card-header">Last Entry</h3>
             <div className="card-body">
-                <p className="card-text">
+                <p className="card-text card-dashboard-widget-text">
                     {props.description}
                 </p>
                 <a href="#" className="btn btn-primary">More</a>

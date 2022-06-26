@@ -14,7 +14,7 @@ function RecordGrid (props) {
         <div>
             <div className="row">
                 <div className="col">
-                    <label htmlFor="recordsDiv" className="form-label">Records</label>
+                    <label id="recordGridLabel" htmlFor="recordsDiv" className="form-label">Records</label>
                 </div>
                 {
                     (props.mode=="VIEW")?

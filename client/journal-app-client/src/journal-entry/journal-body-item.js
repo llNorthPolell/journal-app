@@ -79,7 +79,7 @@ function JournalBodyItem(props){
                     handleChangeDescription={(props.mode=="EDIT")? handleEditDescription : props.handleChangeDescription} 
                     mode={props.mode}></DescriptionField>
 
-
+                <br />
                 <RecordGrid 
                     recordList={(props.mode=="EDIT")? editRecordList : props.data.recordList} 
                     setRecordList={(props.mode=="EDIT")? setEditRecordList : props.setRecordList}
