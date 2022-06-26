@@ -51,6 +51,7 @@ npm-debug.log
 testem.log
 /typings
 assets
+demo
 
 # e2e
 /e2e/*.js
