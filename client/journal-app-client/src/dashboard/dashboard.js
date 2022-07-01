@@ -1,7 +1,11 @@
 import React, {useState} from 'react';
+import {Link} from "react-router-dom";
+
 import PicCarouselWidget from './widgets/pic-carousel/pic-carousel';
 import LastEntryWidget from './widgets/last-entry/last-entry';
 import LineGraphWidget from './widgets/chart/line-graph';
+
+
 
 function DashboardPage(props){
     const [contents] = useState(props.contents.widgets);
@@ -14,7 +18,7 @@ function DashboardPage(props){
                     <button id="searchBtn" className="btn btn-outline-secondary">Search</button>
                 </div>
                 <div className="col mb-3">
-                    <a id="newEntryBtn" className="btn btn-primary">+ New Entry </a>
+                    <Link id="newEntryBtn" className="btn btn-primary" to="/journal-app/entry/new">+ New Entry </Link>
                 </div>
             </div>
 

@@ -1,9 +1,13 @@
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import logo from './logo.svg';
-import './App.css';
+// Scripts 
+import HomePage from './home/home';
+import LoginPage from './login/login';
 import JournalEntryPage from './journal-entry/journal-entry';
 import DashboardPage from './dashboard/dashboard';
+import Navbar from './navbar/navbar';
+
+import { AuthProvider } from './contexts/authContext';
 
 //Demo
 import DemoJournalEntries from './demo/demo-journal-entries.json'
@@ -11,6 +15,9 @@ import DemoJournalCollections from './demo/demo-journal-collections.json'
 import DemoTopicList from './demo/demo-topic-list.json'
 import DemoDashboard from './demo/demo-dashboard.json'
 
+// Other Resources
+import logo from './logo.svg';
+import './App.css';
 
 function App() {
   // for defaulting date field to today
@@ -22,20 +29,27 @@ function App() {
   const demoNewJournalEntry = {
     journalCollection: "",
     summary: "",
-    dateOfEntry: year+"-"+month+"-"+day,
+    dateOfEntry: year + "-" + month + "-" + day,
     overview: "",
     journalBodyItems: []
   }
 
   return (
     <div id="JournalAppDiv">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/journal-app/" element={<DashboardPage contents={DemoDashboard}/>}></Route>
-          <Route path="/journal-app/entry/new" element={<JournalEntryPage data={demoNewJournalEntry} journalCollections={DemoJournalCollections} topicList={DemoTopicList}/>}></Route>
-          <Route path="/journal-app/entry/read/:id" element={<JournalEntryPage data={DemoJournalEntries[0]} journalCollections={DemoJournalCollections} topicList={DemoTopicList}/>}></Route>
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <Navbar></Navbar>
+        <br />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/journal-app/" element={<HomePage />}></Route>
+            <Route path="/journal-app/login" element={<LoginPage />}></Route>
+            <Route path="/journal-app/:collection_id" element={<DashboardPage contents={DemoDashboard} />}></Route>
+            <Route path="/journal-app/:collection_id/new" element={<JournalEntryPage data={demoNewJournalEntry} journalCollections={DemoJournalCollections} topicList={DemoTopicList} />}></Route>
+            <Route path="/journal-app/:collection_id/edit/:entry_id" element={<JournalEntryPage data={DemoJournalEntries[0]} journalCollections={DemoJournalCollections} topicList={DemoTopicList} />}></Route>
+          </Routes>
+
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }
