@@ -17,7 +17,7 @@ const listUtil = (list,setList,action) => {
         case "CONTAINS":
             return list.some(item=> item == action.payload);
         case "SET":
-            setList(action.payload);
+            setList([...action.payload]);
             break;
         case "TRUNCATE":
             setList([]);

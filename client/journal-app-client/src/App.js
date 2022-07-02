@@ -18,6 +18,7 @@ import DemoDashboard from './demo/demo-dashboard.json'
 // Other Resources
 import logo from './logo.svg';
 import './App.css';
+import { DataProvider } from './contexts/dataContext';
 
 function App() {
   // for defaulting date field to today
@@ -37,17 +38,18 @@ function App() {
   return (
     <div id="JournalAppDiv">
       <AuthProvider>
-        <Navbar></Navbar>
-        <br />
         <BrowserRouter>
-          <Routes>
-            <Route path="/journal-app/" element={<HomePage />}></Route>
-            <Route path="/journal-app/login" element={<LoginPage />}></Route>
-            <Route path="/journal-app/:collection_id" element={<DashboardPage contents={DemoDashboard} />}></Route>
-            <Route path="/journal-app/:collection_id/new" element={<JournalEntryPage data={demoNewJournalEntry} journalCollections={DemoJournalCollections} topicList={DemoTopicList} />}></Route>
-            <Route path="/journal-app/:collection_id/edit/:entry_id" element={<JournalEntryPage data={DemoJournalEntries[0]} journalCollections={DemoJournalCollections} topicList={DemoTopicList} />}></Route>
-          </Routes>
-
+          <Navbar></Navbar>
+          <br />
+          <DataProvider>
+            <Routes>
+              <Route path="/journal-app/" element={<HomePage />}></Route>
+              <Route path="/journal-app/login" element={<LoginPage />}></Route>
+              <Route path="/journal-app/:collection_id" element={<DashboardPage contents={DemoDashboard} />}></Route>
+              <Route path="/journal-app/:collection_id/new" element={<JournalEntryPage data={demoNewJournalEntry} journalCollections={DemoJournalCollections} topicList={DemoTopicList} />}></Route>
+              <Route path="/journal-app/:collection_id/edit/:entry_id" element={<JournalEntryPage data={DemoJournalEntries[0]} journalCollections={DemoJournalCollections} topicList={DemoTopicList} />}></Route>
+            </Routes>
+          </DataProvider>
         </BrowserRouter>
       </AuthProvider>
     </div>

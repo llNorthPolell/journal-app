@@ -1,4 +1,5 @@
 import {useAuth} from '../contexts/authContext';
+import {Link} from 'react-router-dom';
 
 function Navbar(props){
     const { user } = useAuth();
@@ -6,17 +7,17 @@ function Navbar(props){
     return (
         <div id="Navbar" className="navbar navbar-expand-lg bg-dark">
             <div className="container-fluid">
-                <a className="navbar-brand" href="/journal-app/">
+                <Link className="navbar-brand" to="/journal-app/">
                     <span>Journal App</span>
-                </a>
+                </Link>
                 <div className="collapse navbar-collapse">
                 </div>
 
                 {
                     (user == null)?   
-                        <a className="nav-link text-light" href="/journal-app/login">Login</a>
+                        <Link className="nav-link text-light" to="/journal-app/login">Login</Link>
                     :
-                        <a className="nav-link text-light" href="#">Logout</a> 
+                        <Link className="nav-link text-light" to="#">Logout</Link> 
                 }
             </div>
         </div>
