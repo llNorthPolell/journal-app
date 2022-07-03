@@ -21,15 +21,16 @@ const initFirebaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const googleAuthProvider = new GoogleAuthProvider();
 
-
-
-// FIRESTORE
 export function loginWithGoogle(){
     signInWithRedirect(auth,googleAuthProvider);
     return getRedirectResult(auth);
 }
 
+export function signOut(){
+    return auth.signOut();
+}
 
+// FIRESTORE
 const db = getFirestore();
 export const journalRef = collection(db,'journals');
 export const journalEntriesRef = collection(db,'journal_entries');

@@ -8,6 +8,8 @@ import DashboardPage from './dashboard/dashboard';
 import Navbar from './navbar/navbar';
 
 import { AuthProvider } from './contexts/authContext';
+import { DataProvider } from './contexts/dataContext';
+import PrivateRoute from './util/components/private-route';
 
 //Demo
 import DemoJournalEntries from './demo/demo-journal-entries.json'
@@ -18,7 +20,7 @@ import DemoDashboard from './demo/demo-dashboard.json'
 // Other Resources
 import logo from './logo.svg';
 import './App.css';
-import { DataProvider } from './contexts/dataContext';
+
 
 function App() {
   // for defaulting date field to today
@@ -45,9 +47,9 @@ function App() {
             <Routes>
               <Route path="/journal-app/" element={<HomePage />}></Route>
               <Route path="/journal-app/login" element={<LoginPage />}></Route>
-              <Route path="/journal-app/:collection_id" element={<DashboardPage contents={DemoDashboard} />}></Route>
-              <Route path="/journal-app/:collection_id/new" element={<JournalEntryPage data={demoNewJournalEntry} journalCollections={DemoJournalCollections} topicList={DemoTopicList} />}></Route>
-              <Route path="/journal-app/:collection_id/edit/:entry_id" element={<JournalEntryPage data={DemoJournalEntries[0]} journalCollections={DemoJournalCollections} topicList={DemoTopicList} />}></Route>
+              <Route path="/journal-app/:collection_id" element={<PrivateRoute><DashboardPage contents={DemoDashboard}/></PrivateRoute>}></Route>
+              <Route path="/journal-app/:collection_id/new" element={<PrivateRoute><JournalEntryPage data={demoNewJournalEntry} journalCollections={DemoJournalCollections} topicList={DemoTopicList} /></PrivateRoute>}></Route>
+              <Route path="/journal-app/:collection_id/edit/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} journalCollections={DemoJournalCollections} topicList={DemoTopicList} /></PrivateRoute>}></Route>
             </Routes>
           </DataProvider>
         </BrowserRouter>

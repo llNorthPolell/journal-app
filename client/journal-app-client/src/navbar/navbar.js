@@ -1,8 +1,17 @@
 import {useAuth} from '../contexts/authContext';
 import {Link} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 function Navbar(props){
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    //todo
+    const handleLogout = (e) =>{
+        e.preventDefault();
+        logout();
+        navigate('/journal-app/login');
+    }
 
     return (
         <div id="Navbar" className="navbar navbar-expand-lg bg-dark">
@@ -17,7 +26,7 @@ function Navbar(props){
                     (user == null)?   
                         <Link className="nav-link text-light" to="/journal-app/login">Login</Link>
                     :
-                        <Link className="nav-link text-light" to="#">Logout</Link> 
+                        <button className="btn btn-link text-light" onClick={handleLogout}>Logout</button> 
                 }
             </div>
         </div>

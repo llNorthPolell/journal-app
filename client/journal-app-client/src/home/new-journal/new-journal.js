@@ -35,7 +35,7 @@ function NewJournalForm(props) {
         createJournal({
             name: newJournal,
             permissions: permissions,
-            img: journalPic,
+            img: (journalPic)?journalPic:null,
             creation_timestamp: new Date().toISOString(),
             last_updated: new Date().toISOString(),
             author: userId

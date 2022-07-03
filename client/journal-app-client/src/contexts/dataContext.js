@@ -1,6 +1,6 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {useAuth} from '../contexts/authContext';
-import {journalRef, getList, query, where, createDoc} from '../firebase'
+import {journalRef,journalEntriesRef, getList, query, where, createDoc} from '../firebase'
 import listUtil from '../util/functions/list-util';
 
 const DataContext = React.createContext();
@@ -42,6 +42,16 @@ export function DataProvider ({children}){
             console.log(err.message);
         });
     }
+
+    function createJournalEntry(journalEntry){
+        createDoc(journalEntriesRef,journalEntry).then((docRef)=>{
+            let returnId = docRef.id;
+            console.log("New Journal Entry ID: " +returnId);
+        }).catch((err)=>{
+            console.log(err.message);
+        });
+    }
+
 
     const values = {
         journalList, createJournal, userId

@@ -6,9 +6,9 @@ import LastEntryWidget from './widgets/last-entry/last-entry';
 import LineGraphWidget from './widgets/chart/line-graph';
 
 
-
 function DashboardPage(props){
     const [contents] = useState(props.contents.widgets);
+
 
     return (
         <div id="dashboardDiv" className="container">
@@ -26,6 +26,7 @@ function DashboardPage(props){
             <br/><br/>
 
             <h2>My Journal</h2>
+            <div className="row row-cols-4"> 
             {
                 contents.map(
                     widget=>(
@@ -42,6 +43,7 @@ function DashboardPage(props){
                     )
                 ) 
             }
+            </div>
             
         </div>
     );

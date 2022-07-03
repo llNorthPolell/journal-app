@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {auth,loginWithGoogle} from '../firebase'
+import {auth,loginWithGoogle, signOut} from '../firebase'
 
 const AuthContext = React.createContext();
 
@@ -14,6 +14,14 @@ export function AuthProvider ({children}){
         return loginWithGoogle();
     }
 
+    function logout(){
+        signOut().then(()=>{
+            setUser(null);
+        }).catch((err)=>{
+            console.log("Error occurred while signing out... " + err.message);
+        });
+        
+    }
 
     useEffect(()=>{
         const unsubscribe = auth.onAuthStateChanged(user => {
@@ -24,7 +32,7 @@ export function AuthProvider ({children}){
 
 
     const values = {
-        auth,user,login
+        auth,user,login,logout
     }
 
     
