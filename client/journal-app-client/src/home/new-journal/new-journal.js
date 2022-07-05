@@ -7,7 +7,7 @@ import {useData} from '../../contexts/dataContext';
 function NewJournalForm(props) {
     const [newJournal, setNewJournal, handleChangeNewJournal] = useSimpleState("");
     const [permissions, setPermissions, handleChangePermissions] = useSimpleState("private");
-    const [journalPic, setJournalPic, handleChangeJournalPic] = useSimpleState();
+    const [journalPic, setJournalPic] = useState();
 
     const [show, setShow] = useState(false);
 
@@ -29,6 +29,11 @@ function NewJournalForm(props) {
         e.preventDefault();
         setShow(true);
     };
+
+    const handleChangeJournalPic = (e)=>{
+        e.preventDefault();
+        setJournalPic(e.target.files[0]);
+    }
 
     const handleSubmit = (e) =>{
         e.preventDefault();
@@ -71,7 +76,7 @@ function NewJournalForm(props) {
                             handleUpdate={handleChangePermissions}></SimpleInput>
 
                         <div className="mb-3">
-                            <input id="journalPicField" type="file" name="journalPic" value={journalPic} onChange={handleChangeJournalPic} /> 
+                            <input id="journalPicField" type="file" name="journalPic" onChange={handleChangeJournalPic} /> 
                         </div>
                     </form>
                 </Modal.Body>

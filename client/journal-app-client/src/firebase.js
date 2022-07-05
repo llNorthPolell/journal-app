@@ -1,8 +1,8 @@
 import {initializeApp} from 'firebase/app';
 import {addDoc, collection, getFirestore, getDocs} from 'firebase/firestore';
 import {GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult} from 'firebase/auth';
-import {getStorage,ref, getDownloadURL} from 'firebase/storage';
-
+import {getStorage,ref, getDownloadURL, uploadBytes } from 'firebase/storage';
+import {v4} from 'uuid'
 
 // INIT 
 const firebaseConfig={
@@ -58,16 +58,31 @@ export {query,where} from 'firebase/firestore';
 
 // STORAGE
 export const storage = getStorage();
-export const imageLocRef= ref(storage,process.env.REACT_APP_FIREBASE_STORAGE_BUCKET);
-export const getImageURL = (imageName) =>{
-    let imageRef = ref(imageLocRef,imageName);
-    
-    getDownloadURL(imageRef).then((url)=>{
-        return url;
+
+export async function getStorageDownloadURL(fileName) {
+    let fileRef = ref(storage,fileName);
+    let fileURL = null;
+
+    await getDownloadURL(fileRef).then((url)=>{
+        fileURL = url;
     }).catch((err)=>{
         console.log(err.message)
     });
+    return fileURL;
 } 
+
+
+export async function uploadFile(file){
+    let newFileName = v4()+"."+file.name.split('.').pop();
+    let newFileRef = ref(storage,newFileName);
+    let fileDownloadURL = null;
+    await uploadBytes(newFileRef,file);
+    await getStorageDownloadURL(newFileName).then((url)=>{
+        fileDownloadURL = url
+        console.log("File " + file + " has been uploaded to " + fileDownloadURL);
+    });
+    return fileDownloadURL;
+}
 
 export default initFirebaseApp;
 
