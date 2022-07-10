@@ -19,11 +19,7 @@ export function DataProvider ({children}){
     const [userId, setUserId] = useState();
 
     useEffect(() => {
-        if (user != null) {
-            setUserId(user.uid);
-        } else {
-            setUserId();
-        }
+        setUserId((user != null)?user.uid:null);
     }, [user]);
 
     useEffect(()=>{
@@ -39,34 +35,38 @@ export function DataProvider ({children}){
 
     async function createJournal(journal){
         let saveJournal = journal;
+        let docRef=null;
+        let returnId=null;
 
-        if (journal.img != null)
-            await uploadFile(journal.img).then((url)=>{
-                saveJournal.img=url;
-            });
-        else 
-            saveJournal.img="https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/defaultImg.png?alt=media&token=caa93413-9a70-47df-978e-bc787ec05378";
+        saveJournal.img = (journal.img != null)? 
+            await uploadFile(journal.img)
+            :
+            "https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/defaultImg.png?alt=media&token=caa93413-9a70-47df-978e-bc787ec05378";
         
 
         console.log(saveJournal);
 
-        createDoc(journalRef,saveJournal).then((docRef)=>{
-            let returnId = docRef.id;
+        try{
+            docRef = await createDoc(journalRef,saveJournal)
+            returnId = docRef.id;
             console.log("New Journal ID: " +returnId);
             listUtil(journalList, setJournalList, { type: "INSERT", payload:{...saveJournal,key: returnId}});
-        }).catch((err)=>{
+        }
+        catch(err){
             console.log(err.message);
-        });
+        };
     }
 
     
-    function createJournalEntry(journalEntry){
-        createDoc(journalEntriesRef,journalEntry).then((docRef)=>{
+    async function createJournalEntry(journalEntry){
+        try{
+            let docRef = await createDoc(journalEntriesRef,journalEntry);
             let returnId = docRef.id;
             console.log("New Journal Entry ID: " +returnId);
-        }).catch((err)=>{
+        }
+        catch(err){
             console.log(err.message);
-        });
+        };
     }
 
 

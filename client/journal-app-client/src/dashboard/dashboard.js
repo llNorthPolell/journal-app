@@ -18,7 +18,7 @@ function DashboardPage(props){
                     <button id="searchBtn" className="btn btn-outline-secondary">Search</button>
                 </div>
                 <div className="col mb-3">
-                    <Link id="newEntryBtn" className="btn btn-primary" to="/journal-app/entry/new">+ New Entry </Link>
+                    <Link id="newEntryBtn" className="btn btn-primary" to={`${props.location.pathname}/new`}>+ New Entry </Link>
                 </div>
             </div>
 

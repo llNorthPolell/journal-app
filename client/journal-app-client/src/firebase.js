@@ -44,13 +44,15 @@ export async function createDoc(collectionRef,payload){
 
 export async function getList(query) {
     let output=[];
-    await getDocs(query).then((snapshot) => {
+    try{
+        let snapshot = await getDocs(query);
         snapshot.docs.forEach((doc) => {
             output.push({ ...doc.data(),key: doc.id });
         });
-    }).catch((err) => {
+    }
+    catch (err) {
         console.log(err.message);
-    });
+    }
     return output;
 }
 
@@ -62,12 +64,12 @@ export const storage = getStorage();
 export async function getStorageDownloadURL(fileName) {
     let fileRef = ref(storage,fileName);
     let fileURL = null;
-
-    await getDownloadURL(fileRef).then((url)=>{
-        fileURL = url;
-    }).catch((err)=>{
+    try{
+        fileURL=await getDownloadURL(fileRef)
+    }
+    catch(err){
         console.log(err.message)
-    });
+    }
     return fileURL;
 } 
 
@@ -77,10 +79,8 @@ export async function uploadFile(file){
     let newFileRef = ref(storage,newFileName);
     let fileDownloadURL = null;
     await uploadBytes(newFileRef,file);
-    await getStorageDownloadURL(newFileName).then((url)=>{
-        fileDownloadURL = url
-        console.log("File " + file + " has been uploaded to " + fileDownloadURL);
-    });
+    fileDownloadURL = await getStorageDownloadURL(newFileName);
+    console.log("File " + file + " has been uploaded to " + fileDownloadURL);
     return fileDownloadURL;
 }
 
