@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {Link, useLocation} from 'react-router-dom';
 import JournalBodyItem from './journal-body-item';
 import SimpleInput from '../util/components/simple-input';
 import useSimpleState from '../util/hooks/useSimpleState';
@@ -11,8 +12,9 @@ function JournalEntryPage(props) {
   const data = props.data;
   const initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
 
+  const {journalId} = useLocation();
+
   // Simple States
-  const [journalCollection, setJournalCollection, handleChangeJournalCollection] = useSimpleState(data.journalCollection);
   const [summary, setSummary, handleChangeSummary] = useSimpleState(data.summary);
   const [dateOfEntry, setDateOfEntry, handleChangeDateOfEntry] = useSimpleState(data.dateOfEntry);
   const [overview, setOverview, handleChangeOverview] = useSimpleState(data.overview);
@@ -31,7 +33,6 @@ function JournalEntryPage(props) {
 
   const resetAll = e => {
     e.preventDefault();
-    setJournalCollection(data.journalCollection);
     setSummary(data.summary);
     setDateOfEntry(data.dateOfEntry);
     setOverview(data.overview);
@@ -102,27 +103,24 @@ function JournalEntryPage(props) {
 
   const publish = e => {
     let output = {
-      journalCollection: journalCollection,
+      journal: journalId,
       summary: summary,
       dateOfEntry: dateOfEntry,
       overview: overview,
       journalBodyItems: journalBodyItems
     }
 
-    console.log("Published " + output + " to " + journalCollection);
+    console.log("Published " + output + " to " + journalId);
   }
 
 
   return (
     <div id="newEntryFormDiv" className="container">
+      <div className="col">
+        <Link id="toDashboardButton" className="btn btn-outline-primary" to={"/journal-app/"+journalId}>Go to Dashboard</Link>
+      </div>
+      <br/><br/>
       <form>
-        <SimpleInput
-          id="collectionDropdown"
-          value={journalCollection}
-          fieldName="collection"
-          type="select"
-          optionList={props.journalCollections}
-          handleUpdate={handleChangeJournalCollection}></SimpleInput>
         <SimpleInput
           id="summaryField"
           value={summary}

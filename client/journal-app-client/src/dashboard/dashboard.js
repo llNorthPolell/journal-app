@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 
 import PicCarouselWidget from './widgets/pic-carousel/pic-carousel';
 import LastEntryWidget from './widgets/last-entry/last-entry';
@@ -8,7 +8,7 @@ import LineGraphWidget from './widgets/chart/line-graph';
 
 function DashboardPage(props){
     const [contents] = useState(props.contents.widgets);
-
+    const {journalId} = useLocation();
 
     return (
         <div id="dashboardDiv" className="container">
@@ -18,7 +18,7 @@ function DashboardPage(props){
                     <button id="searchBtn" className="btn btn-outline-secondary">Search</button>
                 </div>
                 <div className="col mb-3">
-                    <Link id="newEntryBtn" className="btn btn-primary" to={`${props.location.pathname}/new`}>+ New Entry </Link>
+                    <Link id="newEntryBtn" className="btn btn-primary" to={"/journal-app/"+journalId+"/new"}>+ New Entry </Link>
                 </div>
             </div>
 
