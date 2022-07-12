@@ -8,22 +8,24 @@ import RemoveButton from '../util/components/remove-button';
 import useSimpleState from '../util/hooks/useSimpleState';
 
 function JournalBodyItem(props){
-    const [editDescription,setEditDescription,handleEditDescription] = useSimpleState("");
-    const [editRecordList,setEditRecordList]=useState([]);
+    const [editDescription,setEditDescription,handleEditDescription] = useSimpleState(props.data.description);
+    const [editRecordList,setEditRecordList]=useState(props.data.recordList);
+
+    const [mode, setMode] = useState(props.mode);
 
     const handleSubmit = e => {
         e.preventDefault();
 
-        if (props.mode=="NEW")
+        if (mode==="NEW")
             props.saveJournalBodyItem();
-        else if (props.mode=="EDIT"){
+        else if (mode==="EDIT"){
             props.updateJournalBodyItem({
                 id:props.data.id,
                 topic:props.data.topic,
                 description:editDescription,
                 recordList:editRecordList
             });
-            props.releaseEdit();
+            setMode("VIEW");
         }
     }
 
@@ -39,15 +41,14 @@ function JournalBodyItem(props){
 
     const handleCancelEdit = e => {
         e.preventDefault();
+        setEditDescription(props.data.description);
         setEditRecordList([...props.data.recordList]);
-        props.releaseEdit();
+        setMode("VIEW");
     }
 
     const handleEdit = e => {
         e.preventDefault();
-        setEditDescription(props.data.description);
-        setEditRecordList([...props.data.recordList]);
-        props.takeEdit(props.data.id);
+        setMode("EDIT");
     }
 
     return(   
@@ -59,10 +60,10 @@ function JournalBodyItem(props){
                     handleChangeTopic={props.handleChangeTopic} 
                     topicList={props.topicList}
                     handleChangeNewTopic={props.handleChangeNewTopic}
-                    mode={props.mode}></TopicField>
+                    mode={mode}></TopicField>
 
                 {
-                    (props.mode=="VIEW")?
+                    (mode==="VIEW")?
                         <div className="col">
                             <RemoveButton id={props.data.id} remove={remove} className="btn btn-secondary float-end"></RemoveButton>
                             <button id={"edit_"+props.data.id} className="btn btn-secondary float-end" onClick={handleEdit}><FontAwesomeIcon icon={faPencil} /></button>
@@ -75,19 +76,19 @@ function JournalBodyItem(props){
             
             <div className="card-body">
                 <DescriptionField 
-                    description={(props.mode=="EDIT")? editDescription : props.data.description} 
-                    handleChangeDescription={(props.mode=="EDIT")? handleEditDescription : props.handleChangeDescription} 
-                    mode={props.mode}></DescriptionField>
+                    description={editDescription} 
+                    handleChangeDescription={handleEditDescription} 
+                    mode={mode}></DescriptionField>
 
                 <br />
                 <RecordGrid 
-                    recordList={(props.mode=="EDIT")? editRecordList : props.data.recordList} 
-                    setRecordList={(props.mode=="EDIT")? setEditRecordList : props.setRecordList}
-                    mode={props.mode}></RecordGrid>
+                    recordList={(mode==="EDIT")? editRecordList : props.data.recordList} 
+                    setRecordList={(mode==="EDIT")? setEditRecordList : props.setRecordList}
+                    mode={mode}></RecordGrid>
 
                     <div className="mb-3 row">
                         {
-                            (props.mode=="NEW")?
+                            (mode==="NEW")?
                                 <div className="col">
                                     <button id="clearBodyFormBtn" className="btn btn-outline-secondary" onClick={handleReset}>Clear</button> 
                                 </div>
@@ -96,7 +97,7 @@ function JournalBodyItem(props){
                         }
 
                         {
-                            (props.mode=="EDIT")?
+                            (mode==="EDIT")?
                                 <div className="col">
                                     <button id="cancelEditBodyFormBtn" className="btn btn-outline-secondary" onClick={handleCancelEdit}>Cancel</button> 
                                 </div>
@@ -106,7 +107,7 @@ function JournalBodyItem(props){
 
 
                         {
-                            (props.mode=="VIEW")?
+                            (mode==="VIEW")?
                                 null 
                             :
                                 <div className="col">

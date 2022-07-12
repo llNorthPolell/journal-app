@@ -28,8 +28,6 @@ function JournalEntryPage(props) {
   const [usedTopics, setUsedTopics] = useState(initUsedTopics);
   const [recordList, setRecordList] = useState([]);
 
-  // Other
-  const [editId, setEditId] = useState("-1");
 
   const resetAll = e => {
     e.preventDefault();
@@ -85,20 +83,6 @@ function JournalEntryPage(props) {
     });
     listUtil(usedTopics, setUsedTopics, { type: "INSERT", payload: topicToSubmit });
     resetJournalBodyForm();
-  }
-
-
-  const takeEdit = (id) => {
-    if (editId == "-1") {
-      setEditId(id);
-      return;
-    }
-
-    setEditId(id);
-  }
-
-  const releaseEdit = () => {
-    setEditId("-1");
   }
 
   const publish = e => {
@@ -161,14 +145,12 @@ function JournalEntryPage(props) {
             journalBodyItems.map(journalBodyItem => (
               <div>
                 <JournalBodyItem
-                  mode={(editId == journalBodyItem.id) ? "EDIT" : "VIEW"}
+                  mode={"VIEW"}
                   data={journalBodyItem}
                   key={journalBodyItem.id}
                   removeFromBody={() => listUtil(journalBodyItems, setJournalBodyItems, { type: "DELETE", id: journalBodyItem.id })}
                   removeFromUsedTopics={() => listUtil(usedTopics, setUsedTopics, { type: "DELETE", payload: journalBodyItem.topic })}
-                  updateJournalBodyItem={newJournalBodyItem => listUtil(journalBodyItems, setJournalBodyItems, { type: "UPDATE", id: journalBodyItem.id, payload: newJournalBodyItem })}
-                  takeEdit={takeEdit}
-                  releaseEdit={releaseEdit}></JournalBodyItem>
+                  updateJournalBodyItem={newJournalBodyItem => listUtil(journalBodyItems, setJournalBodyItems, { type: "UPDATE", id: journalBodyItem.id, payload: newJournalBodyItem })}></JournalBodyItem>
                 <br />
               </div>
             ))
