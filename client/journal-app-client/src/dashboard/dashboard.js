@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Link, useLocation} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 import PicCarouselWidget from './widgets/pic-carousel/pic-carousel';
 import LastEntryWidget from './widgets/last-entry/last-entry';
@@ -8,7 +8,7 @@ import LineGraphWidget from './widgets/chart/line-graph';
 
 function DashboardPage(props){
     const [contents] = useState(props.contents.widgets);
-    const {journalId} = useLocation();
+    const {journalId} = useParams();
 
     return (
         <div id="dashboardDiv" className="container">

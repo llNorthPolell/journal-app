@@ -6,6 +6,7 @@ import DescriptionField from './description-field/description-field';
 import RecordGrid from './record-grid/record-grid';
 import RemoveButton from '../util/components/remove-button';
 import useSimpleState from '../util/hooks/useSimpleState';
+import listUtil from '../util/functions/list-util';
 
 function JournalBodyItem(props){
     const [editDescription,setEditDescription,handleEditDescription] = useSimpleState(props.data.description);
@@ -29,9 +30,9 @@ function JournalBodyItem(props){
         }
     }
 
-    const handleReset = e => {
+    const handleClear = e => {
         e.preventDefault();
-        props.resetJournalBodyForm();
+        props.clearJournalBodyForm();
     }
 
     const remove = (id) => {
@@ -42,7 +43,7 @@ function JournalBodyItem(props){
     const handleCancelEdit = e => {
         e.preventDefault();
         setEditDescription(props.data.description);
-        setEditRecordList([...props.data.recordList]);
+        listUtil(editRecordList,setEditRecordList,{type:"SET", payload:props.data.recordList});
         setMode("VIEW");
     }
 
@@ -76,21 +77,21 @@ function JournalBodyItem(props){
             
             <div className="card-body">
                 <DescriptionField 
-                    description={editDescription} 
-                    handleChangeDescription={handleEditDescription} 
+                    description={(mode!=="NEW")? editDescription: props.data.description} 
+                    handleChangeDescription={(mode!=="NEW")?handleEditDescription :props.handleChangeDescription} 
                     mode={mode}></DescriptionField>
 
                 <br />
                 <RecordGrid 
-                    recordList={(mode==="EDIT")? editRecordList : props.data.recordList} 
-                    setRecordList={(mode==="EDIT")? setEditRecordList : props.setRecordList}
+                    recordList={(mode!=="NEW")?editRecordList:props.data.recordList} 
+                    setRecordList={(mode!=="NEW")? setEditRecordList : props.setRecordList}
                     mode={mode}></RecordGrid>
 
                     <div className="mb-3 row">
                         {
                             (mode==="NEW")?
                                 <div className="col">
-                                    <button id="clearBodyFormBtn" className="btn btn-outline-secondary" onClick={handleReset}>Clear</button> 
+                                    <button id="clearBodyFormBtn" className="btn btn-outline-secondary" onClick={handleClear}>Clear</button> 
                                 </div>
                             :
                                 null

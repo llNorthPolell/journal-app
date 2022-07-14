@@ -3,6 +3,8 @@ const listUtil = (list,setList,action) => {
         case "INSERT":
             setList([...list, action.payload]);
             break;
+        case "GET":
+            return list.find(item=>{return item.id===action.id});
         case "UPDATE":
             setList(list.map(item=>
                 item.id === action.payload.id ? 

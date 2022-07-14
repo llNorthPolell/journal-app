@@ -13,7 +13,6 @@ import PrivateRoute from './util/components/private-route';
 
 //Demo
 import DemoJournalEntries from './demo/demo-journal-entries.json'
-import DemoJournalCollections from './demo/demo-journal-collections.json'
 import DemoTopicList from './demo/demo-topic-list.json'
 import DemoDashboard from './demo/demo-dashboard.json'
 
@@ -48,8 +47,8 @@ function App() {
               <Route path="/journal-app/" element={<HomePage />}></Route>
               <Route path="/journal-app/login" element={<LoginPage />}></Route>
               <Route path="/journal-app/:journalId" element={<PrivateRoute><DashboardPage contents={DemoDashboard}/></PrivateRoute>}></Route>
-              <Route path="/journal-app/:journalId/new" element={<PrivateRoute><JournalEntryPage data={demoNewJournalEntry} journalCollections={DemoJournalCollections} topicList={DemoTopicList} /></PrivateRoute>}></Route>
-              <Route path="/journal-app/:journalId/edit/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} journalCollections={DemoJournalCollections} topicList={DemoTopicList} /></PrivateRoute>}></Route>
+              <Route path="/journal-app/:journalId/new" element={<PrivateRoute><JournalEntryPage data={demoNewJournalEntry} topicList={DemoTopicList} /></PrivateRoute>}></Route>
+              <Route path="/journal-app/:journalId/edit/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} topicList={DemoTopicList} /></PrivateRoute>}></Route>
             </Routes>
           </DataProvider>
         </BrowserRouter>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Link, useLocation} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import JournalBodyItem from './journal-body-item';
 import SimpleInput from '../util/components/simple-input';
 import useSimpleState from '../util/hooks/useSimpleState';
@@ -12,7 +12,7 @@ function JournalEntryPage(props) {
   const data = props.data;
   const initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
 
-  const {journalId} = useLocation();
+  const {journalId} = useParams();
 
   // Simple States
   const [summary, setSummary, handleChangeSummary] = useSimpleState(data.summary);
@@ -38,11 +38,11 @@ function JournalEntryPage(props) {
     setUsedTopics([...initUsedTopics]);
     setTopicList([...props.topicList]);
 
-    resetJournalBodyForm();
+    clearJournalBodyForm();
   }
 
 
-  const resetJournalBodyForm = () => {
+  const clearJournalBodyForm = () => {
     setTopic("");
     setDescription("");
     setNewTopic("");
@@ -82,7 +82,7 @@ function JournalEntryPage(props) {
       }
     });
     listUtil(usedTopics, setUsedTopics, { type: "INSERT", payload: topicToSubmit });
-    resetJournalBodyForm();
+    clearJournalBodyForm();
   }
 
   const publish = e => {
@@ -134,7 +134,7 @@ function JournalEntryPage(props) {
             newTopic={newTopic}
             data={{ topic: topic, description: description, recordList: recordList }}
             saveJournalBodyItem={saveJournalBodyItem}
-            resetJournalBodyForm={resetJournalBodyForm}
+            clearJournalBodyForm={clearJournalBodyForm}
             handleChangeTopic={handleChangeTopic}
             handleChangeNewTopic={handleChangeNewTopic}
             handleChangeDescription={handleChangeDescription}
@@ -157,7 +157,9 @@ function JournalEntryPage(props) {
           }
         </div>
       </form>
+      <br/><br/><br/>
       <div id="formControlButtonsDiv" className="container fixed-bottom">
+        <br/>
         <div className="mb-3 row">
           <div className="col">
             <button id="clearEntryFormButton" className="btn btn-danger" onClick={resetAll}>Clear</button>
