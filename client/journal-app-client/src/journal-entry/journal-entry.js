@@ -52,11 +52,11 @@ function JournalEntryPage(props) {
   const saveJournalBodyItem = () => {
     let topicToSubmit = "";
 
-    if (topic == "" && newTopic == "") {
+    if (topic === "" && newTopic === "") {
       console.log("Cannot submit blank Topic...")
       return;
     }
-    else if (topic == "" && newTopic != "") {
+    else if (topic === "" && newTopic !== "") {
       topicToSubmit = newTopic;
 
       if (!listUtil(topicList, setTopicList, { type: "CONTAINS", payload: newTopic }))
@@ -75,7 +75,7 @@ function JournalEntryPage(props) {
     listUtil(journalBodyItems, setJournalBodyItems, {
       type: "INSERT",
       payload: {
-        id: uuidv4(),
+        key: uuidv4(),
         topic: topicToSubmit,
         description: description,
         recordList: recordList
@@ -94,7 +94,7 @@ function JournalEntryPage(props) {
       journalBodyItems: journalBodyItems
     }
 
-    console.log("Published " + output + " to " + journalId);
+    console.log("Published " + JSON.stringify(output) + " to " + journalId);
   }
 
 

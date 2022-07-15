@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {auth,loginWithGoogle, signOut} from '../firebase'
+import {loginToApp, logoutOfApp, getAuth} from '../facades/auth';
 
 const AuthContext = React.createContext();
 
@@ -9,18 +9,16 @@ export function useAuth() {
 
 export function AuthProvider ({children}){
     const [user,setUser] = useState();
+    const auth = getAuth();
 
     function login() {
-        return loginWithGoogle();
+        return loginToApp();
     }
 
     function logout(){
-        signOut().then(()=>{
+        logoutOfApp().then(()=>{
             setUser(null);
-        }).catch((err)=>{
-            console.log("Error occurred while signing out... " + err.message);
         });
-        
     }
 
     useEffect(()=>{
