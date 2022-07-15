@@ -8,7 +8,6 @@ export function loginToApp() {
 export async function logoutOfApp() {
     try{
         await signOut();
-        return "success";
     }catch(err){
         console.log("Error occurred while signing out... " + err.message);
     }

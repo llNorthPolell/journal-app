@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import NewJournalForm from './new-journal/new-journal';
 import { Link } from 'react-router-dom';
 import { useData } from '../contexts/dataContext';

@@ -34,11 +34,12 @@ export function DataProvider ({children}){
     
     async function createJournalEntry(journalEntry){
         const newJournalEntry = await createJournalEntryDoc(journalEntry);
+        return newJournalEntry;
     }
 
 
     const values = {
-        journalList, createJournal, userId
+        journalList, createJournal, userId, createJournalEntry
     }
 
     

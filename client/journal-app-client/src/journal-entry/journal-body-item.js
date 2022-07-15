@@ -21,7 +21,6 @@ function JournalBodyItem(props){
             props.saveJournalBodyItem();
         else if (mode==="EDIT"){
             props.updateJournalBodyItem({
-                id:props.data.id,
                 topic:props.data.topic,
                 description:editDescription,
                 recordList:editRecordList

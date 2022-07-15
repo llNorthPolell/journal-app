@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import JournalBodyItem from './journal-body-item';
 import SimpleInput from '../util/components/simple-input';
 import useSimpleState from '../util/hooks/useSimpleState';
 import listUtil from '../util/functions/list-util';
+import {useData} from '../contexts/dataContext';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -12,6 +13,9 @@ function JournalEntryPage(props) {
   const data = props.data;
   const initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
 
+  const {createJournalEntry} = useData();
+
+  const navigate = useNavigate();
   const {journalId} = useParams();
 
   // Simple States
@@ -94,7 +98,11 @@ function JournalEntryPage(props) {
       journalBodyItems: journalBodyItems
     }
 
-    console.log("Published " + JSON.stringify(output) + " to " + journalId);
+    createJournalEntry(output).then((returnJournal)=>{
+      console.log("Published " + JSON.stringify(returnJournal) + " to " + journalId);
+      navigate('/journal-app/'+journalId);
+    });
+    
   }
 
 
