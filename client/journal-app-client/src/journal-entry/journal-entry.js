@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import JournalBodyItem from './journal-body-item';
 import SimpleInput from '../util/components/simple-input';
 import useSimpleState from '../util/hooks/useSimpleState';
 import listUtil from '../util/functions/list-util';
+import {useData} from '../contexts/dataContext';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,8 +13,12 @@ function JournalEntryPage(props) {
   const data = props.data;
   const initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
 
+  const {createJournalEntry} = useData();
+
+  const navigate = useNavigate();
+  const {journalId} = useParams();
+
   // Simple States
-  const [journalCollection, setJournalCollection, handleChangeJournalCollection] = useSimpleState(data.journalCollection);
   const [summary, setSummary, handleChangeSummary] = useSimpleState(data.summary);
   const [dateOfEntry, setDateOfEntry, handleChangeDateOfEntry] = useSimpleState(data.dateOfEntry);
   const [overview, setOverview, handleChangeOverview] = useSimpleState(data.overview);
@@ -26,12 +32,9 @@ function JournalEntryPage(props) {
   const [usedTopics, setUsedTopics] = useState(initUsedTopics);
   const [recordList, setRecordList] = useState([]);
 
-  // Other
-  const [editId, setEditId] = useState("-1");
 
   const resetAll = e => {
     e.preventDefault();
-    setJournalCollection(data.journalCollection);
     setSummary(data.summary);
     setDateOfEntry(data.dateOfEntry);
     setOverview(data.overview);
@@ -39,11 +42,11 @@ function JournalEntryPage(props) {
     setUsedTopics([...initUsedTopics]);
     setTopicList([...props.topicList]);
 
-    resetJournalBodyForm();
+    clearJournalBodyForm();
   }
 
 
-  const resetJournalBodyForm = () => {
+  const clearJournalBodyForm = () => {
     setTopic("");
     setDescription("");
     setNewTopic("");
@@ -53,11 +56,11 @@ function JournalEntryPage(props) {
   const saveJournalBodyItem = () => {
     let topicToSubmit = "";
 
-    if (topic == "" && newTopic == "") {
+    if (topic === "" && newTopic === "") {
       console.log("Cannot submit blank Topic...")
       return;
     }
-    else if (topic == "" && newTopic != "") {
+    else if (topic === "" && newTopic !== "") {
       topicToSubmit = newTopic;
 
       if (!listUtil(topicList, setTopicList, { type: "CONTAINS", payload: newTopic }))
@@ -76,53 +79,40 @@ function JournalEntryPage(props) {
     listUtil(journalBodyItems, setJournalBodyItems, {
       type: "INSERT",
       payload: {
-        id: uuidv4(),
+        key: uuidv4(),
         topic: topicToSubmit,
         description: description,
         recordList: recordList
       }
     });
     listUtil(usedTopics, setUsedTopics, { type: "INSERT", payload: topicToSubmit });
-    resetJournalBodyForm();
-  }
-
-
-  const takeEdit = (id) => {
-    if (editId == "-1") {
-      setEditId(id);
-      return;
-    }
-
-    setEditId(id);
-  }
-
-  const releaseEdit = () => {
-    setEditId("-1");
+    clearJournalBodyForm();
   }
 
   const publish = e => {
     let output = {
-      journalCollection: journalCollection,
+      journal: journalId,
       summary: summary,
       dateOfEntry: dateOfEntry,
       overview: overview,
       journalBodyItems: journalBodyItems
     }
 
-    console.log("Published " + output + " to " + journalCollection);
+    createJournalEntry(output).then((returnJournal)=>{
+      console.log("Published " + JSON.stringify(returnJournal) + " to " + journalId);
+      navigate('/journal-app/'+journalId);
+    });
+    
   }
 
 
   return (
     <div id="newEntryFormDiv" className="container">
+      <div className="col">
+        <Link id="toDashboardButton" className="btn btn-outline-primary" to={"/journal-app/"+journalId}>Go to Dashboard</Link>
+      </div>
+      <br/><br/>
       <form>
-        <SimpleInput
-          id="collectionDropdown"
-          value={journalCollection}
-          fieldName="collection"
-          type="select"
-          optionList={props.journalCollections}
-          handleUpdate={handleChangeJournalCollection}></SimpleInput>
         <SimpleInput
           id="summaryField"
           value={summary}
@@ -152,7 +142,7 @@ function JournalEntryPage(props) {
             newTopic={newTopic}
             data={{ topic: topic, description: description, recordList: recordList }}
             saveJournalBodyItem={saveJournalBodyItem}
-            resetJournalBodyForm={resetJournalBodyForm}
+            clearJournalBodyForm={clearJournalBodyForm}
             handleChangeTopic={handleChangeTopic}
             handleChangeNewTopic={handleChangeNewTopic}
             handleChangeDescription={handleChangeDescription}
@@ -163,21 +153,21 @@ function JournalEntryPage(props) {
             journalBodyItems.map(journalBodyItem => (
               <div>
                 <JournalBodyItem
-                  mode={(editId == journalBodyItem.id) ? "EDIT" : "VIEW"}
+                  mode={"VIEW"}
                   data={journalBodyItem}
                   key={journalBodyItem.id}
                   removeFromBody={() => listUtil(journalBodyItems, setJournalBodyItems, { type: "DELETE", id: journalBodyItem.id })}
                   removeFromUsedTopics={() => listUtil(usedTopics, setUsedTopics, { type: "DELETE", payload: journalBodyItem.topic })}
-                  updateJournalBodyItem={newJournalBodyItem => listUtil(journalBodyItems, setJournalBodyItems, { type: "UPDATE", id: journalBodyItem.id, payload: newJournalBodyItem })}
-                  takeEdit={takeEdit}
-                  releaseEdit={releaseEdit}></JournalBodyItem>
+                  updateJournalBodyItem={newJournalBodyItem => listUtil(journalBodyItems, setJournalBodyItems, { type: "UPDATE", id: journalBodyItem.id, payload: newJournalBodyItem })}></JournalBodyItem>
                 <br />
               </div>
             ))
           }
         </div>
       </form>
+      <br/><br/><br/>
       <div id="formControlButtonsDiv" className="container fixed-bottom">
+        <br/>
         <div className="mb-3 row">
           <div className="col">
             <button id="clearEntryFormButton" className="btn btn-danger" onClick={resetAll}>Clear</button>

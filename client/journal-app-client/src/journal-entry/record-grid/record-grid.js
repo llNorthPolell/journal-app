@@ -35,7 +35,7 @@ function RecordGrid (props) {
                         record => (
                             <RecordFieldGroup 
                                 key={record.id} 
-                                data={{id: record.id, key: record.key, value: record.value}} 
+                                data={record} 
                                 setRecordList={props.setRecordList} 
                                 recordList={props.recordList}
                                 mode={props.mode}></RecordFieldGroup>

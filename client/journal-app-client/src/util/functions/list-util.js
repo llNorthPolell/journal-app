@@ -3,6 +3,8 @@ const listUtil = (list,setList,action) => {
         case "INSERT":
             setList([...list, action.payload]);
             break;
+        case "GET":
+            return list.find(item=>{return item.id===action.id});
         case "UPDATE":
             setList(list.map(item=>
                 item.id === action.payload.id ? 
@@ -17,7 +19,7 @@ const listUtil = (list,setList,action) => {
         case "CONTAINS":
             return list.some(item=> item == action.payload);
         case "SET":
-            setList(action.payload);
+            setList([...action.payload]);
             break;
         case "TRUNCATE":
             setList([]);
