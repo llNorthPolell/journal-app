@@ -10,7 +10,7 @@ function LoginPage(props){
         e.preventDefault();
         login().then((result)=>{
             console.log("Login Successful!");
-            navigate('/journal-app');
+            navigate('/journal-app/');
         }).catch((error)=>{
             console.log(error.message);
         });

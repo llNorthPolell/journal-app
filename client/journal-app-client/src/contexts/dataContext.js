@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {useAuth} from '../contexts/authContext';
 import listUtil from '../util/functions/list-util';
-import {getJournalDocs, createJournalDoc, createJournalEntryDoc} from '../facades/data';
+import {getJournalDocs, createJournalDoc, createJournalEntryDoc, getJournalEntryDocs} from '../facades/data';
 
 
 const DataContext = React.createContext();
@@ -20,6 +20,10 @@ export function DataProvider ({children}){
     }, [user]);
 
     useEffect(async ()=>{
+        if (userId==null){
+            listUtil(journalList, setJournalList, { type: "TRUNCATE"});
+            return;
+        } 
         const journalDocs = await getJournalDocs(userId);
         listUtil(journalList, setJournalList, { type: "SET", payload:journalDocs});
     },[userId])
@@ -37,9 +41,19 @@ export function DataProvider ({children}){
         return newJournalEntry;
     }
 
+    async function getJournalEntries(journalId){
+        if (userId==null) return;
+        return await getJournalEntryDocs(journalId);
+    }
+
+    function getJournalDoc(journalId){
+        if (userId==null) return;
+        console.log("Finding " + journalId + " in " + journalList);
+        return journalList.find(journal=>{return journal.key===journalId})
+    }
 
     const values = {
-        journalList, createJournal, userId, createJournalEntry
+        journalList, userId, createJournal, getJournalDoc, createJournalEntry,getJournalEntries
     }
 
     

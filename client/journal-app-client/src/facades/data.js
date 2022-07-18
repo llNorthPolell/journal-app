@@ -1,6 +1,6 @@
 import {
     journalRef,journalEntriesRef,       //firestore refs
-    getList,createDoc,query, where,     //firestore queries
+    getList,createDoc,query, where,doc,     //firestore queries
     uploadFile    //storage
 } from '../firebase'
 
@@ -30,21 +30,29 @@ export async function createJournalDoc(journal) {
 }
 
 export function getJournalDocs(userId) {
-    if (userId==null) return;
     const createdJournalsQuery = query(journalRef, where("author", "==", userId));
     return getList(createdJournalsQuery);    
 }
 
 
 export async function createJournalEntryDoc(journalEntry) {
+    const journalDocRef = doc(journalRef,journalEntry.journal);
+    let saveJournalEntry = journalEntry;
+    saveJournalEntry.journal = journalDocRef;
+
     try {
-        let docRef = await createDoc(journalEntriesRef, journalEntry);
+        let docRef = await createDoc(journalEntriesRef, saveJournalEntry);
         let returnId = docRef.id;
         console.log("New Journal Entry ID: " + returnId);
-        return {...journalEntry, key: returnId};
+        return {...saveJournalEntry, key: returnId};
     }
     catch (err) {
         console.log(err.message);
     };
 }
 
+export function getJournalEntryDocs(journalId){
+    const queryDocRef = doc(journalRef,journalId);
+    const journalEntriesQuery = query(journalEntriesRef, where("journal", "==", queryDocRef));
+    return getList(journalEntriesQuery);
+}

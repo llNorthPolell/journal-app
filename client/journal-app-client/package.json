@@ -1,6 +1,6 @@
 {
   "homepage": "https://llnorthpolell.github.io/journal-app/",
-  "name": "journal-app-client",
+  "name": "journal-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

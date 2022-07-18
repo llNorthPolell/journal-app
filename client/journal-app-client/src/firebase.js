@@ -1,5 +1,5 @@
 import {initializeApp} from 'firebase/app';
-import {addDoc, collection, getFirestore, getDocs} from 'firebase/firestore';
+import {addDoc, collection, getFirestore, getDocs, doc} from 'firebase/firestore';
 import {GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult} from 'firebase/auth';
 import {getStorage,ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import {v4} from 'uuid'
@@ -20,6 +20,7 @@ const initFirebaseApp = initializeApp(firebaseConfig);
 // AUTH
 export const auth = getAuth();
 export const googleAuthProvider = new GoogleAuthProvider();
+
 
 export function loginWithGoogle(){
     signInWithRedirect(auth,googleAuthProvider);
@@ -56,7 +57,7 @@ export async function getList(query) {
     return output;
 }
 
-export {query,where} from 'firebase/firestore';
+export {query,where,doc} from 'firebase/firestore';
 
 // STORAGE
 export const storage = getStorage();
