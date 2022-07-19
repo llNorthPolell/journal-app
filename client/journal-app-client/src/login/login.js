@@ -1,5 +1,5 @@
 import {useAuth} from '../contexts/authContext';
-import {useNavigate} from 'react-router-dom';
+import {Link,useNavigate} from 'react-router-dom';
 
 
 function LoginPage(props){
@@ -19,7 +19,14 @@ function LoginPage(props){
 
     return (
         <div id="loginDiv">
-            <button className="btn btn-primary" onClick={handleClick}>Sign in with Google</button>
+            <p>By continuing, you agree to the <Link to="/journal-app/userAgreement">User Agreement</Link> for Journal App. </p>
+            <button className="btn btn-primary" onClick={handleClick}>
+                <img
+                    className="card-img-top"
+                    src="https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/signinwithgoogle.png?alt=media&token=b2c80e57-6f87-400d-8a44-d4c146bc2d83"
+                    alt="Sign In with Google"
+                />
+            </button>
         </div>
     );
 }

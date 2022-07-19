@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {useAuth} from '../contexts/authContext';
 import listUtil from '../util/functions/list-util';
-import {getJournalDocs, createJournalDoc, createJournalEntryDoc, getJournalEntryDocs} from '../facades/data';
+import {getJournalDocs, createJournalDoc, createJournalEntryDoc, getJournalEntryDocs, updateJournalDoc} from '../facades/data';
 
 
 const DataContext = React.createContext();
@@ -52,8 +52,20 @@ export function DataProvider ({children}){
         return journalList.find(journal=>{return journal.key===journalId})
     }
 
+    async function updateJournal(journalId, payload){
+        await updateJournalDoc(journalId, payload);
+
+        const updatedJournal = getJournalDoc(journalId);
+        updatedJournal.topics = [...updatedJournal.topics, ...payload.topics];
+        updatedJournal.last_updated = payload.last_updated;
+        setJournalList(journalList.map(journal=>
+            journal.key === updatedJournal.key ? 
+                updatedJournal : journal   
+        ));
+    }
+
     const values = {
-        journalList, userId, createJournal, getJournalDoc, createJournalEntry,getJournalEntries
+        journalList, userId, createJournal, getJournalDoc, createJournalEntry,getJournalEntries,updateJournal
     }
 
     

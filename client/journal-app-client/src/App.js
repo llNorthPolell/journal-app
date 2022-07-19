@@ -12,6 +12,8 @@ import { DataProvider } from './contexts/dataContext';
 import { DashboardProvider } from './contexts/dashboardContext';
 import PrivateRoute from './util/components/private-route';
 
+import { DefaultJournalEntry } from './journal-entry/journal-entry-dto';
+
 //Demo
 import DemoJournalEntries from './demo/demo-journal-entries.json'
 import DemoTopicList from './demo/demo-topic-list.json'
@@ -23,20 +25,6 @@ import './App.css';
 
 
 function App() {
-  // for defaulting date field to today
-  const today = new Date();
-  const day = ((today.getDate() > 9) ? '' : '0') + today.getDate();
-  const month = ((today.getMonth() > 9) ? '' : '0') + (today.getMonth() + 1);
-  const year = today.getFullYear();
-
-  const demoNewJournalEntry = {
-    journalCollection: "",
-    summary: "",
-    dateOfEntry: year + "-" + month + "-" + day,
-    overview: "",
-    journalBodyItems: []
-  }
-
   return (
     <div id="JournalAppDiv">
       <AuthProvider>
@@ -48,8 +36,9 @@ function App() {
               <Routes>
                 <Route path="/journal-app/" element={<HomePage />}></Route>
                 <Route path="/journal-app/login" element={<LoginPage />}></Route>
+                <Route path="/journal-app/userAgreement" element={<></>}></Route>
                 <Route path="/journal-app/:journalId" element={<PrivateRoute><DashboardPage contents={DemoDashboard} /></PrivateRoute>}></Route>
-                <Route path="/journal-app/:journalId/new" element={<PrivateRoute><JournalEntryPage data={demoNewJournalEntry} topicList={DemoTopicList} /></PrivateRoute>}></Route>
+                <Route path="/journal-app/:journalId/new" element={<PrivateRoute><JournalEntryPage data={DefaultJournalEntry}/></PrivateRoute>}></Route>
                 <Route path="/journal-app/:journalId/edit/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} topicList={DemoTopicList} /></PrivateRoute>}></Route>
               </Routes>
             </DashboardProvider>

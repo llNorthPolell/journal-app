@@ -10,7 +10,7 @@ function Navbar(props){
     const handleLogout = (e) =>{
         e.preventDefault();
         logout();
-        navigate('/journal-app/login');
+        navigate('/journal-app/');
     }
 
     return (

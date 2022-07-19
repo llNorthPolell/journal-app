@@ -43,7 +43,8 @@ function NewJournalForm(props) {
             img: (journalPic)?journalPic:null,
             creation_timestamp: new Date().toISOString(),
             last_updated: new Date().toISOString(),
-            author: userId
+            author: userId,
+            topics: []
         });
         reset();
         setShow(false);

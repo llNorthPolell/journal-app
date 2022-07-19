@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useParams, useLocation, useNavigate} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 import {useDashboard} from '../contexts/dashboardContext';
-
-import useSimpleState from '../util/hooks/useSimpleState';
 
 import PicCarouselWidget from './widgets/pic-carousel/pic-carousel';
 import LastEntryWidget from './widgets/last-entry/last-entry';
@@ -13,13 +11,10 @@ import SearchResults from './search/search-results';
 
 function DashboardPage(props){
     const {journalId} = useParams();
-    const url = useLocation().pathname;
-    const navigate = useNavigate();
 
     const {loadDashboard, journalDoc, filterJournalEntries} = useDashboard();
     const [contents] = useState(props.contents.widgets);
     const [name, setName] = useState("");
-    const [journal, setJournal] = useState();
 
     const [topics, setTopics] = useState([]);
     const [searchInput, setSearchInput] = useState("");
@@ -61,7 +56,6 @@ function DashboardPage(props){
                             )
                         }
                     </datalist>
-                    <button id="searchBtn" className="btn btn-outline-secondary">Search</button>
                 </div>
                 <div className="col mb-3">
                     <Link id="newEntryBtn" className="btn btn-primary" to={"/journal-app/"+journalId+"/new"}>+ New Entry </Link>

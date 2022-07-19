@@ -8,7 +8,9 @@ function SearchResults(props){
                             {searchResult.topic}
                         </div>
                         <div className="card-body">
-                            {searchResult.description}
+                            <div className="card-text"> 
+                                {searchResult.description}
+                            </div>
                         </div>
                     </div>
                 )

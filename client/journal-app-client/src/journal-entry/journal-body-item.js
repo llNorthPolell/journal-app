@@ -34,9 +34,9 @@ function JournalBodyItem(props){
         props.clearJournalBodyForm();
     }
 
-    const remove = (id) => {
+    const handleRemove = e => {
         props.removeFromUsedTopics(undefined,props.data.topic);
-        props.removeFromBody(id);
+        props.removeFromBody(props.data.key);
     }
 
     const handleCancelEdit = e => {
@@ -65,8 +65,8 @@ function JournalBodyItem(props){
                 {
                     (mode==="VIEW")?
                         <div className="col">
-                            <RemoveButton id={props.data.id} remove={remove} className="btn btn-secondary float-end"></RemoveButton>
-                            <button id={"edit_"+props.data.id} className="btn btn-secondary float-end" onClick={handleEdit}><FontAwesomeIcon icon={faPencil} /></button>
+                            <RemoveButton id={props.data.key} remove={handleRemove} className="btn btn-secondary float-end"></RemoveButton>
+                            <button id={"edit_"+props.data.key} className="btn btn-secondary float-end" onClick={handleEdit}><FontAwesomeIcon icon={faPencil} /></button>
                         </div>
                     :
                     null

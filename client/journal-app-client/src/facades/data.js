@@ -1,6 +1,6 @@
 import {
     journalRef,journalEntriesRef,       //firestore refs
-    getList,createDoc,query, where,doc,     //firestore queries
+    getList,createDoc,query, where,doc,arrayUnion,updateDoc,     //firestore queries
     uploadFile    //storage
 } from '../firebase'
 
@@ -32,6 +32,17 @@ export async function createJournalDoc(journal) {
 export function getJournalDocs(userId) {
     const createdJournalsQuery = query(journalRef, where("author", "==", userId));
     return getList(createdJournalsQuery);    
+}
+
+export async function updateJournalDoc(journalId, payload){
+    const journalDocRef = doc(journalRef,journalId);
+
+    let savePayload = {...payload};
+    if (payload.topics!=null && payload.topics.length > 0){
+        savePayload.topics = arrayUnion(...payload.topics);
+    }
+
+    await updateDoc(journalDocRef,savePayload);
 }
 
 

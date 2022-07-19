@@ -7,13 +7,14 @@ const listUtil = (list,setList,action) => {
             return list.find(item=>{return item.id===action.id});
         case "UPDATE":
             setList(list.map(item=>
-                item.id === action.payload.id ? 
+                item.key === action.payload.key ? 
                     action.payload : item   
             ));
             break;
         case "DELETE":
             setList((action.id !== undefined)? 
                 list.filter(item => item.id!==action.id):
+                (action.key !== undefined)? list.filter(item=> item.key!==action.key):
                 list.filter(item => item!==action.payload));
             break;
         case "CONTAINS":

@@ -13,7 +13,7 @@ function JournalEntryPage(props) {
   const data = props.data;
   const initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
 
-  const {createJournalEntry} = useData();
+  const {createJournalEntry, updateJournal, getJournalDoc} = useData();
 
   const navigate = useNavigate();
   const {journalId} = useParams();
@@ -27,11 +27,10 @@ function JournalEntryPage(props) {
   const [description, setDescription, handleChangeDescription] = useSimpleState("");
 
   // List States
-  const [topicList, setTopicList] = useState(props.topicList);
+  const [topicList, setTopicList] = useState(getJournalDoc(journalId).topics);
   const [journalBodyItems, setJournalBodyItems] = useState(data.journalBodyItems);
   const [usedTopics, setUsedTopics] = useState(initUsedTopics);
   const [recordList, setRecordList] = useState([]);
-
 
   const resetAll = e => {
     e.preventDefault();
@@ -63,8 +62,10 @@ function JournalEntryPage(props) {
     else if (topic === "" && newTopic !== "") {
       topicToSubmit = newTopic;
 
-      if (!listUtil(topicList, setTopicList, { type: "CONTAINS", payload: newTopic }))
+      if (!listUtil(topicList, setTopicList, { type: "CONTAINS", payload: newTopic })){
         listUtil(topicList, setTopicList, { type: "INSERT", payload: newTopic });
+      }
+
     }
     else
       topicToSubmit = topic;
@@ -89,6 +90,11 @@ function JournalEntryPage(props) {
     clearJournalBodyForm();
   }
 
+
+  const removeFromBody = key =>{ 
+    listUtil(journalBodyItems, setJournalBodyItems, { type: "DELETE", key: key });
+  }
+
   const publish = e => {
     let output = {
       journal: journalId,
@@ -98,8 +104,12 @@ function JournalEntryPage(props) {
       journalBodyItems: journalBodyItems
     }
 
-    createJournalEntry(output).then((returnJournal)=>{
-      console.log("Published " + JSON.stringify(returnJournal) + " to " + journalId);
+    createJournalEntry(output).then((returnJournalEntry)=>{
+      console.log("Published " + JSON.stringify(returnJournalEntry) + " to " + journalId);
+      updateJournal(journalId, {
+        last_updated: new Date().toISOString(),
+        topics: usedTopics
+      });
       navigate('/journal-app/'+journalId);
     });
     
@@ -155,8 +165,8 @@ function JournalEntryPage(props) {
                 <JournalBodyItem
                   mode={"VIEW"}
                   data={journalBodyItem}
-                  key={journalBodyItem.id}
-                  removeFromBody={() => listUtil(journalBodyItems, setJournalBodyItems, { type: "DELETE", id: journalBodyItem.id })}
+                  key={journalBodyItem.key}
+                  removeFromBody={removeFromBody}
                   removeFromUsedTopics={() => listUtil(usedTopics, setUsedTopics, { type: "DELETE", payload: journalBodyItem.topic })}
                   updateJournalBodyItem={newJournalBodyItem => listUtil(journalBodyItems, setJournalBodyItems, { type: "UPDATE", id: journalBodyItem.id, payload: newJournalBodyItem })}></JournalBodyItem>
                 <br />

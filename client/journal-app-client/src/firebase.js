@@ -1,5 +1,5 @@
 import {initializeApp} from 'firebase/app';
-import {addDoc, collection, getFirestore, getDocs, doc} from 'firebase/firestore';
+import {addDoc, collection, getFirestore, getDocs} from 'firebase/firestore';
 import {GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult} from 'firebase/auth';
 import {getStorage,ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import {v4} from 'uuid'
@@ -42,7 +42,6 @@ export async function createDoc(collectionRef,payload){
     return docPromise;
 }
 
-
 export async function getList(query) {
     let output=[];
     try{
@@ -57,7 +56,7 @@ export async function getList(query) {
     return output;
 }
 
-export {query,where,doc} from 'firebase/firestore';
+export {query,where,doc, updateDoc, arrayUnion} from 'firebase/firestore';
 
 // STORAGE
 export const storage = getStorage();
