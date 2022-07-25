@@ -12,8 +12,8 @@ import SearchResults from './search/search-results';
 function DashboardPage(props){
     const {journalId} = useParams();
 
-    const {loadDashboard, journalDoc, filterJournalEntries} = useDashboard();
-    const [contents] = useState(props.contents.widgets);
+    const {loadDashboard, journalDoc, filterJournalEntries, dashboardWidgetContents} = useDashboard();
+    const [contents,setContents] = useState([]);
     const [name, setName] = useState("");
 
     const [topics, setTopics] = useState([]);
@@ -33,6 +33,9 @@ function DashboardPage(props){
         }
     },[journalDoc]);
 
+    useEffect(()=>{
+        setContents([...dashboardWidgetContents]);
+    },[dashboardWidgetContents]);
 
     const handleChangeSearchInput = e => {
         e.preventDefault();

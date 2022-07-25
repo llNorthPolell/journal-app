@@ -33,9 +33,9 @@ export function signOut(){
 
 // FIRESTORE
 const db = getFirestore();
-export const journalRef = collection(db,'journals');
-export const journalEntriesRef = collection(db,'journal_entries');
-
+export const journalRef = collection(db,process.env.REACT_APP_FIRESTORE_JOURNALS_COLLECTION);
+export const journalEntriesRef = collection(db,process.env.REACT_APP_FIRESTORE_JOURNAL_ENTRIES_COLLECTION);
+export const dashboardWidgetConfigRef = collection(db, process.env.REACT_APP_FIRESTORE_DASHBOARD_WIDGET_CONFIG_COLLECTION);
 
 export async function createDoc(collectionRef,payload){
     let docPromise = await addDoc(collectionRef,payload);
@@ -56,7 +56,7 @@ export async function getList(query) {
     return output;
 }
 
-export {query,where,doc, updateDoc, arrayUnion} from 'firebase/firestore';
+export {query,where,doc, updateDoc, arrayUnion, orderBy} from 'firebase/firestore';
 
 // STORAGE
 export const storage = getStorage();

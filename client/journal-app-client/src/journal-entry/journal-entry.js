@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Link, useParams, useNavigate} from 'react-router-dom';
 import JournalBodyItem from './journal-body-item';
 import SimpleInput from '../util/components/simple-input';
@@ -12,12 +12,14 @@ import { v4 as uuidv4 } from 'uuid';
 function JournalEntryPage(props) {
   const data = props.data;
   const initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
-
+  let initTopicList = [];
+  
   const {createJournalEntry, updateJournal, getJournalDoc} = useData();
 
   const navigate = useNavigate();
   const {journalId} = useParams();
 
+ 
   // Simple States
   const [summary, setSummary, handleChangeSummary] = useSimpleState(data.summary);
   const [dateOfEntry, setDateOfEntry, handleChangeDateOfEntry] = useSimpleState(data.dateOfEntry);
@@ -27,10 +29,16 @@ function JournalEntryPage(props) {
   const [description, setDescription, handleChangeDescription] = useSimpleState("");
 
   // List States
-  const [topicList, setTopicList] = useState(getJournalDoc(journalId).topics);
+  const [topicList, setTopicList] = useState([]);
   const [journalBodyItems, setJournalBodyItems] = useState(data.journalBodyItems);
   const [usedTopics, setUsedTopics] = useState(initUsedTopics);
   const [recordList, setRecordList] = useState([]);
+
+  useEffect(()=>{
+    initTopicList=getJournalDoc(journalId).topics;
+    setTopicList([...initTopicList]);
+  },[])
+
 
   const resetAll = e => {
     e.preventDefault();
@@ -39,7 +47,7 @@ function JournalEntryPage(props) {
     setOverview(data.overview);
     setJournalBodyItems([...data.journalBodyItems]);
     setUsedTopics([...initUsedTopics]);
-    setTopicList([...props.topicList]);
+    setTopicList([getJournalDoc(journalId).topics]);
 
     clearJournalBodyForm();
   }

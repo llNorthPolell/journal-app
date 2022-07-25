@@ -1,6 +1,6 @@
 import {
-    journalRef,journalEntriesRef,       //firestore refs
-    getList,createDoc,query, where,doc,arrayUnion,updateDoc,     //firestore queries
+    journalRef,journalEntriesRef,dashboardWidgetConfigRef,      //firestore refs
+    getList,createDoc,query, where,doc,arrayUnion,updateDoc,orderBy,     //firestore queries
     uploadFile    //storage
 } from '../firebase'
 
@@ -66,4 +66,15 @@ export function getJournalEntryDocs(journalId){
     const queryDocRef = doc(journalRef,journalId);
     const journalEntriesQuery = query(journalEntriesRef, where("journal", "==", queryDocRef));
     return getList(journalEntriesQuery);
+}
+ 
+export function getDashboardWidgetConfigDocs(journalId){
+    const queryDocRef = doc(journalRef, journalId);
+    const dashboardWidgetConfigQuery=query(dashboardWidgetConfigRef,where("journal", "==", queryDocRef));
+    return getList(dashboardWidgetConfigQuery);
+}
+
+
+export function getDashboardConfigDoc(journalId){
+
 }

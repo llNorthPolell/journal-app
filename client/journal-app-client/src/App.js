@@ -37,9 +37,9 @@ function App() {
                 <Route path="/journal-app/" element={<HomePage />}></Route>
                 <Route path="/journal-app/login" element={<LoginPage />}></Route>
                 <Route path="/journal-app/userAgreement" element={<></>}></Route>
-                <Route path="/journal-app/:journalId" element={<PrivateRoute><DashboardPage contents={DemoDashboard} /></PrivateRoute>}></Route>
+                <Route path="/journal-app/:journalId" element={<PrivateRoute><DashboardPage /></PrivateRoute>}></Route>
                 <Route path="/journal-app/:journalId/new" element={<PrivateRoute><JournalEntryPage data={DefaultJournalEntry}/></PrivateRoute>}></Route>
-                <Route path="/journal-app/:journalId/edit/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} topicList={DemoTopicList} /></PrivateRoute>}></Route>
+                <Route path="/journal-app/:journalId/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} /></PrivateRoute>}></Route>
               </Routes>
             </DashboardProvider>
           </DataProvider>

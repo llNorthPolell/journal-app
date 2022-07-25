@@ -7,7 +7,7 @@ const listUtil = (list,setList,action) => {
             return list.find(item=>{return item.id===action.id});
         case "UPDATE":
             setList(list.map(item=>
-                item.key === action.payload.key ? 
+                item.id === action.payload.id ? 
                     action.payload : item   
             ));
             break;

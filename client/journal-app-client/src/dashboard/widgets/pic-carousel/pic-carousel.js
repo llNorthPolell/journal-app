@@ -11,7 +11,7 @@ function PicCarouselWidget(props) {
                         <Carousel.Item>
                             <img
                                 className="d-block carousel-img"
-                                src= {`${process.env.PUBLIC_URL}/${pic.src}`}
+                                src= {`${pic.src}`}
                                 alt={pic.alt}
                             />
                             <Carousel.Caption className="caption">

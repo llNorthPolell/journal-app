@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {useAuth} from '../contexts/authContext';
 import listUtil from '../util/functions/list-util';
-import {getJournalDocs, createJournalDoc, createJournalEntryDoc, getJournalEntryDocs, updateJournalDoc} from '../facades/data';
+import {getJournalDocs, createJournalDoc, createJournalEntryDoc, getJournalEntryDocs, updateJournalDoc, getDashboardWidgetConfigDocs} from '../facades/data';
 
 
 const DataContext = React.createContext();
@@ -55,7 +55,7 @@ export function DataProvider ({children}){
     async function updateJournal(journalId, payload){
         await updateJournalDoc(journalId, payload);
 
-        const updatedJournal = getJournalDoc(journalId);
+        const updatedJournal = {...getJournalDoc(journalId)};
         updatedJournal.topics = [...updatedJournal.topics, ...payload.topics];
         updatedJournal.last_updated = payload.last_updated;
         setJournalList(journalList.map(journal=>
@@ -64,8 +64,14 @@ export function DataProvider ({children}){
         ));
     }
 
+    async function getDashboardConfig(journalId){
+        if (userId==null) return;
+        return await getDashboardWidgetConfigDocs(journalId);
+    }
+
+
     const values = {
-        journalList, userId, createJournal, getJournalDoc, createJournalEntry,getJournalEntries,updateJournal
+        journalList, userId, createJournal, getJournalDoc, createJournalEntry,getJournalEntries,updateJournal, getDashboardConfig
     }
 
     
