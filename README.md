@@ -10,15 +10,15 @@ Journal app built using React and Firebase
 - dynamic journal entry filtering
 
 
-##Work in Progress
+## Work in Progress
 - widget menu
 - search results screen
 
 
-##Known Issues
+## Known Issues
 - dashboard state not updated after journal entry is submitted 
 
 
-##Backlog
+## Backlog
 - view and edit journal entries
 - home page
