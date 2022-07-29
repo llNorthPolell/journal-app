@@ -1,6 +1,6 @@
 import {
     journalRef,journalEntriesRef,dashboardWidgetConfigRef,      //firestore refs
-    getList,createDoc,query, where,doc,arrayUnion,updateDoc,orderBy,     //firestore queries
+    getList,createDoc,query, where,doc,arrayUnion,updateDoc,     //firestore queries
     uploadFile    //storage
 } from '../firebase'
 
@@ -67,7 +67,24 @@ export function getJournalEntryDocs(journalId){
     const journalEntriesQuery = query(journalEntriesRef, where("journal", "==", queryDocRef));
     return getList(journalEntriesQuery);
 }
- 
+
+export async function createWidgetConfigDoc(config){
+    const journalDocRef = doc(journalRef,config.journalId);
+    let saveConfig = config;
+    config.journal = journalDocRef;
+
+    try {
+        let docRef = await createDoc(dashboardWidgetConfigRef, config);
+        let returnId = docRef.id;
+        console.log("New Widget Config Entry ID: " + returnId);
+        return {...saveConfig, key: returnId};
+    }
+    catch (err){
+        console.log(err.message);
+    }
+}
+
+
 export function getDashboardWidgetConfigDocs(journalId){
     const queryDocRef = doc(journalRef, journalId);
     const dashboardWidgetConfigQuery=query(dashboardWidgetConfigRef,where("journal", "==", queryDocRef));

@@ -1,7 +1,7 @@
 import {initializeApp} from 'firebase/app';
-import {addDoc, collection, getFirestore, getDocs, connectFirestoreEmulator } from 'firebase/firestore';
-import {GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult, connectAuthEmulator } from 'firebase/auth';
-import {getStorage,ref, getDownloadURL, uploadBytes, connectStorageEmulator } from 'firebase/storage';
+import {addDoc, collection, getFirestore, getDocs} from 'firebase/firestore';
+import {GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult} from 'firebase/auth';
+import {getStorage,ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import {v4} from 'uuid'
 
 // INIT 
@@ -20,7 +20,7 @@ const initFirebaseApp = initializeApp(firebaseConfig);
 // AUTH
 export const auth = getAuth();
 export const googleAuthProvider = new GoogleAuthProvider();
-
+auth.useEmulator("http://localhost:9099/");
 
 export function loginWithGoogle(){
     signInWithRedirect(auth,googleAuthProvider);
@@ -33,6 +33,8 @@ export function signOut(){
 
 // FIRESTORE
 const db = getFirestore();
+db.useEmulator(auth,"http://localhost:8000/");
+
 export const journalRef = collection(db,process.env.REACT_APP_FIRESTORE_JOURNALS_COLLECTION);
 export const journalEntriesRef = collection(db,process.env.REACT_APP_FIRESTORE_JOURNAL_ENTRIES_COLLECTION);
 export const dashboardWidgetConfigRef = collection(db, process.env.REACT_APP_FIRESTORE_DASHBOARD_WIDGET_CONFIG_COLLECTION);
@@ -60,6 +62,7 @@ export {query,where,doc, updateDoc, arrayUnion, orderBy} from 'firebase/firestor
 
 // STORAGE
 export const storage = getStorage();
+storage.useEmulator(auth,"http://localhost:9199/");
 
 export async function getStorageDownloadURL(fileName) {
     let fileRef = ref(storage,fileName);
@@ -83,16 +86,6 @@ export async function uploadFile(file){
     console.log("File " + file + " has been uploaded to " + fileDownloadURL);
     return fileDownloadURL;
 }
-
-
-if (window.location.hostname.includes("localhost")){
-    console.log("LOCALHOST DETECTED!!!!");
-    connectAuthEmulator(auth,"http://localhost:9099");
-    connectFirestoreEmulator(db,"localhost",8000);
-    connectStorageEmulator(storage,"localhost",9199);
-}
-
-
 
 export default initFirebaseApp;
 
