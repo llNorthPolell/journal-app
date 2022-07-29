@@ -7,26 +7,35 @@ function LoginPage(props){
     const navigate = useNavigate();
 
     const handleClick = (e) => {
+        
+        async function callLogin(){
+            try {
+                const userCreds = await login();
+                navigate('/');
+                console.log("Login Successful");
+            } catch (err){
+                console.log(err.message);
+            }
+        }
         e.preventDefault();
-        login().then((result)=>{
-            console.log("Login Successful!");
-            navigate('/journal-app/');
-        }).catch((error)=>{
-            console.log(error.message);
-        });
+        callLogin();
 
     }
 
     return (
         <div id="loginDiv">
-            <p>By continuing, you agree to the <Link to="/journal-app/userAgreement">User Agreement</Link> for Journal App. </p>
-            <button className="btn btn-primary" onClick={handleClick}>
-                <img
-                    className="card-img-top"
-                    src="https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/signinwithgoogle.png?alt=media&token=b2c80e57-6f87-400d-8a44-d4c146bc2d83"
-                    alt="Sign In with Google"
-                />
-            </button>
+            <div className="card">
+                <div className="card-body">
+                    <p>By continuing, you agree to the <Link to="/userAgreement">User Agreement</Link> for Journal App. </p>
+                    <button className="btn btn-primary" onClick={handleClick}>
+                        <img
+                            className="card-img-top signInOption"
+                            src="https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/Login%20Page%2Fsigninwithgoogle.png?alt=media&token=79d59d42-a095-41cc-b7af-82da99892c72"
+                            alt="Sign In with Google"
+                        />
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

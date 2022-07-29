@@ -19,13 +19,16 @@ export function DataProvider ({children}){
         setUserId((user != null)?user.uid:null);
     }, [user]);
 
-    useEffect(async ()=>{
-        if (userId==null){
-            listUtil(journalList, setJournalList, { type: "TRUNCATE"});
-            return;
-        } 
-        const journalDocs = await getJournalDocs(userId);
-        listUtil(journalList, setJournalList, { type: "SET", payload:journalDocs});
+    useEffect(()=>{
+        async function loadJournalList(){
+            if (userId==null){
+                listUtil(journalList, setJournalList, { type: "TRUNCATE"});
+                return;
+            } 
+            const journalDocs = await getJournalDocs(userId);
+            listUtil(journalList, setJournalList, { type: "SET", payload:journalDocs});
+        }
+        loadJournalList();
     },[userId])
 
 
@@ -56,7 +59,12 @@ export function DataProvider ({children}){
         await updateJournalDoc(journalId, payload);
 
         const updatedJournal = {...getJournalDoc(journalId)};
-        updatedJournal.topics = [...updatedJournal.topics, ...payload.topics];
+
+        payload.topics.map(payloadTopic=>{
+            if (!updatedJournal.topics.some(topic=>topic === payloadTopic))
+                updatedJournal.topics.push(payloadTopic);
+        });
+
         updatedJournal.last_updated = payload.last_updated;
         setJournalList(journalList.map(journal=>
             journal.key === updatedJournal.key ? 

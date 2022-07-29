@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import useSimpleState from '../../util/hooks/useSimpleState';
 import SimpleInput from '../../util/components/simple-input';
-import Modal from 'react-bootstrap/Modal'
+import Modal from 'react-bootstrap/Modal';
 import {useData} from '../../contexts/dataContext';
 
 function NewJournalForm(props) {

@@ -118,7 +118,7 @@ function JournalEntryPage(props) {
         last_updated: new Date().toISOString(),
         topics: usedTopics
       });
-      navigate('/journal-app/'+journalId);
+      navigate('/'+journalId);
     });
     
   }
@@ -127,7 +127,7 @@ function JournalEntryPage(props) {
   return (
     <div id="newEntryFormDiv" className="container">
       <div className="col">
-        <Link id="toDashboardButton" className="btn btn-outline-primary" to={"/journal-app/"+journalId}>Go to Dashboard</Link>
+        <Link id="toDashboardButton" className="btn btn-outline-primary" to={"/"+journalId}>Go to Dashboard</Link>
       </div>
       <br/><br/>
       <form>

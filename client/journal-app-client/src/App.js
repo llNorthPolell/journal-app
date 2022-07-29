@@ -16,8 +16,6 @@ import { DefaultJournalEntry } from './journal-entry/journal-entry-dto';
 
 //Demo
 import DemoJournalEntries from './demo/demo-journal-entries.json'
-import DemoTopicList from './demo/demo-topic-list.json'
-import DemoDashboard from './demo/demo-dashboard.json'
 
 // Other Resources
 import logo from './logo.svg';
@@ -30,19 +28,20 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Navbar></Navbar>
-          <br />
-          <DataProvider>
-            <DashboardProvider>
-              <Routes>
-                <Route path="/journal-app/" element={<HomePage />}></Route>
-                <Route path="/journal-app/login" element={<LoginPage />}></Route>
-                <Route path="/journal-app/userAgreement" element={<></>}></Route>
-                <Route path="/journal-app/:journalId" element={<PrivateRoute><DashboardPage /></PrivateRoute>}></Route>
-                <Route path="/journal-app/:journalId/new" element={<PrivateRoute><JournalEntryPage data={DefaultJournalEntry}/></PrivateRoute>}></Route>
-                <Route path="/journal-app/:journalId/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} /></PrivateRoute>}></Route>
-              </Routes>
-            </DashboardProvider>
-          </DataProvider>
+          <div className="contentContainer">
+            <DataProvider>
+              <DashboardProvider>
+                <Routes>
+                  <Route path="/" element={<HomePage />}></Route>
+                  <Route path="/login" element={<LoginPage />}></Route>
+                  <Route path="/userAgreement" element={<></>}></Route>
+                  <Route path="/:journalId" element={<PrivateRoute><DashboardPage /></PrivateRoute>}></Route>
+                  <Route path="/:journalId/new" element={<PrivateRoute><JournalEntryPage data={DefaultJournalEntry}/></PrivateRoute>}></Route>
+                  <Route path="/:journalId/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} /></PrivateRoute>}></Route>
+                </Routes>
+              </DashboardProvider>
+            </DataProvider>
+          </div>
         </BrowserRouter>
       </AuthProvider>
     </div>

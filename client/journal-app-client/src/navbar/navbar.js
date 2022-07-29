@@ -10,13 +10,13 @@ function Navbar(props){
     const handleLogout = (e) =>{
         e.preventDefault();
         logout();
-        navigate('/journal-app/');
+        navigate('/');
     }
 
     return (
-        <div id="Navbar" className="navbar navbar-expand-lg bg-dark">
+        <nav id="Navbar" className="navbar fixed-top navbar-expand-lg bg-dark">
             <div className="container-fluid">
-                <Link className="navbar-brand" to="/journal-app/">
+                <Link className="navbar-brand" to="/">
                     <span>Journal App</span>
                 </Link>
                 <div className="collapse navbar-collapse">
@@ -24,12 +24,12 @@ function Navbar(props){
 
                 {
                     (user == null)?   
-                        <Link className="nav-link text-light" to="/journal-app/login">Login</Link>
+                        <Link className="nav-link navText" to="/login">Login</Link>
                     :
-                        <button className="btn btn-link text-light" onClick={handleLogout}>Logout</button> 
+                        <button className="btn btn-link navText" onClick={handleLogout}>Logout</button> 
                 }
             </div>
-        </div>
+        </nav>
     );
 }
 export default Navbar;

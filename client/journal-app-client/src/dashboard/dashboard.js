@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Link, useParams} from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGear } from '@fortawesome/free-solid-svg-icons'
 
 import {useDashboard} from '../contexts/dashboardContext';
 
@@ -8,6 +10,7 @@ import LastEntryWidget from './widgets/last-entry/last-entry';
 import LineGraphWidget from './widgets/chart/line-graph';
 
 import SearchResults from './search/search-results';
+import WidgetMenuModal from './widgetMenu/widget-menu';
 
 function DashboardPage(props){
     const {journalId} = useParams();
@@ -20,10 +23,13 @@ function DashboardPage(props){
     const [searchInput, setSearchInput] = useState("");
     const [searchResults,setSearchResults] = useState([]);
 
-    
+    const [mode, setMode] = useState("VIEW");
 
-    useEffect(async ()=>{
-        await loadDashboard(journalId);
+    useEffect(()=>{
+        async function callLoadDashboard(){
+            await loadDashboard(journalId);
+        }
+        callLoadDashboard();
     }, []);
 
     useEffect(()=>{
@@ -46,6 +52,20 @@ function DashboardPage(props){
         setSearchResults((searchInput==="")? [] : filterJournalEntries(searchInput));
     }, [searchInput]);
     
+    const handleToEditMode = e =>{
+        e.preventDefault();
+        setMode('EDIT');   
+    }
+
+    const handleSaveDashboard = e =>{
+        e.preventDefault();
+        setMode("VIEW");
+    }
+
+    const handleCancelChangeDashboard = e => {
+        e.preventDefault();
+        setMode("VIEW");
+    }
 
     return (
         <div id="dashboardDiv" className="container">
@@ -61,8 +81,28 @@ function DashboardPage(props){
                     </datalist>
                 </div>
                 <div className="col mb-3">
-                    <Link id="newEntryBtn" className="btn btn-primary" to={"/journal-app/"+journalId+"/new"}>+ New Entry </Link>
+                    <Link id="newEntryBtn" className="btn btn-primary" to={"/"+journalId+"/new"}>+ New Entry </Link>
                 </div>
+
+                {
+                    (mode === "VIEW")?
+                        <div className="col">
+                            <button id="editModeBtn" className="btn btn-secondary" onClick={handleToEditMode}><FontAwesomeIcon icon={faGear} /></button>
+                        </div>
+                    :
+                        <>
+                            <div className="col">
+                                <WidgetMenuModal></WidgetMenuModal>
+                            </div>
+                            <div className="col">
+                                    <button id="cancelDashboardChangeBtn" className="btn btn-outline-secondary" onClick={handleCancelChangeDashboard}>Cancel</button>
+                                    <button id="saveDashboardChangeBtn" className="btn btn-primary" onClick={handleSaveDashboard}>Save Dashboard</button>
+                            </div>
+                        </>
+
+
+                }
+                
             </div>
 
            

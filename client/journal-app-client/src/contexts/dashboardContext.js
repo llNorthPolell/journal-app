@@ -16,21 +16,13 @@ export function DashboardProvider ({children}){
     const [dashboardWidgetContents, setDashboardWidgetContents]=useState([]);
     const [dashboardConfigs,setDashboardConfigs] = useState([]);
 
-    useEffect(async ()=>{
-        if (journalDoc!=null){
-            let journalEntryDocs = await getJournalEntries(journalDoc.key);
-            let dashboardConfigDocs = await getDashboardConfig(journalDoc.key);
-            journalEntryDocs=journalEntryDocs.sort((a,b)=>{return a.dateOfEntry>b.dateOfEntry});
-            console.log ("Got journals: " + journalEntryDocs + " in " + journalDoc.key);
-            listUtil(journalEntriesList, setJournalEntriesList, { type: "SET", payload:journalEntryDocs});
-            listUtil(dashboardConfigs,setDashboardConfigs, {type: "SET", payload: dashboardConfigDocs});
+    useEffect(()=>{
+        async function callLoadDashboardWidgets(){
+            if (journalDoc!=null){
+                loadDashboardWidgets(journalDoc.key);
+            }
         }
-    }, [journalDoc])
-
-    useEffect(async ()=>{
-        if (journalDoc!=null){
-            loadDashboardWidgets(journalDoc.key);
-        }
+        callLoadDashboardWidgets();
     },[journalDoc,dashboardConfigs,journalEntriesList])
 
     async function loadDashboard(journalId) {
@@ -39,7 +31,19 @@ export function DashboardProvider ({children}){
             return;
         }
         console.log("Journal ID is : "+ journalId);
-        setJournalDoc(getJournalDoc(journalId));
+        const retreivedJournalDoc = getJournalDoc(journalId);
+        setJournalDoc(retreivedJournalDoc);
+
+        if (retreivedJournalDoc==null) return;
+        
+        let journalEntryDocs = await getJournalEntries(retreivedJournalDoc.key);
+        let dashboardConfigDocs = await getDashboardConfig(retreivedJournalDoc.key);
+        journalEntryDocs=journalEntryDocs.sort((a,b)=>{return a.dateOfEntry>b.dateOfEntry});
+        journalEntryDocs=journalEntryDocs.sort((a,b)=>{return a.position<b.position});
+        console.log ("Got journals: " + journalEntryDocs + " in " + retreivedJournalDoc.key);
+        listUtil(journalEntriesList, setJournalEntriesList, { type: "SET", payload:journalEntryDocs});
+        listUtil(dashboardConfigs,setDashboardConfigs, {type: "SET", payload: dashboardConfigDocs});
+        
     }
 
     function loadDashboardWidgets(){

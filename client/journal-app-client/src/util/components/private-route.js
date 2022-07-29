@@ -6,7 +6,7 @@ function PrivateRoute({children}){
 
     if (user ==null){
         return (
-            <Navigate to="/journal-app/login"></Navigate>
+            <Navigate to="/login"></Navigate>
         );
     }
     else {
