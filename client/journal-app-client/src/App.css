@@ -178,7 +178,7 @@ section{
 
 /*Journal Entry Page */
 #formControlButtonsDiv {
-
+    padding-bottom: 5vh;
 }
 
 #recordGridLabel{

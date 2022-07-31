@@ -10,8 +10,6 @@ function HomePage() {
     const { user } = useAuth();
 
     return (
-
-
         (user == null) ?
             <div id="landingDiv" className="container-fluid">
                 <div className="landingContent">

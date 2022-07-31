@@ -15,27 +15,31 @@ export function useData() {
 }
 
 export function DataProvider ({children}){
-    const { user } = useAuth();
+    const { auth } = useAuth();
+    const [journalListLoaded, setJournalListLoaded] = useState(false);
     const [journalList, setJournalList] = useState([]);
     const [userId, setUserId] = useState();
 
-    useEffect(() => {
-        setUserId((user != null)?user.uid:null);
-    }, [user]);
+    const [journalDoc, setJournalDoc] = useState();
+    const [dashboardLoaded, setDashboardLoaded] = useState(false);
+    const [journalEntriesList, setJournalEntriesList] = useState([]);
+    const [dashboardConfigList, setDashboardConfigList] = useState([]);
 
     useEffect(()=>{
-        async function loadJournalList(){
-            if (userId==null){
-                listUtil(journalList, setJournalList, { type: "TRUNCATE"});
-                return;
-            } 
-            const journalDocs = await getJournalDocs(userId);
-            listUtil(journalList, setJournalList, { type: "SET", payload:journalDocs});
-        }
-        loadJournalList();
-    },[userId])
+        const unsubscribe = auth.onAuthStateChanged(authUser => {
+            if (authUser){
+                setUserId(authUser.uid);
+                loadJournalList(authUser.uid);
+            }
+        });
+        return unsubscribe;
+    },[]);
 
-
+    async function loadJournalList(userId){
+        const journalDocs = await getJournalDocs(userId);
+        listUtil(journalList, setJournalList, { type: "SET", payload:journalDocs});
+        setJournalListLoaded(true);
+    }
 
     async function createJournal(journal){
         const newJournal = await createJournalDoc(journal);
@@ -46,16 +50,16 @@ export function DataProvider ({children}){
     
     async function createJournalEntry(journalEntry){
         const newJournalEntry = await createJournalEntryDoc(journalEntry);
+        setJournalEntriesList(await getJournalEntries(journalDoc.key));
         return newJournalEntry;
     }
 
     async function getJournalEntries(journalId){
-        if (userId==null) return;
         return await getJournalEntryDocs(journalId);
     }
 
-    function getJournalDoc(journalId){
-        if (userId==null) return;
+    async function getJournalDoc(journalId){
+        if (!journalListLoaded) await loadJournalList(userId);
         console.log("Finding " + journalId + " in " + journalList);
         return journalList.find(journal=>{return journal.key===journalId})
     }
@@ -63,7 +67,7 @@ export function DataProvider ({children}){
     async function updateJournal(journalId, payload){
         await updateJournalDoc(journalId, payload);
 
-        const updatedJournal = {...getJournalDoc(journalId)};
+        const updatedJournal = {...await getJournalDoc(journalId)};
 
         payload.topics.map(payloadTopic=>{
             if (!updatedJournal.topics.some(topic=>topic === payloadTopic))
@@ -75,6 +79,8 @@ export function DataProvider ({children}){
             journal.key === updatedJournal.key ? 
                 updatedJournal : journal   
         ));
+
+        if (journalDoc!= null && updatedJournal.key === journalDoc.key) setJournalDoc(updatedJournal);
     }
 
     async function createWidgetConfig(config){
@@ -83,13 +89,42 @@ export function DataProvider ({children}){
     }
 
     async function getDashboardConfig(journalId){
-        if (userId==null) return;
         return await getDashboardWidgetConfigDocs(journalId);
     }
 
 
+
+    async function loadDashboardData (journalId){
+        if (dashboardLoaded && journalId === journalDoc.key) return false;
+
+        const retreivedJournalDoc = await getJournalDoc(journalId);
+        
+        if (retreivedJournalDoc==null) return false;
+        console.log("Load Dashboard!" + journalId);
+        setJournalDoc(retreivedJournalDoc);
+        let resultJournalEntryDocs = await getJournalEntries(journalId);
+        let resultDashboardConfigDocs = await getDashboardConfig(journalId);
+        resultJournalEntryDocs.sort((a,b)=>{return a.dateOfEntry>b.dateOfEntry});
+        resultDashboardConfigDocs.sort((a,b)=>{return a.position<b.position});
+
+        listUtil(journalEntriesList,setJournalEntriesList,{type:"SET",payload:resultJournalEntryDocs});
+        listUtil(dashboardConfigList,setDashboardConfigList,{type:"SET",payload:resultDashboardConfigDocs});
+        setDashboardLoaded(true);
+        return true;
+    }
+
+    async function clearDashboardData(){
+        listUtil(journalEntriesList,setJournalEntriesList,{type:"TRUNCATE"});
+        listUtil(dashboardConfigList,setDashboardConfigList,{type:"TRUNCATE"});
+        setJournalDoc(null);
+    }
+
     const values = {
-        journalList, userId, createJournal, getJournalDoc, createJournalEntry,getJournalEntries,updateJournal, createWidgetConfig, getDashboardConfig
+        journalList, userId, 
+        createJournal, getJournalDoc, updateJournal,
+        createJournalEntry,getJournalEntries, 
+        createWidgetConfig, getDashboardConfig, loadDashboardData, clearDashboardData,
+        journalListLoaded, dashboardLoaded
     }
 
     

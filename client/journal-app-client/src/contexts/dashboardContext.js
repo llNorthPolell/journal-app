@@ -1,4 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
 import {useData} from '../contexts/dataContext';
 import listUtil from '../util/functions/list-util';
 import { processDashboardWidgets } from '../dashboard/widgets/widget-refinery';
@@ -10,52 +11,37 @@ export function useDashboard() {
 }
 
 export function DashboardProvider ({children}){
-    const { getJournalEntries,getJournalDoc, userId, getDashboardConfig } = useData();
-    const [journalEntriesList, setJournalEntriesList] = useState([]);
-    const [journalDoc, setJournalDoc] = useState();
+    const {journalId} = useParams();
+
+    const { getJournalEntries,getJournalDoc, userId, getDashboardConfig,loadDashboardData, dashboardLoaded } = useData();
+
     const [dashboardWidgetContents, setDashboardWidgetContents]=useState([]);
-    const [dashboardConfigs,setDashboardConfigs] = useState([]);
 
     useEffect(()=>{
-        async function callLoadDashboardWidgets(){
-            if (journalDoc!=null){
-                loadDashboardWidgets(journalDoc.key);
-            }
-        }
-        callLoadDashboardWidgets();
-    },[journalDoc,dashboardConfigs,journalEntriesList])
+        if (!dashboardLoaded) callLoadDashboard();
+    },[journalId]);
 
-    async function loadDashboard(journalId) {
-        if (userId == null){
-            listUtil(journalEntriesList, setJournalEntriesList, { type: "TRUNCATE"});
-            return;
-        }
-        console.log("Journal ID is : "+ journalId);
-        const retreivedJournalDoc = getJournalDoc(journalId);
-        setJournalDoc(retreivedJournalDoc);
+    useEffect(()=>{
+        if (!dashboardLoaded) callLoadDashboard();
+        loadDashboardWidgets(journalId);
+    }, [dashboardLoaded])
 
-        if (retreivedJournalDoc==null) return;
-        
-        let journalEntryDocs = await getJournalEntries(retreivedJournalDoc.key);
-        let dashboardConfigDocs = await getDashboardConfig(retreivedJournalDoc.key);
-        journalEntryDocs=journalEntryDocs.sort((a,b)=>{return a.dateOfEntry>b.dateOfEntry});
-        journalEntryDocs=journalEntryDocs.sort((a,b)=>{return a.position<b.position});
-        console.log ("Got journals: " + journalEntryDocs + " in " + retreivedJournalDoc.key);
-        listUtil(journalEntriesList, setJournalEntriesList, { type: "SET", payload:journalEntryDocs});
-        listUtil(dashboardConfigs,setDashboardConfigs, {type: "SET", payload: dashboardConfigDocs});
-        
+    async function callLoadDashboard(){
+        await loadDashboardData(journalId);
     }
 
-    function loadDashboardWidgets(){
+    async function loadDashboardWidgets(){
+        const journalEntriesList = await getJournalEntries(journalId);
+        const dashboardConfigs = await getDashboardConfig(journalId);
         listUtil(dashboardWidgetContents, setDashboardWidgetContents, { type: "SET", payload:processDashboardWidgets(dashboardConfigs,journalEntriesList)});
     }
 
-
-    function filterJournalEntries(searchInput){
+    async function filterJournalEntries(searchInput){
         let searchResults = [];
         //if (!isNaN(Date.parse(searchInput))){
 
         //} 
+        const journalEntriesList = await getJournalEntries(journalId);
 
         journalEntriesList.map(
             journalEntry => {
@@ -70,12 +56,13 @@ export function DashboardProvider ({children}){
         return searchResults;
     }
 
-    function getJournalEntry(key){
+    async function getJournalEntry(key){
+        const journalEntriesList = await getJournalEntries(journalId);
         return journalEntriesList.find(journalEntry=> journalEntry.key===key);
     }
 
     const values = {
-        journalEntriesList, filterJournalEntries, getJournalEntry, loadDashboard, journalDoc,dashboardWidgetContents
+        getJournalEntries, filterJournalEntries, getJournalEntry, getJournalDoc,dashboardWidgetContents
     }
 
     

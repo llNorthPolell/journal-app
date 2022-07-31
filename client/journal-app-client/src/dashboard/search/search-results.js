@@ -1,7 +1,7 @@
-import {Link, useLocation} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 
 function SearchResults(props){
-    const currentURL = useLocation().pathname;
+    const {journalId} = useParams();
 
     return (
         <div id="searchResultsDiv">
@@ -21,7 +21,7 @@ function SearchResults(props){
                         <div className="card-body">
                             <div className="card-text"> 
                                 {searchResult.description}
-                                <Link className="stretched-link" to={currentURL+"/"+searchResult.key}></Link>
+                                <Link className="stretched-link" to={"/"+journalId+"/"+searchResult.key}></Link>
                             </div>
                         </div>
                     </div>

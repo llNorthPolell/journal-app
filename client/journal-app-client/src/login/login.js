@@ -1,10 +1,21 @@
+import React, {useEffect} from 'react';
 import {useAuth} from '../contexts/authContext';
 import {Link,useNavigate} from 'react-router-dom';
 
 
 function LoginPage(props){
-    const { login } = useAuth();
+    const { login, auth } = useAuth();
     const navigate = useNavigate();
+
+
+    useEffect(()=>{
+        const unsubscribe = auth.onAuthStateChanged(authUser => {
+            authUser? navigate("/") : navigate("/login");
+        });
+        return unsubscribe;
+    },[]);
+
+
 
     const handleClick = (e) => {
         
@@ -12,14 +23,11 @@ function LoginPage(props){
             try {
                 e.preventDefault();
                 await login();
-                navigate('/');
-                console.log("Login Successful");
             } catch (err){
                 console.log(err.message);
             }
         }
         callLogin();
-
     }
 
     return (

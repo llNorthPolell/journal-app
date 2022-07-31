@@ -15,7 +15,7 @@ import WidgetMenuModal from './widgetMenu/widget-menu';
 function DashboardPage(props){
     const {journalId} = useParams();
 
-    const {loadDashboard, journalDoc, filterJournalEntries, dashboardWidgetContents} = useDashboard();
+    const {getJournalDoc, filterJournalEntries, dashboardWidgetContents} = useDashboard();
     const [contents,setContents] = useState([]);
     const [name, setName] = useState("");
 
@@ -26,18 +26,15 @@ function DashboardPage(props){
     const [mode, setMode] = useState("VIEW");
 
     useEffect(()=>{
-        async function callLoadDashboard(){
-            await loadDashboard(journalId);
+        async function loadJournalData(){
+            const journalDoc = await getJournalDoc(journalId);
+            if (journalDoc!=null){
+                setTopics([...journalDoc.topics]);
+                setName(journalDoc.name);
+            }
         }
-        callLoadDashboard();
-    }, []);
-
-    useEffect(()=>{
-        if (journalDoc!=null){
-            setTopics([...journalDoc.topics]);
-            setName(journalDoc.name);
-        }
-    },[journalDoc]);
+        loadJournalData();
+    },[journalId]);
 
     useEffect(()=>{
         setContents([...dashboardWidgetContents]);
@@ -49,7 +46,10 @@ function DashboardPage(props){
     }
 
     useEffect(()=>{
-        setSearchResults((searchInput==="")? [] : filterJournalEntries(searchInput));
+        async function triggerSearch(){
+            setSearchResults((searchInput==="")? [] : await filterJournalEntries(searchInput));
+        }
+        triggerSearch();
     }, [searchInput]);
     
     const handleToEditMode = e =>{

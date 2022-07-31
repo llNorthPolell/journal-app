@@ -1,16 +1,26 @@
+import React, { useState,useEffect } from 'react';
 import {Navigate} from "react-router-dom";
 import {useAuth} from "../../contexts/authContext";
 
-function PrivateRoute({children}){
-    const {user} = useAuth();
+function PrivateRoute({ children }){
+    const { auth } = useAuth();
+    const [userId,setUserId] = useState();
+    const [isLoading, setIsLoading] = useState(true);
 
-    if (user ==null){
-        return (
-            <Navigate to="/login"></Navigate>
-        );
-    }
+    useEffect(()=>{
+        const unsubscribe = auth.onAuthStateChanged(authUser => {
+            setUserId(authUser.uid);
+            setIsLoading(false);
+        });
+        return unsubscribe;
+    },[]);
+
+    if (isLoading) return "Loading..."
     else {
-        return children; 
+        return userId? children : <Navigate to={"/login"}/>;
     }
+
+    
+    
 }
 export default PrivateRoute;

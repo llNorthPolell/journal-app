@@ -14,8 +14,7 @@ import {DefaultJournalEntry} from './journal-entry-dto';
 function JournalEntryPage(props) {
   let data = DefaultJournalEntry;
   let initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
-  let initTopicList = [];
-  
+
   const {createJournalEntry, updateJournal, getJournalDoc} = useData();
   const {getJournalEntry} = useDashboard();
 
@@ -38,16 +37,23 @@ function JournalEntryPage(props) {
   const [recordList, setRecordList] = useState([]);
 
   useEffect(()=>{
-    initTopicList=getJournalDoc(journalId).topics;
-    setTopicList([...initTopicList]);
-  },[])
+    async function loadInitTopics(){
+      let journalDoc = await getJournalDoc(journalId)
+      let initTopicList=journalDoc.topics;
+      setTopicList([...initTopicList]);
+    }
+    loadInitTopics();
+  },[journalId])
 
   
   useEffect(()=>{
-    if (!entryId) return;
-    data = getJournalEntry(entryId);
-    initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
-    resetAll();
+    async function loadData(){
+      if (!entryId) return;
+      data = await getJournalEntry(entryId);
+      initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
+      resetAll();
+    }
+    loadData();
   },[]);
 
   function resetAll(){

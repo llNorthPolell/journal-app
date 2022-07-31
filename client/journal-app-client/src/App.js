@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 // Scripts 
 import HomePage from './home/home';
@@ -18,8 +18,6 @@ import './App.css';
 
 
 function App() {
-  const {journalId, entryId} = useParams();
-
   return (
     <div id="JournalAppDiv">
       <AuthProvider>
@@ -27,16 +25,38 @@ function App() {
           <Navbar></Navbar>
           <div className="contentContainer">
             <DataProvider>
-              <DashboardProvider>
                 <Routes>
                   <Route path="/" element={<HomePage />}></Route>
                   <Route path="/login" element={<LoginPage />}></Route>
                   <Route path="/userAgreement" element={<></>}></Route>
-                  <Route path="/:journalId" element={<PrivateRoute><DashboardPage /></PrivateRoute>}></Route>
-                  <Route path="/:journalId/new" element={<PrivateRoute><JournalEntryPage/></PrivateRoute>}></Route>
-                  <Route path="/:journalId/:entryId" element={<PrivateRoute><JournalEntryPage/></PrivateRoute>}></Route>
+                  <Route path="/:journalId" 
+                    element={
+                      <PrivateRoute>
+                        <DashboardProvider>
+                          <DashboardPage />
+                        </DashboardProvider>
+                      </PrivateRoute>
+                    }
+                  ></Route>
+                  <Route path="/:journalId/new" 
+                    element={
+                      <PrivateRoute>
+                        <DashboardProvider>
+                          <JournalEntryPage/>
+                        </DashboardProvider>
+                      </PrivateRoute>
+                    }
+                  ></Route>
+                  <Route path="/:journalId/:entryId" 
+                    element={
+                      <PrivateRoute>
+                        <DashboardProvider>
+                          <JournalEntryPage/>
+                        </DashboardProvider>
+                      </PrivateRoute>
+                    }
+                  ></Route>
                 </Routes>
-              </DashboardProvider>
             </DataProvider>
           </div>
         </BrowserRouter>
