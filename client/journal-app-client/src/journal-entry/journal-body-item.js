@@ -89,31 +89,33 @@ function JournalBodyItem(props){
                     <div className="mb-3 row">
                         {
                             (mode==="NEW")?
-                                <div className="col">
-                                    <button id="clearBodyFormBtn" className="btn btn-outline-secondary" onClick={handleClear}>Clear</button> 
-                                </div>
+                                <>
+                                    <div className="col">
+                                        <button id="clearBodyFormBtn" className="btn btn-outline-secondary" onClick={handleClear}>Clear</button> 
+                                    </div>
+                                    <div className="col">
+                                        <button id="addToBodyBtn" className="btn btn-primary float-end" onClick={handleSubmit}>Add to Body</button> 
+                                    </div> 
+                                </>
+
                             :
                                 null
                         }
 
                         {
                             (mode==="EDIT")?
-                                <div className="col">
-                                    <button id="cancelEditBodyFormBtn" className="btn btn-outline-secondary" onClick={handleCancelEdit}>Cancel</button> 
-                                </div>
+                                <>
+                                    <div className="col">
+                                        <button id="cancelEditBodyFormBtn" className="btn btn-outline-secondary" onClick={handleCancelEdit}>Cancel</button> 
+                                    </div>
+                                    <div className="col">
+                                        <button id="addToBodyBtn" className="btn btn-primary float-end" onClick={handleSubmit}>Save</button> 
+                                    </div> 
+                                </>
                             :
                                 null
                         }
 
-
-                        {
-                            (mode==="VIEW")?
-                                null 
-                            :
-                                <div className="col">
-                                    <button id="addToBodyBtn" className="btn btn-primary float-end" onClick={handleSubmit}>Save</button> 
-                                </div> 
-                        }                 
                     </div>
             </div>  
         </div>      

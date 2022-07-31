@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom';
 
 // Scripts 
 import HomePage from './home/home';
@@ -12,17 +12,14 @@ import { DataProvider } from './contexts/dataContext';
 import { DashboardProvider } from './contexts/dashboardContext';
 import PrivateRoute from './util/components/private-route';
 
-import { DefaultJournalEntry } from './journal-entry/journal-entry-dto';
-
-//Demo
-import DemoJournalEntries from './demo/demo-journal-entries.json'
-
 // Other Resources
 import logo from './logo.svg';
 import './App.css';
 
 
 function App() {
+  const {journalId, entryId} = useParams();
+
   return (
     <div id="JournalAppDiv">
       <AuthProvider>
@@ -36,8 +33,8 @@ function App() {
                   <Route path="/login" element={<LoginPage />}></Route>
                   <Route path="/userAgreement" element={<></>}></Route>
                   <Route path="/:journalId" element={<PrivateRoute><DashboardPage /></PrivateRoute>}></Route>
-                  <Route path="/:journalId/new" element={<PrivateRoute><JournalEntryPage data={DefaultJournalEntry}/></PrivateRoute>}></Route>
-                  <Route path="/:journalId/:entry_id" element={<PrivateRoute><JournalEntryPage data={DemoJournalEntries[0]} /></PrivateRoute>}></Route>
+                  <Route path="/:journalId/new" element={<PrivateRoute><JournalEntryPage/></PrivateRoute>}></Route>
+                  <Route path="/:journalId/:entryId" element={<PrivateRoute><JournalEntryPage/></PrivateRoute>}></Route>
                 </Routes>
               </DashboardProvider>
             </DataProvider>

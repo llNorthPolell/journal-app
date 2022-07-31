@@ -1,7 +1,11 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {useAuth} from '../contexts/authContext';
 import listUtil from '../util/functions/list-util';
-import {getJournalDocs, createJournalDoc, createJournalEntryDoc, getJournalEntryDocs, updateJournalDoc, getDashboardWidgetConfigDocs} from '../facades/data';
+import {
+    createJournalDoc, updateJournalDoc, getJournalDocs,         // journals
+    createJournalEntryDoc, getJournalEntryDocs,                 // journal entries
+    getDashboardWidgetConfigDocs, createWidgetConfigDoc         // widget configs
+} from '../facades/data';
 
 
 const DataContext = React.createContext();
@@ -36,6 +40,7 @@ export function DataProvider ({children}){
     async function createJournal(journal){
         const newJournal = await createJournalDoc(journal);
         listUtil(journalList, setJournalList, { type: "INSERT", payload: newJournal });
+        return newJournal;
     }
 
     
@@ -72,6 +77,11 @@ export function DataProvider ({children}){
         ));
     }
 
+    async function createWidgetConfig(config){
+        const newWidgetConfig = await createWidgetConfigDoc(config);
+        return newWidgetConfig;
+    }
+
     async function getDashboardConfig(journalId){
         if (userId==null) return;
         return await getDashboardWidgetConfigDocs(journalId);
@@ -79,7 +89,7 @@ export function DataProvider ({children}){
 
 
     const values = {
-        journalList, userId, createJournal, getJournalDoc, createJournalEntry,getJournalEntries,updateJournal, getDashboardConfig
+        journalList, userId, createJournal, getJournalDoc, createJournalEntry,getJournalEntries,updateJournal, createWidgetConfig, getDashboardConfig
     }
 
     

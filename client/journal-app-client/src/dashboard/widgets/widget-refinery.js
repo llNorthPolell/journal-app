@@ -7,9 +7,15 @@ export function processDashboardWidgets(config, journalEntriesList) {
     let processedConfigs = [];
 
     function generateLastEntry(){
-        return (journalEntriesList!=null && journalEntriesList.length>0)? 
-            journalEntriesList[journalEntriesList.length-1].overview
-            : "You have no journal entries at the moment. Please create one.";
+        let payload = "You have no journal entries at the moment. Please create one.";
+        if (journalEntriesList==null || journalEntriesList.length===0) return payload;
+
+        const lastEntry = journalEntriesList[journalEntriesList.length-1];
+        payload = {
+            overview: lastEntry.overview,
+            key: lastEntry.key
+        }
+        return payload;
     }
 
     function generateLineGraph(widget){
@@ -43,8 +49,6 @@ export function processDashboardWidgets(config, journalEntriesList) {
             }
         );
 
-        console.log("xValues: " + xValues);
-        console.log("yValues: " + yValues);
         payload.data.x = [...xValues];
         payload.data.y[0].data=[...yValues];
         return payload;

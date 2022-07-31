@@ -63,16 +63,19 @@ export function DashboardProvider ({children}){
                     journalBodyItem=>{
                         if (journalBodyItem.topic.includes(searchInput) || 
                             journalBodyItem.description.includes(searchInput))
-                            searchResults.push(journalBodyItem);
+                            searchResults.push({...journalBodyItem, key: journalEntry.key,dateOfEntry:journalEntry.dateOfEntry});
                         
             })}  
         );
         return searchResults;
     }
 
+    function getJournalEntry(key){
+        return journalEntriesList.find(journalEntry=> journalEntry.key===key);
+    }
 
     const values = {
-        journalEntriesList, filterJournalEntries, loadDashboard, journalDoc,dashboardWidgetContents
+        journalEntriesList, filterJournalEntries, getJournalEntry, loadDashboard, journalDoc,dashboardWidgetContents
     }
 
     

@@ -5,20 +5,23 @@ import SimpleInput from '../util/components/simple-input';
 import useSimpleState from '../util/hooks/useSimpleState';
 import listUtil from '../util/functions/list-util';
 import {useData} from '../contexts/dataContext';
+import {useDashboard} from '../contexts/dashboardContext';
 
 import { v4 as uuidv4 } from 'uuid';
 
+import {DefaultJournalEntry} from './journal-entry-dto';
 
 function JournalEntryPage(props) {
-  const data = props.data;
-  const initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
+  let data = DefaultJournalEntry;
+  let initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
   let initTopicList = [];
   
   const {createJournalEntry, updateJournal, getJournalDoc} = useData();
+  const {getJournalEntry} = useDashboard();
 
   const navigate = useNavigate();
-  const {journalId} = useParams();
-
+  const {journalId, entryId} = useParams();
+  
  
   // Simple States
   const [summary, setSummary, handleChangeSummary] = useSimpleState(data.summary);
@@ -39,9 +42,15 @@ function JournalEntryPage(props) {
     setTopicList([...initTopicList]);
   },[])
 
+  
+  useEffect(()=>{
+    if (!entryId) return;
+    data = getJournalEntry(entryId);
+    initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
+    resetAll();
+  },[]);
 
-  const resetAll = e => {
-    e.preventDefault();
+  function resetAll(){
     setSummary(data.summary);
     setDateOfEntry(data.dateOfEntry);
     setOverview(data.overview);
@@ -52,6 +61,10 @@ function JournalEntryPage(props) {
     clearJournalBodyForm();
   }
 
+  const handleReset = e => {
+    e.preventDefault();
+    resetAll();
+  }
 
   const clearJournalBodyForm = () => {
     setTopic("");
@@ -184,11 +197,11 @@ function JournalEntryPage(props) {
         </div>
       </form>
       <br/><br/><br/>
-      <div id="formControlButtonsDiv" className="container fixed-bottom">
+      <div id="formControlButtonsDiv" className="container-fluid fixed-bottom bg-dark">
         <br/>
-        <div className="mb-3 row">
+        <div className="row">
           <div className="col">
-            <button id="clearEntryFormButton" className="btn btn-danger" onClick={resetAll}>Clear</button>
+            <button id="clearEntryFormButton" className="btn btn-danger" onClick={handleReset}>Clear</button>
           </div>
           <div className="col">
             <button id="postEntry" className="btn btn-primary float-end" onClick={publish}>Post</button>

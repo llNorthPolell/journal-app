@@ -11,7 +11,7 @@ function NewJournalForm(props) {
 
     const [show, setShow] = useState(false);
 
-    const { createJournal,userId } = useData();
+    const { createJournal, createWidgetConfig, userId } = useData();
 
     function reset(){
         setNewJournal("");
@@ -35,9 +35,9 @@ function NewJournalForm(props) {
         setJournalPic(e.target.files[0]);
     }
 
-    const handleSubmit = (e) =>{
+    const handleSubmit = async (e) =>{
         e.preventDefault();
-        createJournal({
+        const returnedJournal = await createJournal({
             name: newJournal,
             permissions: permissions,
             img: (journalPic)?journalPic:null,
@@ -45,6 +45,11 @@ function NewJournalForm(props) {
             last_updated: new Date().toISOString(),
             author: userId,
             topics: []
+        });
+        await createWidgetConfig({
+            position: 0,
+            type: "last-entry",
+            journal: returnedJournal.key
         });
         reset();
         setShow(false);

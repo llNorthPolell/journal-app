@@ -117,7 +117,7 @@ function DashboardPage(props){
                             contents.map(
                                 widget=>(
                                     (widget.type=="last-entry")?
-                                        <LastEntryWidget description={widget.payload}></LastEntryWidget>
+                                        <LastEntryWidget lastEntry={widget.payload}></LastEntryWidget>
                                     :
                                     (widget.type=="pic-carousel")?
                                         <PicCarouselWidget picList={widget.payload}></PicCarouselWidget>

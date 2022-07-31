@@ -10,14 +10,14 @@ function LoginPage(props){
         
         async function callLogin(){
             try {
-                const userCreds = await login();
+                e.preventDefault();
+                await login();
                 navigate('/');
                 console.log("Login Successful");
             } catch (err){
                 console.log(err.message);
             }
         }
-        e.preventDefault();
         callLogin();
 
     }

@@ -69,7 +69,7 @@ export function getJournalEntryDocs(journalId){
 }
 
 export async function createWidgetConfigDoc(config){
-    const journalDocRef = doc(journalRef,config.journalId);
+    const journalDocRef = doc(journalRef,config.journal);
     let saveConfig = config;
     config.journal = journalDocRef;
 
@@ -89,9 +89,4 @@ export function getDashboardWidgetConfigDocs(journalId){
     const queryDocRef = doc(journalRef, journalId);
     const dashboardWidgetConfigQuery=query(dashboardWidgetConfigRef,where("journal", "==", queryDocRef));
     return getList(dashboardWidgetConfigQuery);
-}
-
-
-export function getDashboardConfigDoc(journalId){
-
 }

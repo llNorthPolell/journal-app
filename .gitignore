@@ -5,6 +5,7 @@ server/rubberband-server/src/config/
 .editorconfig 
 .env
 .emulators
+.github
 
 lib-cov
 *.seed
