@@ -13,13 +13,14 @@ export function useDashboard() {
 export function DashboardProvider ({children}){
     const {journalId} = useParams();
 
-    const { getJournalEntries,getJournalDoc, userId, getDashboardConfig,loadDashboardData, dashboardLoaded } = useData();
+    const { getJournalEntries,getJournalDoc, userId, getDashboardConfig,triggerLoadDashboardData, journalListLoaded, dashboardLoaded } = useData();
 
     const [dashboardWidgetContents, setDashboardWidgetContents]=useState([]);
 
+
     useEffect(()=>{
         if (!dashboardLoaded) callLoadDashboard();
-    },[journalId]);
+    },[journalId, journalListLoaded]);
 
     useEffect(()=>{
         if (!dashboardLoaded) callLoadDashboard();
@@ -27,7 +28,7 @@ export function DashboardProvider ({children}){
     }, [dashboardLoaded])
 
     async function callLoadDashboard(){
-        await loadDashboardData(journalId);
+        await triggerLoadDashboardData(journalId);
     }
 
     async function loadDashboardWidgets(){
@@ -53,6 +54,9 @@ export function DashboardProvider ({children}){
                         
             })}  
         );
+
+        searchResults.sort((a,b)=>{return a.dateOfEntry<b.dateOfEntry});
+
         return searchResults;
     }
 

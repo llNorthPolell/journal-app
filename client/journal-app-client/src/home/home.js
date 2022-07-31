@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import NewJournalForm from './new-journal/new-journal';
 import JournalCard from './journal-card/journal-card';
 import { useData } from '../contexts/dataContext';
@@ -6,8 +6,12 @@ import { useAuth } from '../contexts/authContext';
 
 
 function HomePage() {
-    const { journalList } = useData();
+    const { journalList, clearDashboardData } = useData();
     const { user } = useAuth();
+
+    useEffect(()=>{
+        clearDashboardData();
+    },[]);
 
     return (
         (user == null) ?

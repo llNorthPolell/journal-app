@@ -7,7 +7,9 @@ export function processDashboardWidgets(config, journalEntriesList) {
     let processedConfigs = [];
 
     function generateLastEntry(){
-        let payload = "You have no journal entries at the moment. Please create one.";
+        let payload = {
+            overview: "You have no journal entries at the moment. Please create one."
+        };
         if (journalEntriesList==null || journalEntriesList.length===0) return payload;
 
         const lastEntry = journalEntriesList[journalEntriesList.length-1];
@@ -27,9 +29,9 @@ export function processDashboardWidgets(config, journalEntriesList) {
                 y: [...widget.data.yValues]
             }
         };
+        payload.data.y[0].data=[];
 
-        let xValues=[];
-        let yValues=[];
+        let dataset=[];
 
         journalEntriesList.forEach(
             journalEntry => {
@@ -43,14 +45,21 @@ export function processDashboardWidgets(config, journalEntriesList) {
                 );
                 
                 if (record == undefined) return;
-                xValues.push(journalEntry[widget.data.xValue]);
-                yValues.push(record.value);
 
+                dataset.push({
+                    x:journalEntry[widget.data.xValue],
+                    y:record.value
+                });
             }
         );
+        
+        dataset.sort((a,b)=>{return a.x>b.x});
 
-        payload.data.x = [...xValues];
-        payload.data.y[0].data=[...yValues];
+        dataset.forEach(data=>{
+            payload.data.x.push(data.x);
+            payload.data.y[0].data.push(data.y);
+        })
+
         return payload;
     }
 

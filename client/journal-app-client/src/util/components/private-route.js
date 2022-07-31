@@ -9,7 +9,7 @@ function PrivateRoute({ children }){
 
     useEffect(()=>{
         const unsubscribe = auth.onAuthStateChanged(authUser => {
-            setUserId(authUser.uid);
+            setUserId(authUser?authUser.uid:null);
             setIsLoading(false);
         });
         return unsubscribe;
