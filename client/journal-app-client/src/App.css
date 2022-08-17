@@ -17,6 +17,10 @@ a, .link, .btn-link{
     text-decoration: none;
 }
 
+.card{
+    overflow-y: hidden;
+}
+
 .card-img-top {
     width: 100%;
     height: 100%;
@@ -141,15 +145,30 @@ section{
 }
 
 .widget-card{
-    margin-top: 2vh;
     width:5vw;
     height:15vh;
+    padding:0;
+    margin-left:1vh;
+    margin-right:1vh;
 }
 
 .widget-card-link {
     font-size:12px;
     width:100%;
     padding:0;
+    margin: 0 auto;
+}
+
+.widget-card>img{
+    width: 100%;
+    margin: auto;
+    object-fit:cover;
+    object-position:50% 50%;
+    
+}
+
+.widget-card>.card-body{
+    height:30%;
 }
 
 .dashboard-widget {

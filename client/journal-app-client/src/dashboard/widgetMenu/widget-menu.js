@@ -31,9 +31,8 @@ function WidgetMenuModal(props){
         setWidgetSearchInput(e.target.value);
     }
 
-    const handleClickMenuItem = e => {
-        e.preventDefault();
-        setMenu(e.target.value);
+    const clickMenuItem = value => {
+        setMenu(value);
     }
 
     const handleClickBackButton = e =>{
@@ -56,8 +55,7 @@ function WidgetMenuModal(props){
                         <div className="container">
                             <input id="widgetSearchBar" className="form-control" type="text" placeholder="search widgets" value={widgetSearchInput} onChange={handleChangeWidgetSearchInput}/>
 
-                            <div id="widgetOptionsDiv" className="container-fluid">
-                                <div className="col">
+                            <div id="widgetOptionsDiv">
                                     {
                                         WidgetMenuItems.map(widgetMenuItem =>
                                             <div className="row">
@@ -66,21 +64,19 @@ function WidgetMenuModal(props){
                                                 {
                                                     widgetMenuItem.widgetOptions.map(widgetOption => 
                                                         <div className="card widget-card text-center">
-                                                            {
-                                                                <img
-                                                                    className="card-img-top"
-                                                                    src={widgetOption.img}
-                                                                    alt={widgetOption.displayName}
-                                                                />
-                                                            }
+                                                            <img
+                                                                className="card-img-top"
+                                                                src={widgetOption.img}
+                                                                alt={widgetOption.displayName}
+                                                            />
                                                             <div className="card-body">
-                                                                <h2>
-                                                                    <button 
-                                                                        className="card-title widget-card-link stretched-link btn btn-link" 
-                                                                        onClick={handleClickMenuItem} 
-                                                                        value={widgetOption.key}
-                                                                    >{widgetOption.displayName}</button>
-                                                                </h2>
+                                                                <h5>
+                                                                    <a 
+                                                                        className="card-title widget-card-link stretched-link" 
+                                                                        onClick={()=>clickMenuItem(widgetOption.key)} 
+
+                                                                    >{widgetOption.displayName}</a>
+                                                                </h5>
                                                             </div>
                                                         </div>
                                                     )
@@ -90,10 +86,9 @@ function WidgetMenuModal(props){
                                     }
                                 </div>
                             </div>
-                        </div>
                         :
                         <div className="container">
-                            <button className="btn btn-link"><FontAwesomeIcon icon={faArrowLeft} onClick={handleClickBackButton}/></button>
+                            <button className="btn btn-link"><span><FontAwesomeIcon icon={faArrowLeft} onClick={handleClickBackButton}/></span></button>
                             <WidgetMenuForms menu={menu}></WidgetMenuForms>
                         </div>
                     }
