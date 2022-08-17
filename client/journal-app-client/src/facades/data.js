@@ -6,7 +6,7 @@ import {
 
 
 export async function createJournalDoc(journal) {
-    let saveJournal = journal;
+    let saveJournal = {...journal};
     let docRef = null;
     let returnId = null;
 
@@ -48,7 +48,7 @@ export async function updateJournalDoc(journalId, payload){
 
 export async function createJournalEntryDoc(journalEntry) {
     const journalDocRef = doc(journalRef,journalEntry.journal);
-    let saveJournalEntry = journalEntry;
+    let saveJournalEntry = {...journalEntry};
     saveJournalEntry.journal = journalDocRef;
 
     try {
@@ -70,7 +70,7 @@ export function getJournalEntryDocs(journalId){
 
 export async function createWidgetConfigDoc(config){
     const journalDocRef = doc(journalRef,config.journal);
-    let saveConfig = config;
+    let saveConfig = {...config};
     config.journal = journalDocRef;
 
     try {

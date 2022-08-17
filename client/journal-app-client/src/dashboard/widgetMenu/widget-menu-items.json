@@ -1,0 +1,33 @@
+[
+    {
+        "categoryName": "Data",
+        "widgetOptions":[
+            {
+                "key": "bar-graph",
+                "displayName": "Bar Graph",
+                "img": "Test"
+            },
+            {
+                "key": "line-graph",
+                "displayName": "Line Graph",
+                "img": "Test"
+            },
+            {
+                "key": "pie-chart",
+                "displayName": "Pie Chart",
+                "img": "Test"
+            }
+        ]
+    },
+    {
+        "categoryName": "Media",
+        "widgetOptions":[
+            {
+                "key": "pic-carousel",
+                "displayName": "Pic Carousel",
+                "img": "Test"
+            }
+        ]
+    }
+
+]

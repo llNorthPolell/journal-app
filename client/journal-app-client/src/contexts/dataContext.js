@@ -20,7 +20,7 @@ export function DataProvider ({children}){
     const [journalList, setJournalList] = useState([]);
     const [userId, setUserId] = useState();
 
-    const [journalDoc, setJournalDoc] = useState();
+    const [currentJournal, setCurrentJournal] = useState();
     const [dashboardLoaded, setDashboardLoaded] = useState(false);
     const [journalEntriesList, setJournalEntriesList] = useState([]);
     const [dashboardConfigList, setDashboardConfigList] = useState([]);
@@ -38,12 +38,11 @@ export function DataProvider ({children}){
         if (userId) loadJournalList(userId);
     },[userId]);
 
-
     useEffect(()=>{
         async function loadDashboardData(){
-            if (!journalDoc) return;
-            let resultJournalEntryDocs = await getJournalEntries(journalDoc.key);
-            let resultDashboardConfigDocs = await getDashboardConfig(journalDoc.key);
+            if (!currentJournal) return;
+            let resultJournalEntryDocs = await getJournalEntries(currentJournal.key);
+            let resultDashboardConfigDocs = await getDashboardConfig(currentJournal.key);
             resultJournalEntryDocs.sort((a,b)=>{return a.dateOfEntry>b.dateOfEntry});
             resultDashboardConfigDocs.sort((a,b)=>{return a.position<b.position});
 
@@ -52,7 +51,7 @@ export function DataProvider ({children}){
             setDashboardLoaded(true);
         }
         loadDashboardData();
-    }, [journalDoc])
+    }, [currentJournal])
 
     async function loadJournalList(userId){
         const journalDocs = await getJournalDocs(userId);
@@ -83,22 +82,31 @@ export function DataProvider ({children}){
     }
 
     async function updateJournal(journalId, payload){
-        await updateJournalDoc(journalId, payload);
+        let savePayload = {...payload};
+        let saveSchemas = [...currentJournal.schemas];
 
-        const updatedJournal = {...await getJournalDoc(journalId)};
+        payload.schemas.forEach(payloadSchema=>{
+            if (!saveSchemas.some(saveSchema => saveSchema.topic === payloadSchema.topic))
+                saveSchemas.push(payloadSchema);
+            else {
+                saveSchemas.map(schema=>{
+                    if(schema.topic===payloadSchema.topic){
+                        const newRecords=payloadSchema.records.filter(record=> !schema.records.includes(record))
+                        schema.records.push(...newRecords);
+                    }
+                });
 
-        payload.topics.map(payloadTopic=>{
-            if (!updatedJournal.topics.some(topic=>topic === payloadTopic))
-                updatedJournal.topics.push(payloadTopic);
+            }
         });
 
-        updatedJournal.last_updated = payload.last_updated;
-        setJournalList(journalList.map(journal=>
-            journal.key === updatedJournal.key ? 
-                updatedJournal : journal   
-        ));
+        savePayload.schemas = saveSchemas;
 
-        if (journalDoc!= null && updatedJournal.key === journalDoc.key) setJournalDoc(updatedJournal);
+        console.log("Updated Journal Schema: " + JSON.stringify(savePayload));
+
+        await updateJournalDoc(journalId, savePayload);
+        await loadJournalList(userId);
+        const updatedJournalDoc = await getJournalDoc(journalId);
+        setCurrentJournal(updatedJournalDoc);
     }
 
     async function createWidgetConfig(config){
@@ -111,15 +119,14 @@ export function DataProvider ({children}){
     }
 
 
-
     async function triggerLoadDashboardData (journalId){
-        if (dashboardLoaded && journalId === journalDoc.key) return false;
+        if (dashboardLoaded && journalId === currentJournal.key) return false;
 
         const retreivedJournalDoc = await getJournalDoc(journalId);
         
         if (retreivedJournalDoc==null) return false;
 
-        setJournalDoc(retreivedJournalDoc);
+        setCurrentJournal(retreivedJournalDoc);
         
         return true;
     }
@@ -127,16 +134,16 @@ export function DataProvider ({children}){
     async function clearDashboardData(){
         listUtil(journalEntriesList,setJournalEntriesList,{type:"TRUNCATE"});
         listUtil(dashboardConfigList,setDashboardConfigList,{type:"TRUNCATE"});
-        setJournalDoc(null);
+        setCurrentJournal(null);
         setDashboardLoaded(false);
     }
 
     const values = {
         journalList, userId, 
-        createJournal, getJournalDoc, updateJournal,
+        createJournal, getJournalDoc, updateJournal,                //journal
         createJournalEntry,getJournalEntries, 
-        createWidgetConfig, getDashboardConfig, triggerLoadDashboardData, clearDashboardData,
-        journalListLoaded, dashboardLoaded
+        createWidgetConfig, getDashboardConfig, triggerLoadDashboardData, clearDashboardData,   // Dashboard data
+        journalListLoaded, dashboardLoaded, currentJournal  // triggers
     }
 
     

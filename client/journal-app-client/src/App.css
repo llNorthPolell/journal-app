@@ -131,11 +131,39 @@ section{
 
 
 /* Dashboard */
+#dashboardContentsDiv{
+    display:grid;
+}
+
+.widget-category-name{
+    margin-top:2vh;
+    text-decoration: underline;
+}
+
+.widget-card{
+    margin-top: 2vh;
+    width:5vw;
+    height:15vh;
+}
+
+.widget-card-link {
+    font-size:12px;
+    width:100%;
+    padding:0;
+}
+
 .dashboard-widget {
     width: 40%;
     height:40vh;
-    margin:2%;
+    margin:2vh;
     padding:0;
+}
+
+.lineGraphYForm {
+    border: 1px solid #DDDDDD;
+    border-radius: 7px;
+    padding:2vh;
+    margin-top:2vh;
 }
 
 .card-dashboard-widget-text{
@@ -147,6 +175,26 @@ section{
     -webkit-line-clamp: 5; /* number of lines to show */
     line-height: 2;        /* fallback */
     max-height: 5;       /* fallback */
+}
+
+.widget-size-1-1{
+    width:20vw;
+    height:20vh;
+}
+
+.widget-size-2-1{
+    width:40vw;
+    height:20vh;
+}
+
+.widget-size-4-1{
+    width:80vw;
+    height:20vh;
+}
+
+.widget-size-2-2{
+    width:40vw;
+    height:40vh;
 }
 
 #searchResultsDiv > div {

@@ -3,7 +3,7 @@ import {Carousel} from "react-bootstrap";
 
 function PicCarouselWidget(props) {
     return (
-        <div className="container dashboard-widget">
+        <div className="container dashboard-widget widget-size-2-2">
             <Carousel indicators>
             {
                 props.picList.map(

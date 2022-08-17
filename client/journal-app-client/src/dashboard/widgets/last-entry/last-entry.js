@@ -1,10 +1,11 @@
 import React from 'react';
 import {Link, useParams} from 'react-router-dom';
 
+
 function LastEntryWidget(props){
     const {journalId} = useParams();
     return(
-        <div className="card dashboard-widget">
+        <div className="card dashboard-widget widget-size-1-1">
             <h3 className="card-header">Last Entry</h3>
             <div className="card-body">
                 <p className="card-text card-dashboard-widget-text">

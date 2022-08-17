@@ -15,7 +15,7 @@ import WidgetMenuModal from './widgetMenu/widget-menu';
 function DashboardPage(props){
     const {journalId} = useParams();
 
-    const {getJournalDoc, filterJournalEntries, dashboardWidgetContents} = useDashboard();
+    const { filterJournalEntries, dashboardWidgetContents, currentJournal} = useDashboard();
     const [contents,setContents] = useState([]);
     const [name, setName] = useState("");
 
@@ -26,15 +26,11 @@ function DashboardPage(props){
     const [mode, setMode] = useState("VIEW");
 
     useEffect(()=>{
-        async function loadJournalData(){
-            const journalDoc = await getJournalDoc(journalId);
-            if (journalDoc!=null){
-                setTopics([...journalDoc.topics]);
-                setName(journalDoc.name);
-            }
+        if (currentJournal){
+            setTopics(currentJournal.schemas.map(schema=> schema.topic));
+            setName(currentJournal.name);
         }
-        loadJournalData();
-    },[journalId]);
+    },[currentJournal]);
 
     useEffect(()=>{
         setContents([...dashboardWidgetContents]);
@@ -110,9 +106,9 @@ function DashboardPage(props){
 
             {
                 (searchInput=="")?
-                    <div id="dashboardContentsDiv">
+                    <div >
                         <h2>{name}</h2>
-                        <div className="row row-cols-4"> 
+                        <div id="dashboardContentsDiv" className="container-fluid"> 
                         {
                             contents.map(
                                 widget=>(

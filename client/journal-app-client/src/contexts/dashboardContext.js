@@ -13,14 +13,14 @@ export function useDashboard() {
 export function DashboardProvider ({children}){
     const {journalId} = useParams();
 
-    const { getJournalEntries,getJournalDoc, userId, getDashboardConfig,triggerLoadDashboardData, journalListLoaded, dashboardLoaded } = useData();
+    const { getJournalEntries, getDashboardConfig,triggerLoadDashboardData, journalListLoaded, dashboardLoaded, currentJournal,createWidgetConfig } = useData();
 
     const [dashboardWidgetContents, setDashboardWidgetContents]=useState([]);
-
+    const [newDashboardWidgets, setNewDashboardWidgets] = useState([]);
 
     useEffect(()=>{
         if (!dashboardLoaded) callLoadDashboard();
-    },[journalId, journalListLoaded]);
+    },[journalListLoaded]);
 
     useEffect(()=>{
         if (!dashboardLoaded) callLoadDashboard();
@@ -65,8 +65,17 @@ export function DashboardProvider ({children}){
         return journalEntriesList.find(journalEntry=> journalEntry.key===key);
     }
 
+    function getOpenDashboardPosition(){
+        let maxPosition = 0;
+        dashboardWidgetContents.forEach(dashboardWidgetContent=>{
+            maxPosition = (dashboardWidgetContent.position > maxPosition)? dashboardWidgetContent.position : maxPosition;
+        });
+        return maxPosition+1;
+    }
+
+
     const values = {
-        getJournalEntries, filterJournalEntries, getJournalEntry, getJournalDoc,dashboardWidgetContents
+        getJournalEntries, filterJournalEntries, getJournalEntry, dashboardWidgetContents, currentJournal, getOpenDashboardPosition,createWidgetConfig
     }
 
     

@@ -15,7 +15,7 @@ function JournalEntryPage(props) {
   let data = DefaultJournalEntry;
   let initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
 
-  const {createJournalEntry, updateJournal, getJournalDoc} = useData();
+  const {createJournalEntry, updateJournal, getJournalDoc, currentJournal} = useData();
   const {getJournalEntry} = useDashboard();
 
   const navigate = useNavigate();
@@ -38,12 +38,12 @@ function JournalEntryPage(props) {
 
   useEffect(()=>{
     async function loadInitTopics(){
-      let journalDoc = await getJournalDoc(journalId)
-      let initTopicList=journalDoc.topics;
-      setTopicList([...initTopicList]);
+      if (currentJournal){
+        setTopicList(currentJournal.schemas.map(schema=>schema.topic));
+      }
     }
     loadInitTopics();
-  },[journalId])
+  },[currentJournal])
 
   
   useEffect(()=>{
@@ -131,11 +131,27 @@ function JournalEntryPage(props) {
       journalBodyItems: journalBodyItems
     }
 
+    let schemas=[];
+
+    journalBodyItems.forEach(journalBodyItem=>{
+      let schema = {
+        topic: journalBodyItem.topic,
+        records: []
+      };
+      journalBodyItem.recordList.forEach(record=>
+        schema.records.push(record.key)
+      )
+      schemas.push(schema);
+    });
+
+
+    console.log("Delta Schema : " + JSON.stringify(schemas)); 
+
     createJournalEntry(output).then((returnJournalEntry)=>{
       console.log("Published " + JSON.stringify(returnJournalEntry) + " to " + journalId);
       updateJournal(journalId, {
         last_updated: new Date().toISOString(),
-        topics: usedTopics
+        schemas: schemas
       });
       navigate('/'+journalId);
     });
