@@ -40,6 +40,10 @@ function WidgetMenuModal(props){
         setMenu("");
     }
 
+    const close = () => {
+        setShow(false);
+        reset();
+    }
 
     return (
         <div>
@@ -89,7 +93,7 @@ function WidgetMenuModal(props){
                         :
                         <div className="container">
                             <button className="btn btn-link"><span><FontAwesomeIcon icon={faArrowLeft} onClick={handleClickBackButton}/></span></button>
-                            <WidgetMenuForms menu={menu}></WidgetMenuForms>
+                            <WidgetMenuForms menu={menu} close={close}></WidgetMenuForms>
                         </div>
                     }
                 </Modal.Body>

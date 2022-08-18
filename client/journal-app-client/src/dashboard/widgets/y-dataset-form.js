@@ -15,8 +15,16 @@ function YDatasetForm (props){
 
     useEffect(()=>{
         if (currentJournal){
-            setYTopicList(currentJournal.schemas.map(schema=>schema.topic));
-            setYTopic((yTopicList.length>0)?yTopicList[0]:"");
+            const yTopicList = currentJournal.schemas.map(schema=>schema.topic);
+            const yTopic = (yTopicList.length>0)?yTopicList[0]:"";
+            const schema = currentJournal.schemas.find(schema=>schema.topic===yTopic);
+            const yRecord =  (schema.records.length>0)?schema.records[0]:"";
+
+
+            setYTopicList(yTopicList);
+            setYTopic(yTopic);
+            setYRecordList(schema.records);
+            setYRecord(yRecord);
         }
         else setYTopicList([]);
     },[currentJournal])

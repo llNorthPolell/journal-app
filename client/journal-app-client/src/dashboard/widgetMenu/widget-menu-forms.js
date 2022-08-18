@@ -5,9 +5,9 @@ function WidgetMenuForms(props){
 
     switch (props.menu){
         case "line-graph":
-            return <LineGraphMenu></LineGraphMenu>
+            return <LineGraphMenu close={props.close}></LineGraphMenu>
         case "pic-carousel":
-            return <PicCarouselMenu></PicCarouselMenu>
+            return <PicCarouselMenu close={props.close}></PicCarouselMenu>
         default:
             return <></>
     }    

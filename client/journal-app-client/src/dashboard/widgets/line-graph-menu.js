@@ -9,7 +9,7 @@ function LineGraphMenu (props){
     const [title,, handleChangeTitle] = useSimpleState("");
     const [xLabel,, handleChangeXLabel] = useSimpleState("");
     const [yLabel,, handleChangeYLabel] = useSimpleState("");
-    const [xField,, handleChangeXField] = useSimpleState("");
+    const [xField,, handleChangeXField] = useSimpleState("dateOfEntry");
 
     const {currentJournal,getOpenDashboardPosition, createWidgetConfig} = useDashboard();
 
@@ -55,6 +55,8 @@ function LineGraphMenu (props){
         createWidgetConfig(config);
 
         console.log("Save widget as : " + JSON.stringify(config));
+
+        props.close();
     }
 
     return (
@@ -85,7 +87,7 @@ function LineGraphMenu (props){
                         <div className="mb-3 col">
                             <label htmlFor="xFieldNameField">Field Name</label>
                             <select id="xFieldNameField" className="form-select" name="xField" value={xField} onChange={handleChangeXField} placeholder="Field Name">
-                                <option value="dateOfEntry">dateOfEntry</option>
+                                <option value="dateOfEntry">Date of Entry</option>
                             </select>
                         </div>
                     </fieldset>

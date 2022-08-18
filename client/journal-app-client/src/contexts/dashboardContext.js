@@ -23,16 +23,20 @@ export function DashboardProvider ({children}){
     },[journalListLoaded]);
 
     useEffect(()=>{
-        if (!dashboardLoaded) callLoadDashboard();
-        loadDashboardWidgets(journalId);
-    }, [dashboardLoaded])
+        async function loadDashboard() {
+            if (!dashboardLoaded) await callLoadDashboard();
+            await loadDashboardWidgets(journalId);
+        }
+
+        loadDashboard();
+    }, [dashboardLoaded]);
 
     async function callLoadDashboard(){
         await triggerLoadDashboardData(journalId);
     }
 
     async function loadDashboardWidgets(){
-        const journalEntriesList = await getJournalEntries(journalId);
+        const journalEntriesList = getJournalEntries(journalId);
         const dashboardConfigs = await getDashboardConfig(journalId);
         listUtil(dashboardWidgetContents, setDashboardWidgetContents, { type: "SET", payload:processDashboardWidgets(dashboardConfigs,journalEntriesList)});
     }
@@ -42,7 +46,7 @@ export function DashboardProvider ({children}){
         //if (!isNaN(Date.parse(searchInput))){
 
         //} 
-        const journalEntriesList = await getJournalEntries(journalId);
+        const journalEntriesList = getJournalEntries(journalId);
 
         journalEntriesList.map(
             journalEntry => {

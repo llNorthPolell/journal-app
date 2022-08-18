@@ -41,17 +41,29 @@ export function DataProvider ({children}){
     useEffect(()=>{
         async function loadDashboardData(){
             if (!currentJournal) return;
-            let resultJournalEntryDocs = await getJournalEntries(currentJournal.key);
-            let resultDashboardConfigDocs = await getDashboardConfig(currentJournal.key);
-            resultJournalEntryDocs.sort((a,b)=>{return a.dateOfEntry>b.dateOfEntry});
-            resultDashboardConfigDocs.sort((a,b)=>{return a.position<b.position});
+            await loadJournalEntries();
+            await loadDashboardConfigList();
 
-            listUtil(journalEntriesList,setJournalEntriesList,{type:"SET",payload:resultJournalEntryDocs});
-            listUtil(dashboardConfigList,setDashboardConfigList,{type:"SET",payload:resultDashboardConfigDocs});
             setDashboardLoaded(true);
         }
         loadDashboardData();
     }, [currentJournal])
+
+    async function loadJournalEntries(){
+        if (!currentJournal) return;
+        let resultJournalEntryDocs = await getJournalEntryDocs(currentJournal.key);
+        resultJournalEntryDocs.sort((a,b)=>{return a.dateOfEntry>b.dateOfEntry});
+        listUtil(journalEntriesList,setJournalEntriesList,{type:"SET",payload:resultJournalEntryDocs});
+    }
+
+
+    async function loadDashboardConfigList(){
+        if (!currentJournal) return;
+        let resultDashboardConfigDocs = await getDashboardConfig(currentJournal.key);
+        resultDashboardConfigDocs.sort((a,b)=>{return a.position>b.position});
+        listUtil(dashboardConfigList,setDashboardConfigList,{type:"SET",payload:resultDashboardConfigDocs});
+    }
+
 
     async function loadJournalList(userId){
         const journalDocs = await getJournalDocs(userId);
@@ -72,12 +84,12 @@ export function DataProvider ({children}){
         return newJournalEntry;
     }
 
-    async function getJournalEntries(journalId){
-        return await getJournalEntryDocs(journalId);
+    function getJournalEntries(journalId){
+        return journalEntriesList;
     }
 
     async function getJournalDoc(journalId){
-        console.log("Finding " + journalId + " in " + journalList);
+        console.log("Finding " + journalId + " in " + JSON.stringify(journalList));
         return journalList.find(journal=>{return journal.key===journalId})
     }
 
@@ -111,6 +123,9 @@ export function DataProvider ({children}){
 
     async function createWidgetConfig(config){
         const newWidgetConfig = await createWidgetConfigDoc(config);
+        setDashboardLoaded(false);
+        await loadDashboardConfigList();
+        setDashboardLoaded(true);
         return newWidgetConfig;
     }
 
@@ -120,7 +135,7 @@ export function DataProvider ({children}){
 
 
     async function triggerLoadDashboardData (journalId){
-        if (dashboardLoaded && journalId === currentJournal.key) return false;
+        if (dashboardLoaded && journalId === currentJournal.key) return dashboardLoaded;
 
         const retreivedJournalDoc = await getJournalDoc(journalId);
         
@@ -128,7 +143,7 @@ export function DataProvider ({children}){
 
         setCurrentJournal(retreivedJournalDoc);
         
-        return true;
+        return dashboardLoaded;
     }
 
     async function clearDashboardData(){
