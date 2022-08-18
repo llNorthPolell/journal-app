@@ -59,7 +59,7 @@ export function DataProvider ({children}){
 
     async function loadDashboardConfigList(){
         if (!currentJournal) return;
-        let resultDashboardConfigDocs = await getDashboardConfig(currentJournal.key);
+        let resultDashboardConfigDocs = await getDashboardWidgetConfigDocs(currentJournal.key);
         resultDashboardConfigDocs.sort((a,b)=>{return a.position>b.position});
         listUtil(dashboardConfigList,setDashboardConfigList,{type:"SET",payload:resultDashboardConfigDocs});
     }
@@ -81,6 +81,7 @@ export function DataProvider ({children}){
     async function createJournalEntry(journalEntry){
         const newJournalEntry = await createJournalEntryDoc(journalEntry);
         setDashboardLoaded(false);
+        setJournalListLoaded(false);
         return newJournalEntry;
     }
 
@@ -129,8 +130,8 @@ export function DataProvider ({children}){
         return newWidgetConfig;
     }
 
-    async function getDashboardConfig(journalId){
-        return await getDashboardWidgetConfigDocs(journalId);
+    function getDashboardConfig(){
+        return dashboardConfigList;
     }
 
 

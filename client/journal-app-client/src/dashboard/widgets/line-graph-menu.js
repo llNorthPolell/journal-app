@@ -11,7 +11,7 @@ function LineGraphMenu (props){
     const [yLabel,, handleChangeYLabel] = useSimpleState("");
     const [xField,, handleChangeXField] = useSimpleState("dateOfEntry");
 
-    const {currentJournal,getOpenDashboardPosition, createWidgetConfig} = useDashboard();
+    const {currentJournal,getOpenDashboardPosition, addNewWidgetConfig} = useDashboard();
 
     const [yList, setYList] = useState([{
         id: uuidv4(),
@@ -52,7 +52,7 @@ function LineGraphMenu (props){
             }
         }
 
-        createWidgetConfig(config);
+        addNewWidgetConfig(config);
 
         console.log("Save widget as : " + JSON.stringify(config));
 

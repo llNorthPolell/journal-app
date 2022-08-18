@@ -4,8 +4,6 @@ export function processDashboardWidgets(config, journalEntriesList) {
         return;
     } 
 
-    let processedConfigs = [];
-
     function generateLastEntry(){
         let payload = {
             overview: "You have no journal entries at the moment. Please create one."
@@ -39,12 +37,12 @@ export function processDashboardWidgets(config, journalEntriesList) {
                     journalBodyItem=> journalBodyItem.topic === widget.data.yValues[0].topic
                 );
 
-                if (journalBodyItem == undefined) return;
+                if (!journalBodyItem) return;
                 const record = journalBodyItem.recordList.find(
                     record=> record.key===widget.data.yValues[0].record
                 );
                 
-                if (record == undefined) return;
+                if (!record) return;
 
                 dataset.push({
                     x:journalEntry[widget.data.xValue],
@@ -63,21 +61,27 @@ export function processDashboardWidgets(config, journalEntriesList) {
         return payload;
     }
 
-
-    config.map(
+    let output=[];
+    config.forEach(
         widget=> {
-            if(widget.type==="last-entry")
-                widget.payload = generateLastEntry();
-            else if (widget.type==="line-graph"){
-                widget.payload = generateLineGraph(widget);
+            const processedWidget={...widget};
+            switch(widget.type){
+                case "last-entry":
+                    processedWidget.payload = generateLastEntry();
+                    break;
+                case "line-graph":
+                    processedWidget.payload = generateLineGraph(widget);
+                    break;
+                default: 
+                    break;
             }
 
-            if (widget.payload!=null)
-                processedConfigs.push(widget);
+            if (processedWidget.payload)
+                output.push(processedWidget)
         }
     )
 
-    return processedConfigs;
+    return output;
 }
 
 

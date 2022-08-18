@@ -15,7 +15,7 @@ import WidgetMenuModal from './widgetMenu/widget-menu';
 function DashboardPage(props){
     const {journalId} = useParams();
 
-    const { filterJournalEntries, dashboardWidgetContents, currentJournal} = useDashboard();
+    const { filterJournalEntries, dashboardWidgetContents, currentJournal, saveDashboard,discardChangeDashboard} = useDashboard();
     const [contents,setContents] = useState([]);
     const [name, setName] = useState("");
 
@@ -55,11 +55,13 @@ function DashboardPage(props){
 
     const handleSaveDashboard = e =>{
         e.preventDefault();
+        saveDashboard();
         setMode("VIEW");
     }
 
     const handleCancelChangeDashboard = e => {
         e.preventDefault();
+        discardChangeDashboard();
         setMode("VIEW");
     }
 

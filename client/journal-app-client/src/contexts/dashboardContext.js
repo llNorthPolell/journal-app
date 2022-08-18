@@ -23,13 +23,17 @@ export function DashboardProvider ({children}){
     },[journalListLoaded]);
 
     useEffect(()=>{
-        async function loadDashboard() {
+        async function callLoadDashboardWidgets() {
             if (!dashboardLoaded) await callLoadDashboard();
             await loadDashboardWidgets(journalId);
         }
 
-        loadDashboard();
+        callLoadDashboardWidgets();
     }, [dashboardLoaded]);
+
+    useEffect(()=>{
+        loadDashboardWidgets();
+    },[newDashboardWidgets])
 
     async function callLoadDashboard(){
         await triggerLoadDashboardData(journalId);
@@ -37,8 +41,14 @@ export function DashboardProvider ({children}){
 
     async function loadDashboardWidgets(){
         const journalEntriesList = getJournalEntries(journalId);
-        const dashboardConfigs = await getDashboardConfig(journalId);
-        listUtil(dashboardWidgetContents, setDashboardWidgetContents, { type: "SET", payload:processDashboardWidgets(dashboardConfigs,journalEntriesList)});
+        const dashboardConfigs = getDashboardConfig();
+        const tempDashboardContents = processDashboardWidgets(newDashboardWidgets,journalEntriesList);
+        const savedDashboardContents = processDashboardWidgets(dashboardConfigs,journalEntriesList);
+
+
+        console.log("Combine " + JSON.stringify(savedDashboardContents)+" + "+JSON.stringify(tempDashboardContents));
+        listUtil(dashboardWidgetContents, setDashboardWidgetContents, { type: "SET", payload:[...savedDashboardContents,...tempDashboardContents]});
+
     }
 
     async function filterJournalEntries(searchInput){
@@ -78,8 +88,23 @@ export function DashboardProvider ({children}){
     }
 
 
+    function addNewWidgetConfig(config){
+        setNewDashboardWidgets([...newDashboardWidgets,config]);
+    }
+
+    async function saveDashboard(){
+        newDashboardWidgets.forEach(newDashboardWidget=>{
+            createWidgetConfig(newDashboardWidget);
+        });
+        setNewDashboardWidgets([]);
+    }
+
+    function discardChangeDashboard(){
+        setNewDashboardWidgets([]);
+    }
+
     const values = {
-        getJournalEntries, filterJournalEntries, getJournalEntry, dashboardWidgetContents, currentJournal, getOpenDashboardPosition,createWidgetConfig
+        getJournalEntries, filterJournalEntries, getJournalEntry, dashboardWidgetContents, currentJournal, getOpenDashboardPosition,addNewWidgetConfig,saveDashboard,discardChangeDashboard
     }
 
     
