@@ -18,19 +18,20 @@ function LineGraphMenu (props){
         backgroundColor: "#000",
         borderColor: "#000",
         label: "",
-        topic: "",
-        record: ""
+        topic: currentJournal.schemas[0].topic,
+        record: currentJournal.schemas[0].records[0]
     }]);
 
     const handleAddYDataset = e => {
         e.preventDefault();
+        
         listUtil(yList,setYList,{type:"INSERT", payload: {
             id: uuidv4(),
             backgroundColor: "#000",
             borderColor: "#000",
             label: "",
-            topic: "",
-            record: ""
+            topic: currentJournal.schemas[0].topic,
+            record: currentJournal.schemas[0].records[0]
         }});
     } 
 

@@ -68,20 +68,27 @@ function DashboardPage(props){
     return (
         <div id="dashboardDiv" className="container">
             <div className="row">
-                <div className="input-group col mb-3">
-                    <input id="searchbar" className="form-control" type="text" list="searchOptions" placeholder="search" value={searchInput} onChange={handleChangeSearchInput}/>
-                    <datalist id="searchOptions">
-                        {
-                            topics.map(topic=>
-                                <option value={topic}></option>
-                            )
-                        }
-                    </datalist>
-                </div>
-                <div className="col mb-3">
-                    <Link id="newEntryBtn" className="btn btn-primary" to={"/"+journalId+"/new"}>+ New Entry </Link>
-                </div>
+                {
+                    (mode === "VIEW")?
+                        <>
+                            <div className="input-group col mb-3">
+                                <input id="searchbar" className="form-control" type="text" list="searchOptions" placeholder="search" value={searchInput} onChange={handleChangeSearchInput}/>
+                                <datalist id="searchOptions">
+                                    {
+                                        topics.map(topic=>
+                                            <option value={topic}></option>
+                                        )
+                                    }
+                                </datalist>
+                            </div>
 
+                    
+                            <div className="col mb-3">
+                                <Link id="newEntryBtn" className="btn btn-primary" to={"/"+journalId+"/new"}>+ New Entry </Link>
+                            </div>
+                        </>
+                    : <></>
+                }
                 {
                     (mode === "VIEW")?
                         <div className="col">

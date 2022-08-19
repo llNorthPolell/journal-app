@@ -16,23 +16,20 @@ function YDatasetForm (props){
     useEffect(()=>{
         if (currentJournal){
             const yTopicList = currentJournal.schemas.map(schema=>schema.topic);
-            const yTopic = (yTopicList.length>0)?yTopicList[0]:"";
-            const schema = currentJournal.schemas.find(schema=>schema.topic===yTopic);
-            const yRecord =  (schema.records.length>0)?schema.records[0]:"";
-
+            const yTopic = yTopicList[0];
 
             setYTopicList(yTopicList);
             setYTopic(yTopic);
-            setYRecordList(schema.records);
-            setYRecord(yRecord);
         }
         else setYTopicList([]);
-    },[currentJournal])
+    },[])
 
     useEffect(()=>{
         if (yTopic){
             const schema = currentJournal.schemas.find(schema=>schema.topic===yTopic)
+            const yRecord =  schema.records[0];
             setYRecordList(schema.records);
+            setYRecord(yRecord);
         } 
         else setYRecordList([]);
     },[yTopic])
@@ -77,6 +74,14 @@ function YDatasetForm (props){
     
     const handleChangeYTopic = e => {
         setYTopic(e.target.value);
+
+        let newYRecord=yRecord;
+        if (currentJournal){
+            const schema = currentJournal.schemas.find(schema=>schema.topic===e.target.value)
+            newYRecord =  schema.records[0];
+        }
+
+
         listUtil(
             props.yList, 
             props.setYList, 
@@ -88,7 +93,7 @@ function YDatasetForm (props){
                     borderColor: yColor,
                     label: yDatasetName,
                     topic: e.target.value,
-                    record: yRecord
+                    record: newYRecord
                 }
             }
         );

@@ -126,7 +126,8 @@ export function DataProvider ({children}){
         const newWidgetConfig = await createWidgetConfigDoc(config);
         setDashboardLoaded(false);
         await loadDashboardConfigList();
-        setDashboardLoaded(true);
+        if(currentJournal)
+            setDashboardLoaded(true);
         return newWidgetConfig;
     }
 
@@ -137,7 +138,7 @@ export function DataProvider ({children}){
 
     async function triggerLoadDashboardData (journalId){
         if (dashboardLoaded && journalId === currentJournal.key) return dashboardLoaded;
-
+        
         const retreivedJournalDoc = await getJournalDoc(journalId);
         
         if (retreivedJournalDoc==null) return false;

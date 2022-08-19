@@ -44,7 +44,7 @@ function NewJournalForm(props) {
             creation_timestamp: new Date().toISOString(),
             last_updated: new Date().toISOString(),
             author: userId,
-            topics: []
+            schemas: []
         });
         await createWidgetConfig({
             position: 0,
