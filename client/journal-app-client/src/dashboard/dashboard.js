@@ -100,8 +100,10 @@ function DashboardPage(props){
                                 <WidgetMenuModal></WidgetMenuModal>
                             </div>
                             <div className="col">
-                                    <button id="cancelDashboardChangeBtn" className="btn btn-outline-secondary" onClick={handleCancelChangeDashboard}>Cancel</button>
-                                    <button id="saveDashboardChangeBtn" className="btn btn-primary" onClick={handleSaveDashboard}>Save Dashboard</button>
+                                <button id="cancelDashboardChangeBtn" className="btn btn-outline-secondary" onClick={handleCancelChangeDashboard}>Cancel</button>
+                            </div>
+                            <div className="col">
+                                <button id="saveDashboardChangeBtn" className="btn btn-primary" onClick={handleSaveDashboard}>Save Dashboard</button>
                             </div>
                         </>
 

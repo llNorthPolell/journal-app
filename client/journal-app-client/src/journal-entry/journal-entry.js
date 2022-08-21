@@ -178,7 +178,7 @@ function JournalEntryPage(props) {
           value={dateOfEntry}
           fieldName="dateOfEntry"
           displayName="Date"
-          type="date"
+          type="datetime-local"
           handleUpdate={handleChangeDateOfEntry}></SimpleInput>
         <SimpleInput
           id="overviewField"

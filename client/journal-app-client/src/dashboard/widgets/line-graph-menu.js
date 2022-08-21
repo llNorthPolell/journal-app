@@ -18,8 +18,8 @@ function LineGraphMenu (props){
         backgroundColor: "#000",
         borderColor: "#000",
         label: "",
-        topic: currentJournal.schemas[0].topic,
-        record: currentJournal.schemas[0].records[0]
+        topic: (currentJournal.schemas.length>0)?currentJournal.schemas[0].topic:"",
+        record:  (currentJournal.schemas.length>0 && currentJournal.schemas[0].records.length>0)?currentJournal.schemas[0].records[0] : ""
     }]);
 
     const handleAddYDataset = e => {
