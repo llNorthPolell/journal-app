@@ -13,7 +13,7 @@ export function useDashboard() {
 export function DashboardProvider ({children}){
     const {journalId} = useParams();
 
-    const { getJournalEntries, getDashboardConfig,triggerLoadDashboardData, journalListLoaded, dashboardLoaded, currentJournal,createWidgetConfig } = useData();
+    const { getJournalEntries, getDashboardConfig,triggerLoadDashboardData, journalListLoaded, dashboardLoaded, currentJournal,createWidgetConfig,journalEntriesList } = useData();
 
     const [dashboardWidgetContents, setDashboardWidgetContents]=useState([]);
     const [newDashboardWidgets, setNewDashboardWidgets] = useState([]);
@@ -29,7 +29,7 @@ export function DashboardProvider ({children}){
         }
 
         callLoadDashboardWidgets();
-    }, [dashboardLoaded]);
+    }, [dashboardLoaded, journalEntriesList]);
 
     useEffect(()=>{
         loadDashboardWidgets();

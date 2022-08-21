@@ -15,11 +15,11 @@ function RecordFieldGroup(props){
     },[props.data.value])
 
     const handleChangeRecordKey = e => { 
-        listUtil(props.recordList,props.setRecordList,{type:"UPDATE",payload:{id:props.data.id,key:e.target.value, value:props.data.value}});
+        listUtil(props.recordList,props.setRecordList,{type:"UPDATE",id:props.data.id, payload:{id:props.data.id,key:e.target.value, value:props.data.value}});
     }
 
     const handleChangeRecordValue = e => {
-        listUtil(props.recordList,props.setRecordList,{type:"UPDATE",payload:{id:props.data.id,key:props.data.key, value:e.target.value}});
+        listUtil(props.recordList,props.setRecordList,{type:"UPDATE",id:props.data.id, payload:{id:props.data.id,key:props.data.key, value:e.target.value}});
     }
 
     return(

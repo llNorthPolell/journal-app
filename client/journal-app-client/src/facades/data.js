@@ -68,6 +68,16 @@ export function getJournalEntryDocs(journalId){
     return getList(journalEntriesQuery);
 }
 
+export async function updateJournalEntryDoc(journalEntryId, payload){
+    const journalEntriesDocRef = doc(journalEntriesRef,journalEntryId);
+    const journalDocRef = doc(journalRef,payload.journal);
+
+    let savePayload = {...payload};
+    savePayload.journal=journalDocRef;
+
+    await updateDoc(journalEntriesDocRef,savePayload);
+}
+
 export async function createWidgetConfigDoc(config){
     const journalDocRef = doc(journalRef,config.journal);
     let saveConfig = {...config};

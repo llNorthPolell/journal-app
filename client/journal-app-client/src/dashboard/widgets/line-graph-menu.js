@@ -6,14 +6,14 @@ import listUtil from '../../util/functions/list-util';
 import {useDashboard} from '../../contexts/dashboardContext';
 
 function LineGraphMenu (props){
-    const [title,, handleChangeTitle] = useSimpleState("");
-    const [xLabel,, handleChangeXLabel] = useSimpleState("");
-    const [yLabel,, handleChangeYLabel] = useSimpleState("");
+    const [title,, handleChangeTitle] = useSimpleState(props.data? props.data.title : "");
+    const [xLabel,, handleChangeXLabel] = useSimpleState(props.data? props.data.xLabel : "");
+    const [yLabel,, handleChangeYLabel] = useSimpleState(props.data? props.data.yLabel : "");
     const [xField,, handleChangeXField] = useSimpleState("dateOfEntry");
 
     const {currentJournal,getOpenDashboardPosition, addNewWidgetConfig} = useDashboard();
 
-    const [yList, setYList] = useState([{
+    const [yList, setYList] = useState(props.data? props.data.yList : [{
         id: uuidv4(),
         backgroundColor: "#000",
         borderColor: "#000",

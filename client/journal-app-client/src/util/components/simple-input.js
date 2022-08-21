@@ -11,10 +11,10 @@ function SimpleInput(props){
                 
                 {
                     (props.type === "textarea") ?
-                        (<textarea id={props.id} type="text" className="form-control" name={props.fieldName} value={props.value} onChange={props.handleUpdate}></textarea>) :
+                        (<textarea id={props.id} type="text" className={"form-control "+props.className} name={props.fieldName} value={props.value} onChange={props.handleUpdate}></textarea>) :
                     (props.type === "select") ?
                         (
-                            <select id={props.id} className="form-select" name={props.fieldName} defaultValue={props.value} onChange={props.handleUpdate}>
+                            <select id={props.id} className={"form-select "+props.className} name={props.fieldName} defaultValue={props.value} onChange={props.handleUpdate}>
                                 {
                                     props.optionList.map( (optionListItem) => (
                                         <option value={optionListItem}>{optionListItem}</option>
@@ -22,7 +22,7 @@ function SimpleInput(props){
                                 }
                             </select>
                         ) : 
-                        (<input id={props.fieldName} type={props.type} className="form-control" name={props.fieldName} value={props.value} onChange={props.handleUpdate} placeholder={props.placeholder}></input>)
+                        (<input id={props.fieldName} type={props.type} className={"form-control "+props.className} name={props.fieldName} value={props.value} onChange={props.handleUpdate} placeholder={props.placeholder}></input>)
                 }
             </div>
             <br/>

@@ -6,16 +6,22 @@ const listUtil = (list,setList,action) => {
         case "GET":
             return list.find(item=>{return item.id===action.id});
         case "UPDATE":
-            setList(list.map(item=>
-                item.id === action.payload.id ? 
-                    action.payload : item   
-            ));
+            if (action.id) 
+                setList(list.map(item=>
+                    (item.id === action.id)?action.payload : item  
+                ));
+            else if (action.key)
+                setList(list.map(item=>
+                    (item.key === action.key)?action.payload : item  
+                ));         
             break;
         case "DELETE":
-            setList((action.id !== undefined)? 
-                list.filter(item => item.id!==action.id):
-                (action.key !== undefined)? list.filter(item=> item.key!==action.key):
-                list.filter(item => item!==action.payload));
+            if (action.id)
+                setList(list.filter(item => item.id!==action.id));
+            else if (action.key)
+                setList(list.filter(item => item.key!==action.key));
+            else
+                setList(list.filter(item => item!==action.payload));
             break;
         case "CONTAINS":
             return list.some(item=> item == action.payload);

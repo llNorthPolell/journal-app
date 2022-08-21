@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {Link, useParams, useNavigate} from 'react-router-dom';
 import JournalBodyItem from './journal-body-item';
 import SimpleInput from '../util/components/simple-input';
@@ -12,57 +12,60 @@ import { v4 as uuidv4 } from 'uuid';
 import {DefaultJournalEntry} from './journal-entry-dto';
 
 function JournalEntryPage(props) {
-  let data = DefaultJournalEntry;
-  let initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
-
-  const {createJournalEntry, updateJournal, getJournalDoc, currentJournal} = useData();
+  const {createJournalEntry,updateJournalEntry, updateJournal, currentJournal} = useData();
   const {getJournalEntry} = useDashboard();
 
   const navigate = useNavigate();
   const {journalId, entryId} = useParams();
-  
- 
+
+  //Refs
+  const initData = useRef(DefaultJournalEntry);
+  const initUsedTopics = useRef([]);
+  const initTopicList = useRef([]);
+  const usedTopics = useRef([]);
+
   // Simple States
-  const [summary, setSummary, handleChangeSummary] = useSimpleState(data.summary);
-  const [dateOfEntry, setDateOfEntry, handleChangeDateOfEntry] = useSimpleState(data.dateOfEntry);
-  const [overview, setOverview, handleChangeOverview] = useSimpleState(data.overview);
+  const [summary, setSummary, handleChangeSummary] = useSimpleState(initData.current.summary);
+  const [dateOfEntry, setDateOfEntry, handleChangeDateOfEntry] = useSimpleState(initData.current.dateOfEntry);
+  const [overview, setOverview, handleChangeOverview] = useSimpleState(initData.current.overview);
   const [topic, setTopic, handleChangeTopic] = useSimpleState("");
   const [newTopic, setNewTopic, handleChangeNewTopic] = useSimpleState("");
   const [description, setDescription, handleChangeDescription] = useSimpleState("");
 
   // List States
   const [topicList, setTopicList] = useState([]);
-  const [journalBodyItems, setJournalBodyItems] = useState(data.journalBodyItems);
-  const [usedTopics, setUsedTopics] = useState(initUsedTopics);
+  const [journalBodyItems, setJournalBodyItems] = useState(initData.current.journalBodyItems);
   const [recordList, setRecordList] = useState([]);
+
+  useEffect(()=>{
+    async function loadData(){
+      const currentEntry = await getJournalEntry(entryId);
+      if (currentEntry){
+        initData.current=currentEntry
+        initUsedTopics.current=initData.current.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
+        resetAll();
+      }
+    }
+    loadData();
+  },[]);
 
   useEffect(()=>{
     async function loadInitTopics(){
       if (currentJournal){
         setTopicList(currentJournal.schemas.map(schema=>schema.topic));
+        initTopicList.current=currentJournal.schemas.map(schema=> schema.topic);
       }
     }
     loadInitTopics();
   },[currentJournal])
 
-  
-  useEffect(()=>{
-    async function loadData(){
-      if (!entryId) return;
-      data = await getJournalEntry(entryId);
-      initUsedTopics = data.journalBodyItems.map(journalBodyItem => journalBodyItem.topic);
-      resetAll();
-    }
-    loadData();
-  },[]);
-
   function resetAll(){
-    setSummary(data.summary);
-    setDateOfEntry(data.dateOfEntry);
-    setOverview(data.overview);
-    setJournalBodyItems([...data.journalBodyItems]);
-    setUsedTopics([...initUsedTopics]);
-    setTopicList([getJournalDoc(journalId).topics]);
+    setSummary(initData.current.summary);
+    setDateOfEntry(initData.current.dateOfEntry);
+    setOverview(initData.current.overview);
+    setJournalBodyItems([...initData.current.journalBodyItems]);
+    usedTopics.current=[...initUsedTopics.current];
+    setTopicList([...initTopicList.current]);
 
     clearJournalBodyForm();
   }
@@ -98,7 +101,7 @@ function JournalEntryPage(props) {
       topicToSubmit = topic;
 
 
-    if (listUtil(usedTopics, setUsedTopics, { type: "CONTAINS", payload: topicToSubmit })) {
+    if (usedTopics.current.includes(topicToSubmit)) {
       console.log("Topic is already used...");
       return;
     }
@@ -113,24 +116,18 @@ function JournalEntryPage(props) {
         recordList: recordList
       }
     });
-    listUtil(usedTopics, setUsedTopics, { type: "INSERT", payload: topicToSubmit });
+    usedTopics.current=[...usedTopics.current,topicToSubmit];
     clearJournalBodyForm();
   }
 
 
   const removeFromBody = key =>{ 
+    const deleteUsedTopic = journalBodyItems.find(journalBodyItem=> journalBodyItem.key===key).topic;
     listUtil(journalBodyItems, setJournalBodyItems, { type: "DELETE", key: key });
+    usedTopics.current= usedTopics.current.filter(usedTopic=> usedTopic !== deleteUsedTopic);
   }
 
-  const publish = e => {
-    let output = {
-      journal: journalId,
-      summary: summary,
-      dateOfEntry: dateOfEntry,
-      overview: overview,
-      journalBodyItems: journalBodyItems
-    }
-
+  function getSchemaList(){
     let schemas=[];
 
     journalBodyItems.forEach(journalBodyItem=>{
@@ -144,19 +141,60 @@ function JournalEntryPage(props) {
       schemas.push(schema);
     });
 
+    return schemas;
+  }
+
+  function updateJournalHistory(){
+    let schemas=getSchemaList();
 
     console.log("Delta Schema : " + JSON.stringify(schemas)); 
 
+    updateJournal(journalId, {...currentJournal,
+      last_updated: new Date().toISOString(),
+      schemas: schemas
+    });
+  }
+
+  const handlePublish = e => {
+    let output = {
+      journal: journalId,
+      summary: summary,
+      dateOfEntry: dateOfEntry,
+      overview: overview,
+      journalBodyItems: journalBodyItems
+    }
+
     createJournalEntry(output).then((returnJournalEntry)=>{
       console.log("Published " + JSON.stringify(returnJournalEntry) + " to " + journalId);
-      updateJournal(journalId, {
-        last_updated: new Date().toISOString(),
-        schemas: schemas
-      });
+      updateJournalHistory();
       navigate('/'+journalId);
     });
     
   }
+
+
+  async function submitUpdate(){
+    let output = {
+      journal: journalId,
+      summary: summary,
+      dateOfEntry: dateOfEntry,
+      overview: overview,
+      journalBodyItems: journalBodyItems
+    }
+
+    console.log("Update" + JSON.stringify(output));
+
+    await updateJournalEntry(entryId,output);
+    
+    updateJournalHistory();
+
+    navigate('/'+journalId);
+  }
+
+  const handleUpdate = e => {
+    submitUpdate();
+  }
+
 
 
   return (
@@ -208,10 +246,9 @@ function JournalEntryPage(props) {
                 <JournalBodyItem
                   mode={"VIEW"}
                   data={journalBodyItem}
-                  key={journalBodyItem.key}
                   removeFromBody={removeFromBody}
-                  removeFromUsedTopics={() => listUtil(usedTopics, setUsedTopics, { type: "DELETE", payload: journalBodyItem.topic })}
-                  updateJournalBodyItem={newJournalBodyItem => listUtil(journalBodyItems, setJournalBodyItems, { type: "UPDATE", id: journalBodyItem.id, payload: newJournalBodyItem })}></JournalBodyItem>
+                  removeFromUsedTopics={() => usedTopics.current=usedTopics.current.filter(usedTopic=>usedTopic.id===journalBodyItem.topic.id)}
+                  updateJournalBodyItem={newJournalBodyItem => listUtil(journalBodyItems, setJournalBodyItems, { type: "UPDATE", key: journalBodyItem.key, payload: newJournalBodyItem })}></JournalBodyItem>
                 <br />
               </div>
             ))
@@ -223,11 +260,19 @@ function JournalEntryPage(props) {
         <br/>
         <div className="row">
           <div className="col">
-            <button id="clearEntryFormButton" className="btn btn-danger" onClick={handleReset}>Clear</button>
+            <button id="resetEntryFormButton" className="btn btn-danger" onClick={handleReset}>Reset</button>
           </div>
-          <div className="col">
-            <button id="postEntry" className="btn btn-primary float-end" onClick={publish}>Post</button>
-          </div>
+            <div className="col">
+            {
+              (props.mode==="NEW")?
+              <button id="postEntryBtn" className="btn btn-primary float-end" onClick={handlePublish}>Post</button>
+              :
+                (props.mode==="EDIT")?
+                  <button id="updateEntryBtn" className="btn btn-primary float-end" onClick={handleUpdate}>Save Changes</button>
+                  :
+                  <></>
+            }
+            </div>       
         </div>
       </div>
 

@@ -2,9 +2,9 @@ import React, {useContext, useState, useEffect} from 'react';
 import {useAuth} from '../contexts/authContext';
 import listUtil from '../util/functions/list-util';
 import {
-    createJournalDoc, updateJournalDoc, getJournalDocs,         // journals
-    createJournalEntryDoc, getJournalEntryDocs,                 // journal entries
-    getDashboardWidgetConfigDocs, createWidgetConfigDoc         // widget configs
+    createJournalDoc, updateJournalDoc, getJournalDocs,                     // journals
+    createJournalEntryDoc, getJournalEntryDocs, updateJournalEntryDoc,      // journal entries
+    getDashboardWidgetConfigDocs, createWidgetConfigDoc                     // widget configs
 } from '../facades/data';
 
 
@@ -77,19 +77,7 @@ export function DataProvider ({children}){
         return newJournal;
     }
 
-    
-    async function createJournalEntry(journalEntry){
-        const newJournalEntry = await createJournalEntryDoc(journalEntry);
-        setDashboardLoaded(false);
-        setJournalListLoaded(false);
-        return newJournalEntry;
-    }
-
-    function getJournalEntries(journalId){
-        return journalEntriesList;
-    }
-
-    async function getJournalDoc(journalId){
+    function getJournalDoc(journalId){
         console.log("Finding " + journalId + " in " + JSON.stringify(journalList));
         return journalList.find(journal=>{return journal.key===journalId})
     }
@@ -117,10 +105,31 @@ export function DataProvider ({children}){
         console.log("Updated Journal Schema: " + JSON.stringify(savePayload));
 
         await updateJournalDoc(journalId, savePayload);
+        /*
         await loadJournalList(userId);
-        const updatedJournalDoc = await getJournalDoc(journalId);
-        setCurrentJournal(updatedJournalDoc);
+        const updatedJournalDoc = getJournalDoc(journalId);
+        setCurrentJournal(updatedJournalDoc);*/
+
+        listUtil(journalList,setJournalList,{type:"UPDATE",payload:savePayload});
+        setCurrentJournal(savePayload);
     }
+
+    async function createJournalEntry(journalEntry){
+        const newJournalEntry = await createJournalEntryDoc(journalEntry);
+        listUtil(journalEntriesList,setJournalEntriesList, { type: "INSERT", payload: newJournalEntry });
+        return newJournalEntry;
+    }
+
+    function getJournalEntries(journalId){
+        return journalEntriesList;
+    }
+
+    async function updateJournalEntry(journalEntryId, payload){
+        let savePayload = {...payload};
+        await updateJournalEntryDoc(journalEntryId, savePayload);
+        listUtil(journalEntriesList,setJournalEntriesList,{type:"UPDATE",payload:{...savePayload,key:journalEntryId}});
+    }
+
 
     async function createWidgetConfig(config){
         const newWidgetConfig = await createWidgetConfigDoc(config);
@@ -139,7 +148,7 @@ export function DataProvider ({children}){
     async function triggerLoadDashboardData (journalId){
         if (dashboardLoaded && journalId === currentJournal.key) return dashboardLoaded;
         
-        const retreivedJournalDoc = await getJournalDoc(journalId);
+        const retreivedJournalDoc = getJournalDoc(journalId);
         
         if (retreivedJournalDoc==null) return false;
 
@@ -158,9 +167,9 @@ export function DataProvider ({children}){
     const values = {
         journalList, userId, 
         createJournal, getJournalDoc, updateJournal,                //journal
-        createJournalEntry,getJournalEntries, 
+        createJournalEntry,getJournalEntries, updateJournalEntry,   //journal entry
         createWidgetConfig, getDashboardConfig, triggerLoadDashboardData, clearDashboardData,   // Dashboard data
-        journalListLoaded, dashboardLoaded, currentJournal  // triggers
+        journalListLoaded, dashboardLoaded, currentJournal,journalEntriesList  // triggers
     }
 
     

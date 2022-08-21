@@ -42,7 +42,7 @@ function App() {
                     element={
                       <PrivateRoute>
                         <DashboardProvider>
-                          <JournalEntryPage/>
+                          <JournalEntryPage mode="NEW"/>
                         </DashboardProvider>
                       </PrivateRoute>
                     }
@@ -51,7 +51,7 @@ function App() {
                     element={
                       <PrivateRoute>
                         <DashboardProvider>
-                          <JournalEntryPage/>
+                          <JournalEntryPage mode="EDIT"/>
                         </DashboardProvider>
                       </PrivateRoute>
                     }

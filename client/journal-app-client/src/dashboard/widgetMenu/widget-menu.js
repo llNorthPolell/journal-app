@@ -8,7 +8,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 function WidgetMenuModal(props){
     const [show, setShow] = useState(false);
     const [widgetSearchInput, setWidgetSearchInput] = useState("");
-    const [menu, setMenu] = useState("");
+    const [menu, setMenu] = useState(props.menu? props.menu : "");
 
     function reset(){
         setWidgetSearchInput("");
@@ -93,7 +93,7 @@ function WidgetMenuModal(props){
                         :
                         <div className="container">
                             <button className="btn btn-link"><span><FontAwesomeIcon icon={faArrowLeft} onClick={handleClickBackButton}/></span></button>
-                            <WidgetMenuForms menu={menu} close={close}></WidgetMenuForms>
+                            <WidgetMenuForms menu={menu} close={close} data={props.data}></WidgetMenuForms>
                         </div>
                     }
                 </Modal.Body>
