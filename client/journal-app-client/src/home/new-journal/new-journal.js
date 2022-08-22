@@ -38,7 +38,7 @@ function NewJournalForm(props) {
     const handleSubmit = async (e) =>{
         e.preventDefault();
         const returnedJournal = await createJournal({
-            name: newJournal,
+            name: newJournal.trim(),
             permissions: permissions,
             img: (journalPic)?journalPic:null,
             creation_timestamp: new Date().toISOString(),

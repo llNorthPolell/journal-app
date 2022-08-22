@@ -41,6 +41,7 @@ function YDatasetForm (props){
             props.setYList, 
             {
                 type:"UPDATE", 
+                id: props.id,
                 payload:{
                     id: props.id,
                     backgroundColor: e.target.value, 
@@ -60,6 +61,7 @@ function YDatasetForm (props){
             props.setYList, 
             {
                 type:"UPDATE", 
+                id: props.id,
                 payload:{
                     id: props.id,
                     backgroundColor: yColor, 
@@ -87,6 +89,7 @@ function YDatasetForm (props){
             props.setYList, 
             {
                 type:"UPDATE", 
+                id: props.id,
                 payload:{
                     id: props.id,
                     backgroundColor: yColor, 
@@ -106,6 +109,7 @@ function YDatasetForm (props){
             props.setYList, 
             {
                 type:"UPDATE", 
+                id: props.id,
                 payload:{
                     id: props.id,
                     backgroundColor: yColor, 

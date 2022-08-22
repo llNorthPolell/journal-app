@@ -22,7 +22,7 @@ function JournalBodyItem(props){
         else if (mode==="EDIT"){
             props.updateJournalBodyItem({
                 ...props.data,
-                description:editDescription,
+                description:editDescription.trim(),
                 recordList:editRecordList
             });
             setMode("VIEW");

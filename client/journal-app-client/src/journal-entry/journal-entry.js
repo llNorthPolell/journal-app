@@ -90,15 +90,16 @@ function JournalEntryPage(props) {
       return;
     }
     else if (topic === "" && newTopic !== "") {
-      topicToSubmit = newTopic;
+      const newTopicToSave = newTopic.trim();
+      topicToSubmit = newTopicToSave;
 
-      if (!listUtil(topicList, setTopicList, { type: "CONTAINS", payload: newTopic })){
-        listUtil(topicList, setTopicList, { type: "INSERT", payload: newTopic });
+      if (!listUtil(topicList, setTopicList, { type: "CONTAINS", payload: newTopicToSave })){
+        listUtil(topicList, setTopicList, { type: "INSERT", payload: newTopicToSave });
       }
 
     }
     else
-      topicToSubmit = topic;
+      topicToSubmit = topic.trim();
 
 
     if (usedTopics.current.includes(topicToSubmit)) {
@@ -112,7 +113,7 @@ function JournalEntryPage(props) {
       payload: {
         key: uuidv4(),
         topic: topicToSubmit,
-        description: description,
+        description: description.trim(),
         recordList: recordList
       }
     });
@@ -155,14 +156,27 @@ function JournalEntryPage(props) {
     });
   }
 
-  const handlePublish = e => {
+  function getConsolidatedOutput(){
     let output = {
       journal: journalId,
-      summary: summary,
+      summary: summary.trim(),
       dateOfEntry: dateOfEntry,
-      overview: overview,
+      overview: overview.trim(),
       journalBodyItems: journalBodyItems
     }
+
+    output.journalBodyItems.map(journalBodyItem=>{
+      journalBodyItem.recordList.map(record=>{
+        record.key= record.key.trim();
+        record.value = record.value.trim();
+      })
+    });
+
+    return output;
+  }
+
+  const handlePublish = e => {
+    const output = getConsolidatedOutput();
 
     createJournalEntry(output).then((returnJournalEntry)=>{
       console.log("Published " + JSON.stringify(returnJournalEntry) + " to " + journalId);
@@ -174,13 +188,7 @@ function JournalEntryPage(props) {
 
 
   async function submitUpdate(){
-    let output = {
-      journal: journalId,
-      summary: summary,
-      dateOfEntry: dateOfEntry,
-      overview: overview,
-      journalBodyItems: journalBodyItems
-    }
+    const output = getConsolidatedOutput();
 
     console.log("Update" + JSON.stringify(output));
 

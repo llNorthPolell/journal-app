@@ -42,10 +42,10 @@ function LineGraphMenu (props){
             journal: currentJournal.key,
             type: "line-graph",
             position: getOpenDashboardPosition(),
-            title: title,
+            title: title.trim(),
             labels: {
-                x: xLabel,
-                y: yLabel
+                x: xLabel.trim(),
+                y: yLabel.trim()
             },
             data: {
                 xValue: xField,
