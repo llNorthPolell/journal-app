@@ -25,5 +25,5 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 
 ## Backlog
 - home page
-- scribbleboard
+- interactive widgets such as todo list, scribbleboard and personal kanban board
 - deletion of journal, journal entry and dashboard config
