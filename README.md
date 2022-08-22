@@ -9,20 +9,21 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 ## Implemented Features
 - Google authentication
 - Journal creation
-- Journal entry creation
+- Journal entry creation and update
 - dynamic widget creation 
 - dynamic journal entry filtering
 
 
 ## Work in Progress
-- widget menu
+- edit dashboard
 - search results screen
 
 
 ## Known Issues
-- dashboard state not updated after journal entry is submitted 
+
 
 
 ## Backlog
-- view and edit journal entries
 - home page
+- interactive widgets such as todo list, scribbleboard and personal kanban board
+- deletion of journal, journal entry and dashboard config
