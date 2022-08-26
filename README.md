@@ -10,17 +10,18 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 - Google authentication
 - Journal creation
 - Journal entry creation and update
-- dynamic widget creation 
+- dynamic widget creation via widget menu
 - dynamic journal entry filtering
 
 
 ## Work in Progress
 - edit dashboard
-- search results screen
+- goals screen
+- journal entries and search results screens
 
 
 ## Known Issues
-
+- ui responsiveness (working on main functionality first)
 
 
 ## Backlog
