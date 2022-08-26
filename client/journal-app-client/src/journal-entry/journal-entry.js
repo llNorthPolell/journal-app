@@ -27,6 +27,7 @@ function JournalEntryPage(props) {
   // Simple States
   const [summary, setSummary, handleChangeSummary] = useSimpleState(initData.current.summary);
   const [dateOfEntry, setDateOfEntry, handleChangeDateOfEntry] = useSimpleState(initData.current.dateOfEntry);
+  const [endTime, setEndTime, handleChangeEndTime] = useSimpleState(initData.current.endTime);
   const [overview, setOverview, handleChangeOverview] = useSimpleState(initData.current.overview);
   const [topic, setTopic, handleChangeTopic] = useSimpleState("");
   const [newTopic, setNewTopic, handleChangeNewTopic] = useSimpleState("");
@@ -62,6 +63,7 @@ function JournalEntryPage(props) {
   function resetAll(){
     setSummary(initData.current.summary);
     setDateOfEntry(initData.current.dateOfEntry);
+    setEndTime(initData.current.endTime);
     setOverview(initData.current.overview);
     setJournalBodyItems([...initData.current.journalBodyItems]);
     usedTopics.current=[...initUsedTopics.current];
@@ -161,6 +163,7 @@ function JournalEntryPage(props) {
       journal: journalId,
       summary: summary.trim(),
       dateOfEntry: dateOfEntry,
+      endTime: endTime,
       overview: overview.trim(),
       journalBodyItems: journalBodyItems
     }
@@ -206,7 +209,7 @@ function JournalEntryPage(props) {
 
 
   return (
-    <div id="newEntryFormDiv" className="container">
+    <div id="newEntryFormDiv" className="container page-div">
       <div className="col">
         <Link id="toDashboardButton" className="btn btn-outline-primary" to={"/"+journalId}>Go to Dashboard</Link>
       </div>
@@ -219,13 +222,29 @@ function JournalEntryPage(props) {
           displayName="Summary"
           type="text"
           handleUpdate={handleChangeSummary}></SimpleInput>
-        <SimpleInput
-          id="dateOfEntryField"
-          value={dateOfEntry}
-          fieldName="dateOfEntry"
-          displayName="Date"
-          type="datetime-local"
-          handleUpdate={handleChangeDateOfEntry}></SimpleInput>
+        <div className="row">
+          <div className="col">
+            <SimpleInput
+              id="dateOfEntryField"
+              value={dateOfEntry}
+              fieldName="dateOfEntry"
+              displayName="Date (Default in UTC Time)"
+              type="datetime-local"
+              handleUpdate={handleChangeDateOfEntry}></SimpleInput>
+          </div>
+          <div className="col">
+            <SimpleInput
+              id="endTimeField"
+              value={endTime}
+              fieldName="endTime"
+              displayName="End Time (optional)"
+              type="time"
+              handleUpdate={handleChangeEndTime}></SimpleInput>     
+          </div>
+        </div>  
+
+
+
         <SimpleInput
           id="overviewField"
           value={overview}

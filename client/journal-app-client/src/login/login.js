@@ -31,7 +31,7 @@ function LoginPage(props){
     }
 
     return (
-        <div id="loginDiv">
+        <div id="loginDiv" className="page-div">
             <div className="card">
                 <div className="card-body">
                     <p>By continuing, you agree to the <Link to="/userAgreement">User Agreement</Link> for Journal App. </p>

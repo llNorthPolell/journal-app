@@ -66,7 +66,7 @@ function DashboardPage(props){
     }
 
     return (
-        <div id="dashboardDiv" className="container">
+        <div id="dashboardDiv" className="container page-div">
             <div className="row">
                 {
                     (mode === "VIEW")?

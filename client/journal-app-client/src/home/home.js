@@ -15,7 +15,7 @@ function HomePage() {
 
     return (
         (user == null) ?
-            <div id="landingDiv" className="container-fluid">
+            <div id="landingDiv" className="container-fluid page-div">
                 <div className="landingContent">
                     <section className="sectionDiv">
                         <div className="row align-items-center">
@@ -129,7 +129,7 @@ function HomePage() {
                 </div>
             </div>
             :
-            <div id="JournalListDiv" className="container">
+            <div id="JournalListDiv" className="container page-div">
                 <NewJournalForm></NewJournalForm>
                 <br />
                 <ul className="row row-cols-4">

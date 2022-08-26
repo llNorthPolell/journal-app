@@ -31,7 +31,7 @@ a, .link, .btn-link{
     padding-top:55px;
 }
 
-.contentContainer>div{
+.contentContainer>.page-div{
     padding-top:5vh;
     padding-bottom:15vh;
 }
@@ -242,6 +242,18 @@ section{
     object-position:50% 50%;
 }
 
+.toolbar{
+    width:40vw;
+    padding-bottom: 3vh;
+}
+
+.toolbar > ul > li{
+    width:25%;
+}
+
+.toolbar > ul > li> a:hover{
+    background-color:#000000;
+}
 
 /*Journal Entry Page */
 #formControlButtonsDiv {

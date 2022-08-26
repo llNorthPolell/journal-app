@@ -5,7 +5,9 @@ import HomePage from './home/home';
 import LoginPage from './login/login';
 import JournalEntryPage from './journal-entry/journal-entry';
 import DashboardPage from './dashboard/dashboard';
+
 import Navbar from './navbar/navbar';
+import Toolbar from './toolbar/toolbar';
 
 import { AuthProvider } from './contexts/authContext';
 import { DataProvider } from './contexts/dataContext';
@@ -22,7 +24,7 @@ function App() {
     <div id="JournalAppDiv">
       <AuthProvider>
         <BrowserRouter>
-          <Navbar></Navbar>
+          <Navbar/>
           <div className="contentContainer">
             <DataProvider>
                 <Routes>
@@ -34,6 +36,27 @@ function App() {
                       <PrivateRoute>
                         <DashboardProvider>
                           <DashboardPage />
+                          <Toolbar/>
+                        </DashboardProvider>
+                      </PrivateRoute>
+                    }
+                  ></Route>
+                  <Route path="/:journalId/goals" 
+                    element={
+                      <PrivateRoute>
+                        <DashboardProvider>
+                          <h1>Goals Coming Soon!</h1>
+                          <Toolbar/>
+                        </DashboardProvider>
+                      </PrivateRoute>
+                    }
+                  ></Route>
+                  <Route path="/:journalId/entries" 
+                    element={
+                      <PrivateRoute>
+                        <DashboardProvider>
+                          <h1>Entries Coming Soon!</h1>
+                          <Toolbar/>
                         </DashboardProvider>
                       </PrivateRoute>
                     }
