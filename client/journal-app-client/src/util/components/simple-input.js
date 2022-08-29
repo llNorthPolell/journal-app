@@ -5,7 +5,7 @@ function SimpleInput(props){
         <div>
             <div className="mb-3">
                 {
-                    (props.displayName !== undefined )?
+                    (props.displayName)?
                         <label htmlFor={props.fieldName} className="form-label">{props.displayName}</label> : null
                 }
                 
@@ -14,8 +14,9 @@ function SimpleInput(props){
                         (<textarea id={props.id} type="text" className={"form-control "+props.className} name={props.fieldName} value={props.value} onChange={props.handleUpdate}></textarea>) :
                     (props.type === "select") ?
                         (
-                            <select id={props.id} className={"form-select "+props.className} name={props.fieldName} defaultValue={props.value} onChange={props.handleUpdate}>
-                                {
+                            <select id={props.id} className={"form-select "+props.className} name={props.fieldName} defaultValue={props.value} onChange={props.handleUpdate}> 
+                                <option value="">{props.defaultOptionDisplay}</option>
+                                {    
                                     props.optionList.map( (optionListItem) => (
                                         <option value={optionListItem}>{optionListItem}</option>
                                     ))

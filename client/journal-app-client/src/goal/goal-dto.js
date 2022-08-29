@@ -1,8 +1,7 @@
 export const DefaultGoal = {
     topic: "",
     description: "",
-    dateOfGoal:new Date().toISOString(),
-    assumptions: [],
+    assumptions: "",
     deadline: "",
     objectives: []
 }

@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 // Scripts 
 import HomePage from './home/home';
 import LoginPage from './login/login';
-import JournalEntryPage from './journal-entry/journal-entry';
+import JournalEntryPage from './journal-entry/journal-entry-page';
 import DashboardPage from './dashboard/dashboard';
 
 import Navbar from './navbar/navbar';

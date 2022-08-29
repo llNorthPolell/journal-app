@@ -127,7 +127,8 @@ export function DataProvider ({children}){
     async function updateJournalEntry(journalEntryId, payload){
         let savePayload = {...payload};
         await updateJournalEntryDoc(journalEntryId, savePayload);
-        listUtil(journalEntriesList,setJournalEntriesList,{type:"UPDATE",payload:{...savePayload,key:journalEntryId}});
+        //listUtil(journalEntriesList,setJournalEntriesList,{type:"UPDATE",payload:{...savePayload,key:journalEntryId}});
+        listUtil(journalEntriesList,setJournalEntriesList,{type:"UPDATE",payload:savePayload});
     }
 
 

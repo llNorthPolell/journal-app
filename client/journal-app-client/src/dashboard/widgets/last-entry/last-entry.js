@@ -11,7 +11,7 @@ function LastEntryWidget(props){
                 <p className="card-text card-dashboard-widget-text">
                     {props.lastEntry.overview}
                 </p>
-                <Link className="btn btn-primary" to={"/"+journalId+"/"+props.lastEntry.key}>More</Link>
+                <Link className="btn btn-primary" to={"/"+journalId+"/"+((props.lastEntry.key)?props.lastEntry.key:"new")}>More</Link>
             </div>
         </div>
     );
