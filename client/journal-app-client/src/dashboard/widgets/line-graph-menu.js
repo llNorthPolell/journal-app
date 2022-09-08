@@ -1,25 +1,39 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {useParams} from 'react-router-dom';
 import useSimpleState from "../../util/hooks/useSimpleState";
 import YDatasetForm from "./y-dataset-form";
 import {v4 as uuidv4} from 'uuid';
 import listUtil from '../../util/functions/list-util';
 import {useDashboard} from '../../contexts/dashboardContext';
+import useJournalList from '../../facades/hooks/useJournalList';
+import { setCurrentJournal } from '../../redux/journal-entries';
 
 function LineGraphMenu (props){
+    const {journalId} = useParams();
+
     const [title,, handleChangeTitle] = useSimpleState(props.data? props.data.title : "");
     const [xLabel,, handleChangeXLabel] = useSimpleState(props.data? props.data.xLabel : "");
     const [yLabel,, handleChangeYLabel] = useSimpleState(props.data? props.data.yLabel : "");
     const [xField,, handleChangeXField] = useSimpleState("dateOfEntry");
 
-    const {currentJournal,getOpenDashboardPosition, addNewWidgetConfig} = useDashboard();
+    const [getJournal] = useJournalList(["getById"]);
+    const [currentJournal,setCurrentJournal] = useState(null);
+
+    const {getOpenDashboardPosition, addNewWidgetConfig} = useDashboard();
+
+    useEffect(()=>{
+        if(!journalId) return;
+        const currentJournal = getJournal(journalId);
+        setCurrentJournal(currentJournal);
+    },[journalId])
 
     const [yList, setYList] = useState(props.data? props.data.yList : [{
         id: uuidv4(),
         backgroundColor: "#000",
         borderColor: "#000",
         label: "",
-        topic: (currentJournal.schemas.length>0)?currentJournal.schemas[0].topic:"",
-        record:  (currentJournal.schemas.length>0 && currentJournal.schemas[0].records.length>0)?currentJournal.schemas[0].records[0] : ""
+        topic: (currentJournal && currentJournal.schemas.length>0)?currentJournal.schemas[0].topic:"",
+        record:  (currentJournal && currentJournal.schemas.length>0 && currentJournal.schemas[0].records.length>0)?currentJournal.schemas[0].records[0] : ""
     }]);
 
     const handleAddYDataset = e => {

@@ -1,5 +1,5 @@
 import {initializeApp} from 'firebase/app';
-import {addDoc, collection, getFirestore, getDocs, connectFirestoreEmulator } from 'firebase/firestore';
+import {addDoc, collection, getFirestore, getDocs,getDoc, connectFirestoreEmulator } from 'firebase/firestore';
 import {GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult, connectAuthEmulator } from 'firebase/auth';
 import {getStorage,ref, getDownloadURL, uploadBytes, connectStorageEmulator } from 'firebase/storage';
 import {v4} from 'uuid'
@@ -54,6 +54,16 @@ export async function getList(query) {
         console.log(err.message);
     }
     return output;
+}
+
+export async function get(ref){
+    try{
+        let snapshot = await getDoc(ref);
+        return snapshot.data();
+    }
+    catch (err) {
+        console.log(err.message);
+    }
 }
 
 export {query,where,doc, updateDoc, arrayUnion, orderBy} from 'firebase/firestore';

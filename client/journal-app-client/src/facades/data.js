@@ -1,6 +1,6 @@
 import {
     journalRef,journalEntriesRef,dashboardWidgetConfigRef,      //firestore refs
-    getList,createDoc,query, where,doc,arrayUnion,updateDoc,     //firestore queries
+    getList,get,createDoc,query, where,doc,arrayUnion,updateDoc,     //firestore queries
     uploadFile    //storage
 } from '../firebase'
 
@@ -25,13 +25,18 @@ export async function createJournalDoc(journal) {
         return { ...saveJournal, key: returnId };
     }
     catch (err) {
-        console.log(err.message);
+        console.error(err.message);
     };
 }
 
 export function getJournalDocs(userId) {
     const createdJournalsQuery = query(journalRef, where("author", "==", userId));
     return getList(createdJournalsQuery);    
+}
+
+export function getJournalDoc(journalId){
+    const journalDocRef = doc(journalRef,journalId);
+    return get(journalDocRef);
 }
 
 export async function updateJournalDoc(journalId, payload){
@@ -48,9 +53,9 @@ export async function updateJournalDoc(journalId, payload){
 
 export async function createJournalEntryDoc(journalEntry) {
     const journalDocRef = doc(journalRef,journalEntry.journal);
-    let saveJournalEntry = {...journalEntry};
-    saveJournalEntry.journal = journalDocRef;
+    const saveJournalEntry = {...journalEntry, journal: journalDocRef};
 
+    console.log("Creating " + JSON.stringify(saveJournalEntry));
     try {
         let docRef = await createDoc(journalEntriesRef, saveJournalEntry);
         let returnId = docRef.id;
@@ -58,7 +63,7 @@ export async function createJournalEntryDoc(journalEntry) {
         return {...saveJournalEntry, key: returnId};
     }
     catch (err) {
-        console.log(err.message);
+        console.error(err.message);
     };
 }
 
@@ -68,10 +73,17 @@ export function getJournalEntryDocs(journalId){
     return getList(journalEntriesQuery);
 }
 
+export function getJournalEntryDoc(journalId){
+    const journalEntryDocRef = doc(journalEntriesRef,journalId);
+    return get(journalEntryDocRef);
+}
+
 export async function updateJournalEntryDoc(journalEntryId, payload){
     const journalEntriesDocRef = doc(journalEntriesRef,journalEntryId);
-
-    await updateDoc(journalEntriesDocRef,payload);
+    const journalDocRef = doc(journalRef,payload.journal);
+    let saveJournalEntry = {...payload};
+    saveJournalEntry.journal = journalDocRef;
+    await updateDoc(journalEntriesDocRef,saveJournalEntry);
 }
 
 export async function createWidgetConfigDoc(config){
@@ -86,7 +98,7 @@ export async function createWidgetConfigDoc(config){
         return {...saveConfig, key: returnId};
     }
     catch (err){
-        console.log(err.message);
+        console.error(err.message);
     }
 }
 

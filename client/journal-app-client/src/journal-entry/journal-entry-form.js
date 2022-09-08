@@ -1,4 +1,4 @@
-import React, {useEffect,useRef,useMemo} from 'react';
+import React, {useState,useEffect,useRef,useMemo} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import SimpleInput from '../util/components/simple-input';
@@ -15,12 +15,21 @@ function JournalEntryForm(props) {
     
     const [errors, throwError,clearErrors] = useError();
 
-    const initTopicList = useRef(props.journal?props.journal.schemas.map(schema=> schema.topic):[]);
-    const topicList = useRef([...initTopicList.current])
+    const initTopicList = useRef([]);
+    const [topicList,setTopicList] = useState([])
 
     useEffect(()=>{
         resetForm();
     }, [props.data])
+
+    useEffect(()=>{
+        console.log("Current Journal in Journal Entry Form: "+JSON.stringify(props.journal));
+        if (props.journal){
+            initTopicList.current = (props.journal.schemas.map(schema=> schema.topic));
+            setTopicList([...initTopicList.current]);
+            console.log("Topic list: "+JSON.stringify(topicList));
+        }
+    },[props.journal]);
 
     const usedTopics = useMemo(()=>
         formFields.journalBodyItems.map(journalBodyItem=> journalBodyItem.topic)
@@ -34,7 +43,7 @@ function JournalEntryForm(props) {
     const handleReset = e => {
         e.preventDefault();
         resetForm();
-        topicList.current=[...initTopicList.current];
+        setTopicList([...initTopicList.current]);
     }
 
     const handleSubmit = e => {
@@ -43,10 +52,10 @@ function JournalEntryForm(props) {
     }
 
     const saveJournalBodyItem = journalBodyItem => {
-        let payload = {...journalBodyItem};
+        let {newTopic,...payload} = journalBodyItem;
 
-        if (payload.newTopic)
-            payload = {...journalBodyItem,topic:journalBodyItem.newTopic, newTopic: undefined};
+        if (newTopic)
+            payload = {...journalBodyItem,topic:journalBodyItem.newTopic};
 
         if (usedTopics.includes(payload.topic))
             return throwError("Topic is already used...",["journalEntry","journalBodyItem"+((payload.id)?"["+payload.id+"]":""),"topic"]);
@@ -59,8 +68,8 @@ function JournalEntryForm(props) {
         clearErrors("journalBodyItem");
 
         
-        if (!topicList.current.includes(payload.topic))
-            topicList.current.push(payload.topic);
+        if (!topicList.includes(payload.topic))
+            setTopicList([...topicList,payload.topic]);
     }
 
     const updateJournalBodyItem = journalBodyItem => {
@@ -134,12 +143,12 @@ function JournalEntryForm(props) {
                         mode="NEW"
                         data={DefaultJournalBodyItem}
                         save={saveJournalBodyItem}
-                        topicList={topicList.current}/>
+                        topicList={topicList}/>
                     {
                         formFields.journalBodyItems.map(journalBodyItem=>
                             <JournalBodyItemForm 
                                 key={journalBodyItem.id}
-                                topicList={topicList.current}
+                                topicList={topicList}
                                 data={journalBodyItem}
                                 mode="VIEW"
                                 save={updateJournalBodyItem}

@@ -10,7 +10,6 @@ import Navbar from './navbar/navbar';
 import Toolbar from './toolbar/toolbar';
 
 import { AuthProvider } from './contexts/authContext';
-import { DataProvider } from './contexts/dataContext';
 import { DashboardProvider } from './contexts/dashboardContext';
 import PrivateRoute from './util/components/private-route';
 
@@ -24,63 +23,57 @@ function App() {
     <div id="JournalAppDiv">
       <AuthProvider>
         <BrowserRouter>
-          <Navbar/>
+          <Navbar />
           <div className="contentContainer">
-            <DataProvider>
-                <Routes>
-                  <Route path="/" element={<HomePage />}></Route>
-                  <Route path="/login" element={<LoginPage />}></Route>
-                  <Route path="/userAgreement" element={<></>}></Route>
-                  <Route path="/:journalId" 
-                    element={
-                      <PrivateRoute>
-                        <DashboardProvider>
-                          <DashboardPage />
-                          <Toolbar/>
-                        </DashboardProvider>
-                      </PrivateRoute>
-                    }
-                  ></Route>
-                  <Route path="/:journalId/goals" 
-                    element={
-                      <PrivateRoute>
-                        <DashboardProvider>
-                          <h1>Goals Coming Soon!</h1>
-                          <Toolbar/>
-                        </DashboardProvider>
-                      </PrivateRoute>
-                    }
-                  ></Route>
-                  <Route path="/:journalId/entries" 
-                    element={
-                      <PrivateRoute>
-                        <DashboardProvider>
-                          <h1>Entries Coming Soon!</h1>
-                          <Toolbar/>
-                        </DashboardProvider>
-                      </PrivateRoute>
-                    }
-                  ></Route>
-                  <Route path="/:journalId/new" 
-                    element={
-                      <PrivateRoute>
-                        <DashboardProvider>
-                          <JournalEntryPage mode="NEW"/>
-                        </DashboardProvider>
-                      </PrivateRoute>
-                    }
-                  ></Route>
-                  <Route path="/:journalId/:entryId" 
-                    element={
-                      <PrivateRoute>
-                        <DashboardProvider>
-                          <JournalEntryPage mode="EDIT"/>
-                        </DashboardProvider>
-                      </PrivateRoute>
-                    }
-                  ></Route>
-                </Routes>
-            </DataProvider>
+            <Routes>
+              <Route path="/" element={<HomePage />}></Route>
+              <Route path="/login" element={<LoginPage />}></Route>
+              <Route path="/userAgreement" element={<></>}></Route>
+              <Route path="/:journalId"
+                element={
+                  <PrivateRoute>
+                    <DashboardProvider>
+                      <DashboardPage />
+                      <Toolbar />
+                    </DashboardProvider>
+                  </PrivateRoute>
+                }
+              ></Route>
+              <Route path="/:journalId/goals"
+                element={
+                  <PrivateRoute>
+                    <DashboardProvider>
+                      <h1>Goals Coming Soon!</h1>
+                      <Toolbar />
+                    </DashboardProvider>
+                  </PrivateRoute>
+                }
+              ></Route>
+              <Route path="/:journalId/entries"
+                element={
+                  <PrivateRoute>
+                    <DashboardProvider>
+                      <h1>Entries Coming Soon!</h1>
+                      <Toolbar />
+                    </DashboardProvider>
+                  </PrivateRoute>
+                }
+              ></Route>
+              <Route path="/:journalId/new"
+                element={
+                  <PrivateRoute>
+                    <JournalEntryPage mode="NEW" />
+                  </PrivateRoute>
+                }
+              ></Route>
+              <Route path="/:journalId/:entryId"
+                element={
+                  <PrivateRoute>
+                    <JournalEntryPage mode="EDIT" />
+                  </PrivateRoute>
+                }
+              ></Route>
+            </Routes>
           </div>
         </BrowserRouter>
       </AuthProvider>

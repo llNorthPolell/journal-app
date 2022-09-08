@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
-import {useData} from '../contexts/dataContext';
+import useJournalEntryList from '../facades/hooks/useJournalEntryList';
+import useDashboardConfigList from '../facades/hooks/useDashboardConfigList';
 import listUtil from '../util/functions/list-util';
 import { processDashboardWidgets } from '../dashboard/widgets/widget-refinery';
 
@@ -11,73 +11,23 @@ export function useDashboard() {
 }
 
 export function DashboardProvider ({children}){
-    const {journalId} = useParams();
-
-    const { getJournalEntries, getDashboardConfig,triggerLoadDashboardData, journalListLoaded, dashboardLoaded, currentJournal,createWidgetConfig,journalEntriesList } = useData();
+    const [journalEntriesList] = useJournalEntryList(["getAll"]);
+    const [dashboardConfigList,createWidgetConfig]= useDashboardConfigList(["getAll","insert"]);
 
     const [dashboardWidgetContents, setDashboardWidgetContents]=useState([]);
     const [newDashboardWidgets, setNewDashboardWidgets] = useState([]);
 
     useEffect(()=>{
-        if (!dashboardLoaded) callLoadDashboard();
-    },[journalListLoaded]);
-
-    useEffect(()=>{
-        async function callLoadDashboardWidgets() {
-            if (!dashboardLoaded) await callLoadDashboard();
-            await loadDashboardWidgets(journalId);
+        function loadDashboardWidgets(){
+            const dashboardConfigs = [...dashboardConfigList];
+            const tempDashboardContents = processDashboardWidgets(newDashboardWidgets,journalEntriesList);
+            const savedDashboardContents = processDashboardWidgets(dashboardConfigs,journalEntriesList);
+    
+            console.log("Combine " + JSON.stringify(savedDashboardContents)+" + "+JSON.stringify(tempDashboardContents));
+            listUtil(dashboardWidgetContents, setDashboardWidgetContents, { type: "SET", payload:[...savedDashboardContents,...tempDashboardContents]});
         }
-
-        callLoadDashboardWidgets();
-    }, [dashboardLoaded, journalEntriesList]);
-
-    useEffect(()=>{
         loadDashboardWidgets();
-    },[newDashboardWidgets])
-
-    async function callLoadDashboard(){
-        await triggerLoadDashboardData(journalId);
-    }
-
-    async function loadDashboardWidgets(){
-        const journalEntriesList = getJournalEntries(journalId);
-        const dashboardConfigs = getDashboardConfig();
-        const tempDashboardContents = processDashboardWidgets(newDashboardWidgets,journalEntriesList);
-        const savedDashboardContents = processDashboardWidgets(dashboardConfigs,journalEntriesList);
-
-
-        console.log("Combine " + JSON.stringify(savedDashboardContents)+" + "+JSON.stringify(tempDashboardContents));
-        listUtil(dashboardWidgetContents, setDashboardWidgetContents, { type: "SET", payload:[...savedDashboardContents,...tempDashboardContents]});
-
-    }
-
-    async function filterJournalEntries(searchInput){
-        let searchResults = [];
-        //if (!isNaN(Date.parse(searchInput))){
-
-        //} 
-        const journalEntriesList = getJournalEntries(journalId);
-
-        journalEntriesList.map(
-            journalEntry => {
-                journalEntry.journalBodyItems.map(
-                    journalBodyItem=>{
-                        if (journalBodyItem.topic.includes(searchInput) || 
-                            journalBodyItem.description.includes(searchInput))
-                            searchResults.push({...journalBodyItem, key: journalEntry.key,dateOfEntry:journalEntry.dateOfEntry});
-                        
-            })}  
-        );
-
-        searchResults.sort((a,b)=>{return a.dateOfEntry<b.dateOfEntry});
-
-        return searchResults;
-    }
-
-    async function getJournalEntry(key){
-        const journalEntriesList = await getJournalEntries(journalId);
-        return journalEntriesList.find(journalEntry=> journalEntry.key===key);
-    }
+    },[newDashboardWidgets,dashboardConfigList])
 
     function getOpenDashboardPosition(){
         let maxPosition = 0;
@@ -103,8 +53,9 @@ export function DashboardProvider ({children}){
         setNewDashboardWidgets([]);
     }
 
+    
     const values = {
-        getJournalEntries, filterJournalEntries, getJournalEntry, dashboardWidgetContents, currentJournal, getOpenDashboardPosition,addNewWidgetConfig,saveDashboard,discardChangeDashboard
+        dashboardWidgetContents, getOpenDashboardPosition,addNewWidgetConfig,saveDashboard,discardChangeDashboard
     }
 
     

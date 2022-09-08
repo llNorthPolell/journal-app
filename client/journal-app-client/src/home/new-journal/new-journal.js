@@ -2,7 +2,9 @@ import React, {useState} from 'react';
 import useSimpleState from '../../util/hooks/useSimpleState';
 import SimpleInput from '../../util/components/simple-input';
 import Modal from 'react-bootstrap/Modal';
-import {useData} from '../../contexts/dataContext';
+import {useAuth} from '../../contexts/authContext';
+import useJournalList from '../../facades/hooks/useJournalList';
+
 
 function NewJournalForm(props) {
     const [newJournal, setNewJournal, handleChangeNewJournal] = useSimpleState("");
@@ -11,7 +13,8 @@ function NewJournalForm(props) {
 
     const [show, setShow] = useState(false);
 
-    const { createJournal, createWidgetConfig, userId } = useData();
+    //const {createWidgetConfig, userId} = useData();
+    const [createJournal] = useJournalList(["insert"]);
 
     function reset(){
         setNewJournal("");
@@ -43,14 +46,13 @@ function NewJournalForm(props) {
             img: (journalPic)?journalPic:null,
             creation_timestamp: new Date().toISOString(),
             last_updated: new Date().toISOString(),
-            author: userId,
             schemas: []
         });
-        await createWidgetConfig({
+        /*await createWidgetConfig({
             position: 0,
             type: "last-entry",
             journal: returnedJournal.key
-        });
+        });*/
         reset();
         setShow(false);
     }
