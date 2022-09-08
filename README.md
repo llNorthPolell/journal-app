@@ -18,6 +18,7 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 - edit dashboard
 - goals screen
 - journal entries and search results screens
+- convert project to use Redux Toolkit
 
 
 ## Known Issues
