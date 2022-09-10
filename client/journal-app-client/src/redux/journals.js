@@ -11,7 +11,7 @@ export const insertJournal = createAsyncThunk('journals/insertJournal', (newJour
     return createJournalDoc(newJournal);
 })
 
-export const updateJournal = createAsyncThunk('journals/updateJournal', async (journalId,payload)=> {
+export const updateJournal = createAsyncThunk('journals/updateJournal', async ({journalId,payload})=> {
     console.log("in updateJournal...")
     await updateJournalDoc(journalId, payload);
     return await getJournalDoc(journalId);

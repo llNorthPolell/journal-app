@@ -41,23 +41,25 @@ function JournalEntryPage(props) {
 
     console.log("Delta Schema : " + JSON.stringify(usedSchemas)); 
 
-
     usedSchemas.forEach(usedSchema=>{
         if (!schemasToSave.some(saveSchema => saveSchema.topic === usedSchema.topic))
           schemasToSave.push(usedSchema);
         else {
-          schemasToSave.map(schema=>{
-                if(schema.topic===usedSchema.topic){
-                    const newRecords=usedSchema.records.filter(record=> !schema.records.includes(record))
-                    schema.records.push(...newRecords);
-                }
-            });
-
+          schemasToSave = schemasToSave.map(schema=>{
+              if(schema.topic === usedSchema.topic){
+                const newRecords=usedSchema.records.filter(record=> !schema.records.includes(record));
+                return ({
+                    topic: schema.topic,
+                    records: [schema.records,...newRecords]
+                });
+              }
+              else
+                return schema;
+          });
         }
     });
 
-
-    updateJournal(journalId, {...currentJournal,
+    updateJournal(journalId, {
       last_updated: new Date().toISOString(),
       schemas: schemasToSave
     });
@@ -75,7 +77,7 @@ function JournalEntryPage(props) {
 
 
   async function submitUpdate(formFields){
-    const output = {...formFields, journal: journalId};
+    const output = {...formFields};
 
     console.log ("Updating journal entry with " + JSON.stringify(output));
     const returnJournalEntry = await updateJournalEntry(entryId,output);

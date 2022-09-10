@@ -34,7 +34,8 @@ const useJournalList = (requiredOps) => {
     }
 
     const editJournal = async(journalId, payload) => {
-        const returnJournal = await dispatch(updateJournal(journalId,payload)).unwrap();
+        console.log("Updating journal with id " + journalId+" with " + JSON.stringify(payload));
+        const returnJournal = await dispatch(updateJournal({journalId: journalId,payload:payload})).unwrap();
         return returnJournal;
     }
 

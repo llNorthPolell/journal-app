@@ -41,13 +41,8 @@ export function getJournalDoc(journalId){
 
 export async function updateJournalDoc(journalId, payload){
     const journalDocRef = doc(journalRef,journalId);
-
-    let savePayload = {...payload};
-    if (payload.topics!=null && payload.topics.length > 0){
-        savePayload.topics = arrayUnion(...payload.topics);
-    }
-
-    await updateDoc(journalDocRef,savePayload);
+    console.log ("updateJournalDoc: journalId: "+journalId +", payload: "+ JSON.stringify(payload));
+    await updateDoc(journalDocRef,payload);
 }
 
 

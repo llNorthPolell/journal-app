@@ -46,7 +46,7 @@ const useJournalEntryList = (requiredOps) => {
 
 
     const editJournalEntry = async(journalEntryId, payload) => {
-        const returnJournalEntry = await dispatch(updateJournalEntry(journalEntryId,payload)).unwrap();
+        const returnJournalEntry = await dispatch(updateJournalEntry({journalEntryId: journalEntryId,payload:payload})).unwrap();
         return returnJournalEntry;
     }
 
