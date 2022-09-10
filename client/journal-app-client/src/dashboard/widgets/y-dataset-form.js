@@ -12,10 +12,8 @@ function YDatasetForm (props){
     useEffect(()=>{
         if (props.currentJournal){
             const yTopicList = props.currentJournal.schemas.map(schema=>schema.topic);
-            const yTopic = yTopicList[0];
-
-            setYTopicList(yTopicList);
-            updateForm({yTopic:yTopic});
+            updateForm({yTopic:yTopicList[0]});
+            setYTopicList(yTopicList); 
         }
         else setYTopicList([]);
     },[])
