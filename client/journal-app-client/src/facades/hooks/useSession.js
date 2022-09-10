@@ -22,7 +22,7 @@ const useSession = (requiredOps) => {
 
     useEffect(()=>{
         const unsubscribe = auth.onAuthStateChanged(authUser => {
-            if (authUser)
+            if (authUser && !userId)
                 dispatch(setUserId(authUser.uid));  
         });
         return unsubscribe;
@@ -30,18 +30,18 @@ const useSession = (requiredOps) => {
 
 
     useEffect(()=>{
-        if (journalId && journalLoadStatus==="loaded")
-            dispatch(setCurrentJournal(journals.find(journal=> journal.key===journalId)));
-        else if (journalId && userId && (journalLoadStatus ==="empty" || journalLoadStatus ==="failed"))
+        if (journalId && userId && (journalLoadStatus ==="empty" || journalLoadStatus ==="failed"))
             dispatch(loadJournalList(userId)); 
-    }, [journals]);
+            
+        dispatch(setCurrentJournal(journals.find(journal=> journal.key===journalId)));
+    }, [journalId,userId,journals]);
 
     useEffect(()=>{
-        if (entryId && journalEntryLoadStatus==="loaded")
-            dispatch(setCurrentJournalEntry(journalEntries.find(journalEntry=> journalEntry.key===entryId)));
-        else if (entryId && journalId && (journalEntryLoadStatus ==="empty" || journalEntryLoadStatus ==="failed"))
+        if (entryId && journalId && (journalEntryLoadStatus ==="empty" || journalEntryLoadStatus ==="failed"))
             dispatch(loadJournalEntryList(journalId)); 
-    }, [journalEntries]);
+
+        dispatch(setCurrentJournalEntry(journalEntries.find(journalEntry=> journalEntry.key===entryId)));
+    }, [journalId,entryId,journalEntries]);
 
     let output = [];
     requiredOps.forEach(requiredOp=>{

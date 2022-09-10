@@ -5,8 +5,8 @@ import { faGear } from '@fortawesome/free-solid-svg-icons'
 
 import {useDashboard} from '../contexts/dashboardContext';
 
-import useJournalList from '../facades/hooks/useJournalList';
 import useJournalEntryList from '../facades/hooks/useJournalEntryList';
+import useSession from '../facades/hooks/useSession';
 
 import PicCarouselWidget from './widgets/pic-carousel/pic-carousel';
 import LastEntryWidget from './widgets/last-entry/last-entry';
@@ -17,13 +17,12 @@ import WidgetMenuModal from './widgetMenu/widget-menu';
 
 function DashboardPage(props){
     const {journalId} = useParams();
-
-    const [getJournalDoc,journalsListStatus] = useJournalList(["getById","loadStatus"]);
+    
     const [filterJournalEntries] = useJournalEntryList(["filter"]);
 
-    const [currentJournal,setCurrentJournal] = useState();
+    const [currentJournal] = useSession(["currentJournal"]);
 
-    const { dashboardWidgetContents, saveDashboard,discardChangeDashboard} = useDashboard();
+    const {dashboardWidgetContents, saveDashboard,discardChangeDashboard} = useDashboard();
     const [contents,setContents] = useState([]);
     const [name, setName] = useState("");
 
@@ -32,13 +31,6 @@ function DashboardPage(props){
     const [searchResults,setSearchResults] = useState([]);
 
     const [mode, setMode] = useState("VIEW");
-
-    useEffect(()=>{
-        const journalsListLoaded = journalsListStatus ==="loaded";
-        console.log("journals list loaded: " + journalsListLoaded);
-        if (journalsListLoaded)
-            setCurrentJournal(getJournalDoc(journalId));
-    },[journalsListStatus])
 
     useEffect(()=>{
         console.log("current journal: " + JSON.stringify(currentJournal));
