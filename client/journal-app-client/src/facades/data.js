@@ -1,5 +1,5 @@
 import {
-    journalRef,journalEntriesRef,dashboardWidgetConfigRef,      //firestore refs
+    journalRef,journalEntriesRef,dashboardWidgetConfigRef,goalsRef,      //firestore refs
     getList,get,createDoc,query, where,doc,arrayUnion,updateDoc,     //firestore queries
     uploadFile    //storage
 } from '../firebase'
@@ -43,6 +43,8 @@ export async function updateJournalDoc(journalId, payload){
     const journalDocRef = doc(journalRef,journalId);
     console.log ("updateJournalDoc: journalId: "+journalId +", payload: "+ JSON.stringify(payload));
     await updateDoc(journalDocRef,payload);
+    const returnJournal = await getJournalDoc(journalId);
+    return returnJournal;
 }
 
 
@@ -68,8 +70,8 @@ export function getJournalEntryDocs(journalId){
     return getList(journalEntriesQuery);
 }
 
-export function getJournalEntryDoc(journalId){
-    const journalEntryDocRef = doc(journalEntriesRef,journalId);
+export function getJournalEntryDoc(journalEntryId){
+    const journalEntryDocRef = doc(journalEntriesRef,journalEntryId);
     return get(journalEntryDocRef);
 }
 
@@ -79,6 +81,8 @@ export async function updateJournalEntryDoc(journalEntryId, payload){
     let saveJournalEntry = {...payload};
     saveJournalEntry.journal = journalDocRef;
     await updateDoc(journalEntriesDocRef,saveJournalEntry);
+    const returnJournalEntry = await getJournalEntryDoc(journalEntryId);
+    return returnJournalEntry;
 }
 
 export async function createWidgetConfigDoc(config){
@@ -102,4 +106,43 @@ export function getDashboardWidgetConfigDocs(journalId){
     const queryDocRef = doc(journalRef, journalId);
     const dashboardWidgetConfigQuery=query(dashboardWidgetConfigRef,where("journal", "==", queryDocRef));
     return getList(dashboardWidgetConfigQuery);
+}
+
+
+
+export async function createGoalDoc(goal){
+    const journalDocRef = doc(journalRef,goal.journal);
+    const saveGoal = {...goal, journal: journalDocRef};
+
+    console.log("Creating " + JSON.stringify(saveGoal));
+    try {
+        let docRef = await createDoc(goalsRef, saveGoal);
+        let returnId = docRef.id;
+        console.log("New Goal ID: " + returnId);
+        return {...saveGoal, key: returnId};
+    }
+    catch (err) {
+        console.error(err.message);
+    };
+}
+
+export function getGoalDocs(journalId){
+    const queryDocRef = doc(journalRef, journalId);
+    const goalsQuery=query(goalsRef,where("journal", "==", queryDocRef));
+    return getList(goalsQuery);
+}
+
+export function getGoalDoc(goalId){
+    const goalDocRef = doc(goalsRef,goalId);
+    return get(goalDocRef);
+}
+
+export async function updateGoalDoc(goalId, payload){
+    const goalsDocRef = doc(goalsRef,goalId);
+    const journalDocRef = doc(journalRef,payload.journal);
+    let saveGoal = {...payload};
+    saveGoal.journal = journalDocRef;
+    await updateDoc(goalsDocRef,saveGoal);
+    const returnGoal = await getGoalDoc(goalId);
+    return returnGoal;
 }

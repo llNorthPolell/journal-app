@@ -10,7 +10,7 @@ export function processDashboardWidgets(config, journalEntriesList) {
         };
         if (journalEntriesList==null || journalEntriesList.length===0) return payload;
 
-        const lastEntry = journalEntriesList[journalEntriesList.length-1];
+        const lastEntry = journalEntriesList[0];
         payload = {
             overview: lastEntry.overview,
             key: lastEntry.key
@@ -31,34 +31,6 @@ export function processDashboardWidgets(config, journalEntriesList) {
             y.data=[]
         );
 
-/*
-let xList=[
-	{a:1,b:[{c:1,d:[{e:1,f:2}]},{c:2,d:[{e:2,f:4}]}]},
-    {a:2,b:[{c:1,d:[{e:1,f:2},{e:2,f:4}]}]},
-    {a:3,b:[{c:1,d:[{e:1},{e:2,f:4}]},{c:2,d:[{e:3,f:6},{e:4,f:8}]}]}
-]
-
-let eList = [1,2,3]
-
-let dList = xList.map(x=>
-	({
-    	a: x.a,
-        f: 	x.b.map(b=>
-              b.d.filter(d=>eList.includes(d.e)).map(d=>
-                 d.f
-              )
-            ).flat()
-    })
-
-
-);
-
-let output = dList.map(d=>({a:d.a, f:d.f}))
-
-
-
-console.log(JSON.stringify(output));
-*/
         const yValues = widget.data.yValues.map(y=>
                             ({
                                 topic:y.topic,

@@ -34,14 +34,14 @@ const useSession = (requiredOps) => {
             dispatch(loadJournalList(userId)); 
             
         dispatch(setCurrentJournal(journals.find(journal=> journal.key===journalId)));
-    }, [journalId,userId,journals]);
+    }, [journalId,userId,journalLoadStatus]);
 
     useEffect(()=>{
         if (entryId && journalId && (journalEntryLoadStatus ==="empty" || journalEntryLoadStatus ==="failed"))
             dispatch(loadJournalEntryList(journalId)); 
 
         dispatch(setCurrentJournalEntry(journalEntries.find(journalEntry=> journalEntry.key===entryId)));
-    }, [journalId,entryId,journalEntries]);
+    }, [journalId,entryId,journalEntryLoadStatus]);
 
     let output = [];
     requiredOps.forEach(requiredOp=>{

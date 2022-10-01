@@ -137,7 +137,7 @@ function JournalBodyItemForm(props){
 
                     <div className="row">
                         <div className="col">
-                            <label id="recordGridLabel" htmlFor="recordsDiv" className="form-label">Records</label>
+                            <label htmlFor="recordsDiv" className="form-label underline">Records</label>
                         </div>
                         {
                             (mode === "VIEW") ?

@@ -5,6 +5,7 @@ import { createJournalEntryDoc, getJournalEntryDocs, getJournalEntryDoc, updateJ
 export const loadJournalEntryList = createAsyncThunk('journalEntries/loadJournalEntries', async (journalId)=> {
     console.log("in loadJournalEntryList...");
     let resultJournalEntryDocs = await getJournalEntryDocs(journalId);
+    resultJournalEntryDocs.sort((a,b)=>{return a.dateOfEntry<b.dateOfEntry});
     return resultJournalEntryDocs.map(journalEntry=> ({...journalEntry,journal:journalId}));
 })
 
@@ -16,8 +17,7 @@ export const insertJournalEntry = createAsyncThunk('journalEntries/insertJournal
 
 export const updateJournalEntry = createAsyncThunk('journalEntries/updateJournalEntry', async ({journalEntryId,payload})=> {
     console.log("in updateJournalEntry...");
-    await updateJournalEntryDoc(journalEntryId, payload);
-    const {journal,...returnJournalEntry} = await getJournalEntryDoc(journalEntryId);
+    const {journal,...returnJournalEntry} = await updateJournalEntryDoc(journalEntryId, payload);
     return returnJournalEntry;
 })
 
@@ -56,15 +56,25 @@ export const journalEntriesSlice = createSlice({
         state.error=action.error.message
         console.error("ERROR: "+action.error.message);
     })
+    builder.addCase(insertJournalEntry.pending,(state)=>{
+        console.log("in insertJournalEntry.pending...");
+        state.status="updating";
+    })
     builder.addCase(insertJournalEntry.fulfilled, (state, action)=> {
         console.log("in insertJournalEntry.fulfilled...");
         state.journalEntries.push(action.payload);
         state.error = "";
+        state.status="loaded";
     })
     builder.addCase(updateJournalEntry.fulfilled,(state,action)=>{
         console.log("in updateJournalEntry.fulfilled...");
         state.journalEntries = state.journalEntries.map(journalEntry=> journalEntry.key===action.payload.key? action.payload:journalEntry);
         state.error = "";
+        state.status="loaded";
+    })
+    builder.addCase(updateJournalEntry.pending,(state)=>{
+        console.log("in updateJournalEntry.pending...");
+        state.status="updating";
     })
   }
 })

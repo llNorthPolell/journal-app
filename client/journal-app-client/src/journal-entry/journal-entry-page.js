@@ -50,7 +50,7 @@ function JournalEntryPage(props) {
                 const newRecords=usedSchema.records.filter(record=> !schema.records.includes(record));
                 return ({
                     topic: schema.topic,
-                    records: [schema.records,...newRecords]
+                    records: [...schema.records,...newRecords]
                 });
               }
               else

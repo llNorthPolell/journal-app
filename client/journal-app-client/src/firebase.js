@@ -36,6 +36,7 @@ const db = getFirestore();
 export const journalRef = collection(db,process.env.REACT_APP_FIRESTORE_JOURNALS_COLLECTION);
 export const journalEntriesRef = collection(db,process.env.REACT_APP_FIRESTORE_JOURNAL_ENTRIES_COLLECTION);
 export const dashboardWidgetConfigRef = collection(db, process.env.REACT_APP_FIRESTORE_DASHBOARD_WIDGET_CONFIG_COLLECTION);
+export const goalsRef = collection(db,process.env.REACT_APP_FIRESTORE_GOALS_COLLECTION);
 
 export async function createDoc(collectionRef,payload){
     let docPromise = await addDoc(collectionRef,payload);

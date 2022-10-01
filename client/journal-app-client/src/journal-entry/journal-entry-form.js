@@ -6,7 +6,7 @@ import useSimpleForm from '../util/hooks/useSimpleForm';
 import useError from '../util/hooks/useError';
 
 import JournalBodyItemForm from './journal-body-item/journal-body-item';
-import JournalEntryToolbar from './journal-entry-toolbar';
+import FormToolbar from '../util/components/form-toolbar';
 
 import {DefaultJournalBodyItem} from './journal-body-item/journal-body-item-dto';
 
@@ -54,7 +54,7 @@ function JournalEntryForm(props) {
     const saveJournalBodyItem = journalBodyItem => {
         let {newTopic,...payload} = journalBodyItem;
 
-        if (newTopic)
+        if (newTopic && payload.topic==="")
             payload = {...journalBodyItem,topic:journalBodyItem.newTopic};
 
         if (usedTopics.includes(payload.topic))
@@ -158,7 +158,7 @@ function JournalEntryForm(props) {
                 </div>
             </form>
             <br/><br/><br/>
-            <JournalEntryToolbar handleSubmit={handleSubmit} handleReset={handleReset} mode={props.mode}/>
+            <FormToolbar handleSubmit={handleSubmit} handleReset={handleReset} mode={props.mode}/>
         </div>
     )
 }

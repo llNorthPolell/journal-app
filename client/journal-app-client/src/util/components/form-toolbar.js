@@ -1,4 +1,4 @@
-function JournalEntryToolbar(props) {
+function FormToolbar(props) {
     return (
         <div id="formControlButtonsDiv" className="container-fluid fixed-bottom bg-dark">
             <br />
@@ -21,4 +21,4 @@ function JournalEntryToolbar(props) {
         </div>
     );
 }
-export default JournalEntryToolbar;
+export default FormToolbar;

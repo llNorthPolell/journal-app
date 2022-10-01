@@ -38,8 +38,6 @@ const useJournalEntryList = (requiredOps) => {
             })}  
         );
 
-        searchResults.sort((a,b)=>{return a.dateOfEntry<b.dateOfEntry});
-
         return searchResults;
     }
 

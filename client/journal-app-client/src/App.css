@@ -260,6 +260,6 @@ section{
     padding-bottom: 5vh;
 }
 
-#recordGridLabel{
+.underline{
     text-decoration: underline;
 }

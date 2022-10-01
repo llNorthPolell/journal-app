@@ -16,6 +16,9 @@ import PrivateRoute from './util/components/private-route';
 // Other Resources
 import logo from './logo.svg';
 import './App.css';
+import GoalPage from './goal/goal-page';
+import GoalsDashboardPage from './dashboard/goals-dashboard';
+import JournalEntriesDashboardPage from './dashboard/journal-entries-dashboard';
 
 
 function App() {
@@ -43,19 +46,31 @@ function App() {
                 element={
                   <PrivateRoute>
                     <DashboardProvider>
-                      <h1>Goals Coming Soon!</h1>
+                      <GoalsDashboardPage />
                       <Toolbar />
                     </DashboardProvider>
+                  </PrivateRoute>
+                }
+              ></Route>
+              <Route path="/:journalId/goals/new"
+                element={
+                  <PrivateRoute>
+                    <GoalPage mode="NEW" />
+                  </PrivateRoute>
+                }
+              ></Route>
+              <Route path="/:journalId/goals/:goalId"
+                element={
+                  <PrivateRoute>
+                    <GoalPage mode="EDIT" />
                   </PrivateRoute>
                 }
               ></Route>
               <Route path="/:journalId/entries"
                 element={
                   <PrivateRoute>
-                    <DashboardProvider>
-                      <h1>Entries Coming Soon!</h1>
-                      <Toolbar />
-                    </DashboardProvider>
+                    <JournalEntriesDashboardPage />
+                    <Toolbar />
                   </PrivateRoute>
                 }
               ></Route>

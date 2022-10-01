@@ -1,12 +1,12 @@
-import GoalFormPage from "../../goal/goal-form";
+import GoalForm from "../../goal/goal-form";
 
 
 export default{
     title: "Forms/Goal",
-    component: GoalFormPage
+    component: GoalForm
 }
 
 
 
 export const GoalFormStory = () => 
-    <GoalFormPage></GoalFormPage>
+    <GoalForm mode="NEW"></GoalForm>

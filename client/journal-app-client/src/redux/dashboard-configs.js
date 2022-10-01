@@ -1,15 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { createWidgetConfigDoc, getDashboardWidgetConfigDocs } from '../facades/data';
 
-export const loadDashboardConfigList = createAsyncThunk('dashboardConfigs/loadJournals', async (journalId)=> {
+export const loadDashboardConfigList = createAsyncThunk('dashboardConfigs/loadDashboardConfigList', async (journalId)=> {
     console.log("in loadDashboardConfigList...");
     let resultDashboardConfigs = await getDashboardWidgetConfigDocs(journalId);
     return resultDashboardConfigs.map(dashboardConfig=> ({...dashboardConfig,journal:journalId}));
 })
 
-export const insertDashboardConfig = createAsyncThunk('dashboardConfigs/insertJournal', async ()=> {
+export const insertDashboardConfig = createAsyncThunk('dashboardConfigs/insertDashboardConfig', async (config)=> {
     console.log("in insertDashboardConfig...");
-    return await createWidgetConfigDoc();
+    return await createWidgetConfigDoc(config);
 })
 
 const initialState = {
@@ -48,10 +48,15 @@ export const dashboardConfigsSlice = createSlice({
         state.error=action.error.message
         console.error("ERROR: "+action.error.message);
     })
+    builder.addCase(insertDashboardConfig.pending,(state)=>{
+        console.log("in insertDashboardConfig.pending...");
+        state.status="updating";
+    })
     builder.addCase(insertDashboardConfig.fulfilled, (state, action)=> {
         console.log("in insertDashboardConfig.fulfilled...");
         state.dashboardConfigs.push(action.payload);
         state.error = "";
+        state.status="loaded";
     })
   }
 })
