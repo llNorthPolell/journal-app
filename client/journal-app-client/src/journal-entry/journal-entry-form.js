@@ -16,7 +16,7 @@ function JournalEntryForm(props) {
     const [errors, throwError,clearErrors] = useError();
 
     const initTopicList = useRef([]);
-    const [topicList,setTopicList] = useState([])
+    const [topicList,setTopicList] = useState([]);
 
     useEffect(()=>{
         resetForm();

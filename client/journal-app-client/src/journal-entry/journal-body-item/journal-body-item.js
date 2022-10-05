@@ -63,141 +63,139 @@ function JournalBodyItemForm(props){
         updateForm({ recordList: newRecordList });
     }
 
-    return(   
-        <>
-            <div className="card">
-                <div className="card-header">
-                    <div className="row">
-                        {
-                            (mode === "NEW") ?
-                                <>
-                                    <div className="col">
-                                        <select id="topicDropdown" className="form-select" name="topic" value={formFields.topic} onChange={handleChange}>
-                                            <option value="">New Topic</option>
-                                            {
-                                                props.topicList.map(topicListItem => (
-                                                    <option value={topicListItem}>{topicListItem}</option>
-                                                ))
-                                            }
-                                        </select>
-                                    </div>
-                                    <div className="col">
-                                        {
-                                            (formFields.topic == "") ?
-
-                                                <SimpleInput
-                                                    id="newTopicField"
-                                                    fieldName="newTopic"
-                                                    type="text"
-                                                    placeholder="New Topic Name"
-                                                    value={formFields.newTopic}
-                                                    handleUpdate={handleChange} />
-
-                                                :
-                                                <></>
-
-                                        }
-                                    </div>
-                                </>
-
-                                :
-                                <div className="col">
-                                    <h5 className="card-title">{props.data.topic}</h5>
-                                </div>
-                        }
-
-                        {
-                            (mode === "VIEW") ?
-                                <>
-                                    <div className="col">
-                                        <RemoveButton id={props.data.id} remove={props.remove} className="btn btn-secondary float-end" />
-                                        <button id={"edit_" + props.data.id} className="btn btn-secondary float-end" onClick={handleEdit}><FontAwesomeIcon icon={faPencil} /></button>
-                                    </div>
-                                </>
-                                :
-                                <></>
-                        }
-                    </div>
-                </div>
-
-                <div className="card-body">
+    return (
+        <div className="card">
+            <div className="card-header">
+                <div className="row">
                     {
-                        (mode === "VIEW") ?
-                            <p className="card-text">{formFields.description}</p>
+                        (mode === "NEW") ?
+                            <>
+                                <div className="col">
+                                    <select id="topicDropdown" className="form-select" name="topic" value={formFields.topic} onChange={handleChange}>
+                                        <option value="">New Topic</option>
+                                        {
+                                            props.topicList.map(topicListItem => (
+                                                <option value={topicListItem}>{topicListItem}</option>
+                                            ))
+                                        }
+                                    </select>
+                                </div>
+                                <div className="col">
+                                    {
+                                        (formFields.topic == "") ?
+
+                                            <SimpleInput
+                                                id="newTopicField"
+                                                fieldName="newTopic"
+                                                type="text"
+                                                placeholder="New Topic Name"
+                                                value={formFields.newTopic}
+                                                handleUpdate={handleChange} />
+
+                                            :
+                                            <></>
+
+                                    }
+                                </div>
+                            </>
+
                             :
-                            <SimpleInput
-                                id="descriptionField"
-                                fieldName="description"
-                                displayName="Description"
-                                type="textarea"
-                                value={formFields.description}
-                                handleUpdate={handleChange}></SimpleInput>
+                            <div className="col">
+                                <h5 className="card-title">{props.data.topic}</h5>
+                            </div>
                     }
 
-
-                    <div className="row">
-                        <div className="col">
-                            <label htmlFor="recordsDiv" className="form-label underline">Records</label>
-                        </div>
-                        {
-                            (mode === "VIEW") ?
-                                <></>
-                                :
-                                <div className="col col-md-4">
-                                    <button id="newRecordBtn" className="btn link-primary" onClick={handleInsertNewRecord}><FontAwesomeIcon icon={faPlus} /></button>
+                    {
+                        (mode === "VIEW") ?
+                            <>
+                                <div className="col">
+                                    <RemoveButton id={props.data.id} remove={props.remove} className="btn btn-secondary float-end" />
+                                    <button id={"edit_" + props.data.id} className="btn btn-secondary float-end" onClick={handleEdit}><FontAwesomeIcon icon={faPencil} /></button>
                                 </div>
-
-                        }
-                        <div id="recordsDiv">
-                            {
-                                formFields.recordList.map(record =>
-                                    <RecordForm data={record}
-                                        key={record.id}
-                                        update={updateRecord}
-                                        remove={removeRecord}
-                                        mode={mode} />
-
-                                )
-                            }
-                        </div>
-                    </div>
-
-
-                    <div className="mb-3 row">
-                        {
-                            (mode === "NEW") ?
-                                <>
-                                    <div className="col">
-                                        <button id="clearBodyFormBtn" className="btn btn-outline-secondary" onClick={handleClear}>Clear</button>
-                                    </div>
-                                    <div className="col">
-                                        <button id="addToBodyBtn" className="btn btn-primary float-end" onClick={handleSubmit}>Add to Body</button>
-                                    </div>
-                                </>
-
-                                :
-                                null
-                        }
-
-                        {
-                            (mode === "EDIT") ?
-                                <>
-                                    <div className="col">
-                                        <button id="cancelEditBodyFormBtn" className="btn btn-outline-secondary" onClick={handleCancelEdit}>Cancel</button>
-                                    </div>
-                                    <div className="col">
-                                        <button id="addToBodyBtn" className="btn btn-primary float-end" onClick={handleSubmit}>Save</button>
-                                    </div>
-                                </>
-                                :
-                                null
-                        }
-
-                    </div>
+                            </>
+                            :
+                            <></>
+                    }
                 </div>
             </div>
-            <br />
-        </>   
+
+            <div className="card-body">
+                {
+                    (mode === "VIEW") ?
+                        <p className="card-text">{formFields.description}</p>
+                        :
+                        <SimpleInput
+                            id="descriptionField"
+                            fieldName="description"
+                            displayName="Description"
+                            type="textarea"
+                            value={formFields.description}
+                            handleUpdate={handleChange}></SimpleInput>
+                }
+
+
+                <div className="row">
+                    <div className="col">
+                        <label htmlFor="recordsDiv" className="form-label underline">Records</label>
+                    </div>
+                    {
+                        (mode === "VIEW") ?
+                            <></>
+                            :
+                            <div className="col col-md-4">
+                                <button id="newRecordBtn" className="btn link-primary" onClick={handleInsertNewRecord}><FontAwesomeIcon icon={faPlus} /></button>
+                            </div>
+
+                    }
+                    <div id="recordsDiv">
+                        {
+                            formFields.recordList.map(record =>
+                                <RecordForm data={record}
+                                    key={record.id}
+                                    update={updateRecord}
+                                    remove={removeRecord}
+                                    mode={mode} />
+
+                            )
+                        }
+                    </div>
+                </div>
+
+
+                <div className="mb-3 row">
+                    {
+                        (mode === "NEW") ?
+                            <>
+                                <div className="col">
+                                    <button id="clearBodyFormBtn" className="btn btn-outline-secondary" onClick={handleClear}>Clear</button>
+                                </div>
+                                <div className="col">
+                                    <button id="addToBodyBtn" className="btn btn-primary float-end" onClick={handleSubmit}>Add to Body</button>
+                                </div>
+                            </>
+
+                            :
+                            null
+                    }
+
+                    {
+                        (mode === "EDIT") ?
+                            <>
+                                <div className="col">
+                                    <button id="cancelEditBodyFormBtn" className="btn btn-outline-secondary" onClick={handleCancelEdit}>Cancel</button>
+                                </div>
+                                <div className="col">
+                                    <button id="addToBodyBtn" className="btn btn-primary float-end" onClick={handleSubmit}>Save</button>
+                                </div>
+                            </>
+                            :
+                            null
+                    }
+
+                </div>
+            </div>
+        </div>
+
     );
 
 }

@@ -61,7 +61,7 @@ a, .link, .btn-link{
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
     padding-top:25vh;
     color: white;
 }
@@ -70,13 +70,18 @@ a, .link, .btn-link{
     padding:0 ;
 }
 
+#heroSection{
+    display:flex;
+    flex-direction:column;
+}
+
 
 section{
     width: 100%;
     height:100vh;
     padding: 10vh;
-    background-size: cover;
-    background-position: center;
+    /*-size: cover;
+    background-position: center;*/
 }
 
 
@@ -89,6 +94,16 @@ section{
     background-color:white;
 }
 
+.framedImg{
+    box-shadow: #989898 2px 5px 10px;
+    border: white solid 12px;
+}
+
+
+.landingCard{
+    box-shadow:#989898 2px 5px 10px;
+}
+
 .landingCard > img {
     width: 100%;
     height:40vh;
@@ -97,6 +112,10 @@ section{
     object-position:50% 50%;
 }
 
+#landingFooter{
+    padding-bottom:5vh;
+    background-color:#E1E1E0;
+}
 
 .journal-card{
     width: 100%;
