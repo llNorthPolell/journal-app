@@ -119,7 +119,7 @@ function HomePage() {
                         </div>
                     </div>
                 </section>  
-                <footer id="landingFooter">
+                <footer id="landingFooter" className="container-fluid footer">
                     <ul className="nav justify-content-end">
                         <li className="nav-item"><Link to="#" className="nav-link text-dark">Contact Us</Link></li>
                         <li className="nav-item"><Link to="#" className="nav-link text-dark">Feedback</Link></li>

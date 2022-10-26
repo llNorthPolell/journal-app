@@ -60,7 +60,7 @@ a, .link, .btn-link{
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 75vh;
     background-color: rgba(0, 0, 0, 0.3);
     padding-top:25vh;
     color: white;
@@ -71,17 +71,12 @@ a, .link, .btn-link{
 }
 
 #heroSection{
-    display:flex;
-    flex-direction:column;
+    height:75vh;
 }
 
-
 section{
-    width: 100%;
-    height:100vh;
     padding: 10vh;
-    /*-size: cover;
-    background-position: center;*/
+    display: inline-block
 }
 
 
@@ -116,6 +111,7 @@ section{
     padding-bottom:5vh;
     background-color:#E1E1E0;
 }
+
 
 .journal-card{
     width: 100%;

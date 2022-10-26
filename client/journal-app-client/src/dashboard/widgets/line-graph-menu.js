@@ -11,7 +11,7 @@ const DefaultLineGraphMenu = {
     title: "",
     xLabel:"",
     yLabel: "",
-    xField: "",
+    xField: "dateOfEntry",
     yList: []
 }
 
@@ -24,14 +24,15 @@ function LineGraphMenu (props){
     const {getOpenDashboardPosition, addNewWidgetConfig} = useDashboard();
 
     useEffect(()=>{
-        updateForm({yList:[...formFields.yList,{
-            id: uuidv4(),
-            backgroundColor: "#000",
-            borderColor: "#000",
-            label: "",
-            topic: currentJournal?.schemas[0].topic,
-            record: currentJournal?.schemas[0].records[0]
-        }]});
+        updateForm({
+            yList: [...formFields.yList, {
+                id: uuidv4(),
+                yColor: "#000",
+                yDatasetName: "",
+                yTopic: currentJournal?.schemas[0].topic,
+                yRecord: currentJournal?.schemas[0].records[0]
+            }]
+        });
     },[])
 
     const handleChange = e => {
@@ -43,22 +44,18 @@ function LineGraphMenu (props){
         
         const newYDataset = {
             id: uuidv4(),
-            backgroundColor: "#000",
-            borderColor: "#000",
-            label: "",
-            topic: currentJournal.schemas[0].topic,
-            record: currentJournal.schemas[0].records[0]
+            yColor: "#000",
+            yDatasetName: "",
+            yTopic: currentJournal.schemas[0].topic,
+            yRecord: currentJournal.schemas[0].records[0]
         }
         updateForm({yList: [...formFields.yList,newYDataset]});
     } 
 
     const changeYDataset = (payload) => {
-        formFields.yList.map(y=>
-            (y.id === payload.id)?
-                payload
-            :
-                y
-        )
+        updateForm({
+            yList: formFields.yList.map(y=>(y.id === payload.id)?payload:y)
+        });
     }
 
     const handleSubmit = e => {
@@ -75,7 +72,16 @@ function LineGraphMenu (props){
             },
             data: {
                 xValue: formFields.xField,
-                yValues: formFields.yList
+                yValues: formFields.yList.map(
+                    y=> ({
+                        id: y.id,
+                        backgroundColor: y.yColor,
+                        borderColor: y.yColor,
+                        label: y.yDatasetName,
+                        yTopic: y.yTopic,
+                        yRecord: y.yRecord
+                    })
+                )
             }
         }
 
@@ -119,7 +125,7 @@ function LineGraphMenu (props){
                         <legend>X</legend>
                         <div className="mb-3 col">
                             <label htmlFor="xFieldNameField">Field Name</label>
-                            <select id="xFieldNameField" className="form-select" name="xField" value={formFields.xField} onChange={handleChange} placeholder="Field Name">
+                            <select id="xFieldNameField" className="form-select" name="xField" value={formFields.xField} onChange={handleChange}>
                                 <option value="dateOfEntry">Date of Entry</option>
                             </select>
                         </div>

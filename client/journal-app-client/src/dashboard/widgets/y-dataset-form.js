@@ -31,14 +31,8 @@ function YDatasetForm (props){
 
     const handleChange = e => {
         updateForm({[e.target.name]: e.target.value});
-        saveYDataset();
     }
 
-    const handleChangeColor = e => {
-        updateForm({backgroundColor: e.target.value, borderColor: e.target.value});
-        saveYDataset(e);
-    }
-    
     const handleChangeYTopic = e => {
         let newYRecord=formFields.yRecord;
         if (props.currentJournal){
@@ -46,7 +40,6 @@ function YDatasetForm (props){
             newYRecord =  schema.records[0];
         }
         updateForm({ytopic: e.target.value, yRecord: newYRecord});
-        saveYDataset();
     }
 
     return (
@@ -56,16 +49,16 @@ function YDatasetForm (props){
             </div>
             <div className="mb-3">
                 <label htmlFor="yColorField">Color</label>
-                <input id="yColorField" type="color" className="form-control" name="yColor" value={formFields.yColor} onChange={handleChangeColor} placeholder="#000"></input>
+                <input id="yColorField" type="color" className="form-control" name="yColor" value={formFields.yColor} onChange={handleChange} onBlur={saveYDataset} placeholder="#000"></input>
             </div>
             <div className="mb-3">
                 <label htmlFor="yDatasetNameField">Dataset Name</label>
-                <input id="yDatasetNameField" type="text" className="form-control" name="yDatasetName" value={formFields.yDatasetName} onChange={handleChange} placeholder="Dataset Name"></input>
+                <input id="yDatasetNameField" type="text" className="form-control" name="yDatasetName" value={formFields.yDatasetName} onChange={handleChange}  onBlur={saveYDataset} placeholder="Dataset Name"></input>
             </div>
             <div className="row">
                 <div className="mb-3 col">
                     <label htmlFor="yTopicField">Topic</label>
-                    <select id="yTopicField" className="form-select" name="yTopic" value={formFields.yTopic} onChange={handleChangeYTopic} placeholder="Topic">
+                    <select id="yTopicField" className="form-select" name="yTopic" value={formFields.yTopic} onChange={handleChangeYTopic}  onBlur={saveYDataset} placeholder="Topic">
                         {
                             yTopicList.map(yTopic=>
                                 <option value={yTopic}>{yTopic}</option>
@@ -75,7 +68,7 @@ function YDatasetForm (props){
                 </div>
                 <div className="mb-3 col">
                     <label htmlFor="yRecordField">Record Name</label>
-                    <select id="yRecordField" className="form-select" name="yRecord" value={formFields.yRecord} onChange={handleChange} placeholder="Record">
+                    <select id="yRecordField" className="form-select" name="yRecord" value={formFields.yRecord} onChange={handleChange} onBlur={saveYDataset} placeholder="Record">
                         {
                             yRecordList.map(yRecord=>
                                 <option value={yRecord}>{yRecord}</option>

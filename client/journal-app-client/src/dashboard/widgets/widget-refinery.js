@@ -24,39 +24,44 @@ export function processDashboardWidgets(config, journalEntriesList) {
             labels : widget.labels,
             data : {
                 x: [],
-                y: [...widget.data.yValues]
+                y: []
             }
         };
-        payload.data.y.forEach(y=>
-            y.data=[]
+
+        widget.data.yValues.forEach(
+            widgetYValue => payload.data.y.push({
+                ...widgetYValue, data: []
+            })
+        )
+
+        console.log("line-graph payload:" + JSON.stringify(payload));
+
+        const yValues = widget.data.yValues.map(y =>
+        ({
+            topic: y.yTopic,
+            record: y.yRecord
+        })
         );
 
-        const yValues = widget.data.yValues.map(y=>
-                            ({
-                                topic:y.topic,
-                                record:y.record
-                            })
-                        );
-
-        const data = journalEntriesList.map(journalEntry=>
-                        ({
-                        x:journalEntry[widget.data.xValue],
-                        y:journalEntry.journalBodyItems.map(journalBodyItem=> 
-                                journalBodyItem.recordList.filter(record=> 
-                                    yValues.some(y=>y.topic===journalBodyItem.topic && y.record===record.key)
-                                ).map(record=>
-                                    ({topic: journalBodyItem.topic, record: record.key, value: record.value})
-                                )
-                            ).flat()
-                        })    
-                    );
+        const data = journalEntriesList.map(journalEntry =>
+        ({
+            x: journalEntry[widget.data.xValue],
+            y: journalEntry.journalBodyItems.map(journalBodyItem =>
+                journalBodyItem.recordList.filter(record =>
+                    yValues.some(y => y.topic === journalBodyItem.topic && y.record === record.recKey)
+                ).map(record =>
+                    ({ topic: journalBodyItem.topic, record: record.recKey, value: record.recValue })
+                )
+            ).flat()
+        })
+        );
         console.log("yValues : "+ JSON.stringify(yValues));
         console.log("Data : "+ JSON.stringify(data));
 
         let i = 1;
         data.forEach(data=>{
             payload.data.x.push(data.x);
-
+            
             payload.data.y.forEach(payloadY=>{
                 data.y.forEach(dataY=>{
                     if (payloadY.topic===dataY.topic && payloadY.record===dataY.record)
@@ -82,7 +87,7 @@ export function processDashboardWidgets(config, journalEntriesList) {
                     processedWidget.payload = generateLastEntry();
                     break;
                 case "line-graph":
-                    processedWidget.payload = generateLineGraph(widget);
+                    processedWidget.payload = generateLineGraph(processedWidget);
                     break;
                 default: 
                     break;
