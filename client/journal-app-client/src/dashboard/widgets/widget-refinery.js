@@ -57,14 +57,15 @@ export function processDashboardWidgets(config, journalEntriesList) {
         );
         console.log("yValues : "+ JSON.stringify(yValues));
         console.log("Data : "+ JSON.stringify(data));
-
+        console.log("PayloadY: " + JSON.stringify(payload.data.y));
+        
         let i = 1;
         data.forEach(data=>{
             payload.data.x.push(data.x);
             
             payload.data.y.forEach(payloadY=>{
                 data.y.forEach(dataY=>{
-                    if (payloadY.topic===dataY.topic && payloadY.record===dataY.record)
+                    if (payloadY.yTopic===dataY.topic && payloadY.record===dataY.yRTecord)
                         payloadY.data.push(dataY.value)
                 })
 
