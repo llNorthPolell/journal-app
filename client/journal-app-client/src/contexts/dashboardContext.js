@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useMemo} from 'react';
 import useJournalEntryList from '../facades/hooks/useJournalEntryList';
 import useDashboardConfigList from '../facades/hooks/useDashboardConfigList';
 import listUtil from '../util/functions/list-util';
@@ -17,11 +17,15 @@ export function DashboardProvider ({children}){
     const [dashboardWidgetContents, setDashboardWidgetContents]=useState([]);
     const [newDashboardWidgets, setNewDashboardWidgets] = useState([]);
 
+    const ascJournalEntries = useMemo(()=>
+        [...journalEntriesList].reverse()
+    ,[journalEntriesList]);
+
     useEffect(()=>{
         function loadDashboardWidgets(){
             const dashboardConfigs = [...dashboardConfigList];
-            const tempDashboardContents = processDashboardWidgets(newDashboardWidgets,journalEntriesList);
-            const savedDashboardContents = processDashboardWidgets(dashboardConfigs,journalEntriesList);
+            const tempDashboardContents = processDashboardWidgets(newDashboardWidgets,ascJournalEntries);
+            const savedDashboardContents = processDashboardWidgets(dashboardConfigs,ascJournalEntries);
     
             console.log("Combine " + JSON.stringify(savedDashboardContents)+" + "+JSON.stringify(tempDashboardContents));
             listUtil(dashboardWidgetContents, setDashboardWidgetContents, { type: "SET", payload:[...savedDashboardContents,...tempDashboardContents]});

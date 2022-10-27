@@ -10,7 +10,7 @@ export function processDashboardWidgets(config, journalEntriesList) {
         };
         if (journalEntriesList==null || journalEntriesList.length===0) return payload;
 
-        const lastEntry = journalEntriesList[0];
+        const lastEntry = journalEntriesList[journalEntriesList.length-1];
         payload = {
             overview: lastEntry.overview,
             key: lastEntry.key
