@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
 
 // Scripts 
 import HomePage from './home/home';
@@ -7,7 +7,6 @@ import JournalEntryPage from './journal-entry/journal-entry-page';
 import DashboardPage from './dashboard/dashboard';
 
 import Navbar from './navbar/navbar';
-import Toolbar from './toolbar/toolbar';
 
 import { AuthProvider } from './contexts/authContext';
 import { DashboardProvider } from './contexts/dashboardContext';
@@ -26,68 +25,67 @@ function App() {
     <div id="JournalAppDiv">
       <AuthProvider>
         <BrowserRouter>
-          <Navbar />
+
           <div className="contentContainer">
             <Routes>
-              <Route path="/" element={<HomePage />}></Route>
-              <Route path="/login" element={<LoginPage />}></Route>
-              <Route path="/userAgreement" element={<></>}></Route>
-              <Route path="/:journalId"
-                element={
-                  <PrivateRoute>
-                    <DashboardProvider>
-                      <DashboardPage />
-                      <Toolbar />
-                    </DashboardProvider>
-                  </PrivateRoute>
-                }
-              ></Route>
-              <Route path="/:journalId/goals"
-                element={
-                  <PrivateRoute>
-                    <DashboardProvider>
-                      <GoalsDashboardPage />
-                      <Toolbar />
-                    </DashboardProvider>
-                  </PrivateRoute>
-                }
-              ></Route>
-              <Route path="/:journalId/goals/new"
-                element={
-                  <PrivateRoute>
-                    <GoalPage mode="NEW" />
-                  </PrivateRoute>
-                }
-              ></Route>
-              <Route path="/:journalId/goals/:goalId"
-                element={
-                  <PrivateRoute>
-                    <GoalPage mode="EDIT" />
-                  </PrivateRoute>
-                }
-              ></Route>
-              <Route path="/:journalId/entries"
-                element={
-                  <PrivateRoute>
-                    <JournalEntriesDashboardPage />
-                    <Toolbar />
-                  </PrivateRoute>
-                }
-              ></Route>
-              <Route path="/:journalId/new"
-                element={
-                  <PrivateRoute>
-                    <JournalEntryPage mode="NEW" />
-                  </PrivateRoute>
-                }
-              ></Route>
-              <Route path="/:journalId/:entryId"
-                element={
-                  <PrivateRoute>
-                    <JournalEntryPage mode="EDIT" />
-                  </PrivateRoute>
-                }
-              ></Route>
+              <Route element={<><Navbar /><Outlet/></>}>
+                <Route path="/" element={<HomePage />}></Route>
+                <Route path="/login" element={<LoginPage />}></Route>
+                <Route path="/userAgreement" element={<></>}></Route>
+                <Route path="/:journalId"
+                  element={
+                    <PrivateRoute>
+                      <DashboardProvider>
+                        <DashboardPage />
+                      </DashboardProvider>
+                    </PrivateRoute>
+                  }
+                ></Route>
+                <Route path="/:journalId/goals"
+                  element={
+                    <PrivateRoute>
+                      <DashboardProvider>
+                        <GoalsDashboardPage />
+                      </DashboardProvider>
+                    </PrivateRoute>
+                  }
+                ></Route>
+                <Route path="/:journalId/goals/new"
+                  element={
+                    <PrivateRoute>
+                      <GoalPage mode="NEW" />
+                    </PrivateRoute>
+                  }
+                ></Route>
+                <Route path="/:journalId/goals/:goalId"
+                  element={
+                    <PrivateRoute>
+                      <GoalPage mode="EDIT" />
+                    </PrivateRoute>
+                  }
+                ></Route>
+                <Route path="/:journalId/entries"
+                  element={
+                    <PrivateRoute>
+                      <JournalEntriesDashboardPage />
+                    </PrivateRoute>
+                  }
+                ></Route>
+                <Route path="/:journalId/new"
+                  element={
+                    <PrivateRoute>
+                      <JournalEntryPage mode="NEW" />
+                    </PrivateRoute>
+                  }
+                ></Route>
+                <Route path="/:journalId/:entryId"
+                  element={
+                    <PrivateRoute>
+                      <JournalEntryPage mode="EDIT" />
+                    </PrivateRoute>
+                  }
+                ></Route>
+              </Route>
             </Routes>
           </div>
         </BrowserRouter>

@@ -11,8 +11,14 @@ function GoalsDashboardPage(props){
     return (
         <div id="dashboardDiv" className="container page-div">
             <h2>Goals and Achievements</h2>
-            <Link className="btn btn-primary" to={"/"+journalId+"/goals/new"}>+Goal</Link>
+            <div className="row">
+                <div className="col mb-3">
+                    <Link className="btn btn-primary" to={"/"+journalId+"/goals/new"}>+Goal</Link>
+                </div>
+            </div>
 
+            <br/><br/>
+            
             {
                 goals.map(goal=>
                     <GoalCard goal={goal}></GoalCard>
