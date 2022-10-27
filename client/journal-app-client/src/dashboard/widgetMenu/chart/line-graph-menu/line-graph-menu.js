@@ -1,11 +1,6 @@
-import React, {useEffect} from 'react';
-import {useParams} from 'react-router-dom';
-import YDatasetForm from "./y-dataset-form";
 import {v4 as uuidv4} from 'uuid';
-import {useDashboard} from '../../contexts/dashboardContext';
-import useSession from '../../facades/hooks/useSession';
-import useSimpleForm from '../../util/hooks/useSimpleForm';
-
+import useSimpleForm from '../../../../util/hooks/useSimpleForm';
+import YDatasetForm from './y-dataset-form';
 
 const DefaultLineGraphMenu = {
     title: "",
@@ -16,24 +11,7 @@ const DefaultLineGraphMenu = {
 }
 
 function LineGraphMenu (props){
-    const {journalId} = useParams();
-    const [formFields,updateForm,submit,resetForm] = useSimpleForm(DefaultLineGraphMenu,);
-
-    const [currentJournal] = useSession(["currentJournal"]);
-
-    const {getOpenDashboardPosition, addNewWidgetConfig} = useDashboard();
-
-    useEffect(()=>{
-        updateForm({
-            yList: [...formFields.yList, {
-                id: uuidv4(),
-                yColor: "#000",
-                yDatasetName: "",
-                yTopic: currentJournal?.schemas[0].topic,
-                yRecord: currentJournal?.schemas[0].records[0]
-            }]
-        });
-    },[])
+    const [formFields,updateForm,submit,resetForm] = useSimpleForm(DefaultLineGraphMenu,props.submit);
 
     const handleChange = e => {
         updateForm({[e.target.name]: e.target.value});
@@ -46,8 +24,8 @@ function LineGraphMenu (props){
             id: uuidv4(),
             yColor: "#000",
             yDatasetName: "",
-            yTopic: currentJournal.schemas[0].topic,
-            yRecord: currentJournal.schemas[0].records[0]
+            yTopic: (props.schemas && props.schemas.length > 0)? props.schemas[0].topic : "",
+            yRecord: (props.schemas && props.schemas.length > 0)? props.schemas[0].records[0] : ""
         }
         updateForm({yList: [...formFields.yList,newYDataset]});
     } 
@@ -58,13 +36,12 @@ function LineGraphMenu (props){
         });
     }
 
+
     const handleSubmit = e => {
         e.preventDefault();
 
         const config = {
-            journal: journalId,
             type: "line-graph",
-            position: getOpenDashboardPosition(),
             title: formFields.title.trim(),
             labels: {
                 x: formFields.xLabel.trim(),
@@ -84,19 +61,14 @@ function LineGraphMenu (props){
                 )
             }
         }
-
-        addNewWidgetConfig(config);
-
-        console.log("Save widget as : " + JSON.stringify(config));
-
+        
+        submit(config);
         props.close();
     }
 
-    
-    const remove = id =>{
+    const removeYDataset = id =>{
         updateForm({yList: formFields.yList.filter(y=>y.id !== id)});
     }
-
 
     return (
         <div className="container-fluid">
@@ -134,7 +106,7 @@ function LineGraphMenu (props){
                     <legend>Y</legend>
                     {
                         formFields.yList.map(y=> 
-                            <YDatasetForm id={y.id} key={y.id} data={y} currentJournal={currentJournal} onChange={changeYDataset} remove={remove}></YDatasetForm>
+                            <YDatasetForm id={y.id} key={y.id} data={y} schemas={props.schemas} onChange={changeYDataset} remove={removeYDataset}></YDatasetForm>
                         )
                     }
 
@@ -149,5 +121,8 @@ function LineGraphMenu (props){
         
 
     );
+
+
 }
 export default LineGraphMenu;
+

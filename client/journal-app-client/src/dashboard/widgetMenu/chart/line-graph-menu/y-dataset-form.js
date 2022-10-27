@@ -1,32 +1,13 @@
-import React, {useState,useEffect} from 'react';
-import RemoveButton from '../../util/components/remove-button';
-import useSimpleChildForm from '../../util/hooks/useSimpleChildForm';
+import React, {useState,useRef} from 'react';
+import RemoveButton from '../../../../util/components/remove-button';
+import useSimpleChildForm from '../../../../util/hooks/useSimpleChildForm';
 
 function YDatasetForm (props){
 
     const [formFields,updateForm,saveYDataset,] = useSimpleChildForm(props.data, props.onChange);
 
-    const [yTopicList,setYTopicList] = useState([]);
-    const [yRecordList,setYRecordList]= useState([]);
-
-    useEffect(()=>{
-        if (props.currentJournal){
-            const yTopicList = props.currentJournal.schemas.map(schema=>schema.topic);
-            updateForm({yTopic:yTopicList[0]});
-            setYTopicList(yTopicList); 
-        }
-        else setYTopicList([]);
-    },[])
-
-    useEffect(()=>{
-        if (formFields.yTopic){
-            const schema = props.currentJournal.schemas.find(schema=>schema.topic===formFields.yTopic)
-            const yRecord =  schema.records[0];
-            setYRecordList(schema.records);
-            updateForm({yRecord:yRecord});
-        } 
-        else setYRecordList([]);
-    },[formFields.yTopic])
+    const yTopicList= useRef(props.schemas?.map(schema=>schema.topic));
+    const [yRecordList,setYRecordList]= useState((props.schemas && props.schemas.length>0)? props.schemas[0].records : []);
 
 
     const handleChange = e => {
@@ -34,12 +15,10 @@ function YDatasetForm (props){
     }
 
     const handleChangeYTopic = e => {
-        let newYRecord=formFields.yRecord;
-        if (props.currentJournal){
-            const schema = props.currentJournal.schemas.find(schema=>schema.topic===e.target.value)
-            newYRecord =  schema.records[0];
-        }
-        updateForm({ytopic: e.target.value, yRecord: newYRecord});
+        const newRecordsList = props.schemas.find(schema=>schema.topic===e.target.value).records;
+        console.log("New Record List: "+ JSON.stringify(newRecordsList))
+        updateForm({yTopic:e.target.value, yRecord:newRecordsList[0]});
+        setYRecordList(newRecordsList);
     }
 
     return (
@@ -60,7 +39,7 @@ function YDatasetForm (props){
                     <label htmlFor="yTopicField">Topic</label>
                     <select id="yTopicField" className="form-select" name="yTopic" value={formFields.yTopic} onChange={handleChangeYTopic}  onBlur={saveYDataset} placeholder="Topic">
                         {
-                            yTopicList.map(yTopic=>
+                            yTopicList.current.map(yTopic=>
                                 <option value={yTopic}>{yTopic}</option>
                             )
                         }

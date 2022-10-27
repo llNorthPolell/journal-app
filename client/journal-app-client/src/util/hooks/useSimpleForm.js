@@ -27,8 +27,8 @@ const useSimpleForm = (initData,submitEndpointFN) => {
     const update = (delta) => {
         setFieldStates({...fieldStates,...delta});
     }
-    const submit = () => {
-        const output = compileOutput();
+    const submit = overrideOutput => {
+        const output = overrideOutput? overrideOutput : compileOutput();
         console.log("Save to database: " + JSON.stringify(output));
 
         if (submitEndpointFN)
