@@ -61,10 +61,7 @@ export function processDashboardWidgets(config, journalEntriesList) {
         
         data.forEach(data=>{
             payload.data.x.push(data.x);
-        });
-        
 
-        data.forEach(data=>{
             data.y.forEach(dataY=>{
                 const payloadY = payload.data.y.find(y=> y.yTopic===dataY.topic && y.yRecord===dataY.record);
             
@@ -72,8 +69,7 @@ export function processDashboardWidgets(config, journalEntriesList) {
                 else payload.data.y.find(y=> y.yTopic===dataY.topic && y.yRecord===dataY.record).push(0);
             });
         });
-
-
+        
         return payload;
     }
 
