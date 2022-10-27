@@ -59,21 +59,19 @@ export function processDashboardWidgets(config, journalEntriesList) {
         console.log("Data : "+ JSON.stringify(data));
         console.log("PayloadY: " + JSON.stringify(payload.data.y));
         
-        let i = 1;
         data.forEach(data=>{
             payload.data.x.push(data.x);
+        });
+        
+
+        data.forEach(data=>{
+            data.y.forEach(dataY=>{
+                const payloadY = payload.data.y.find(y=> y.yTopic===dataY.topic && y.yRecord===dataY.record);
             
-            payload.data.y.forEach(payloadY=>{
-                data.y.forEach(dataY=>{
-                    if (payloadY.yTopic===dataY.topic && payloadY.record===dataY.yRTecord)
-                        payloadY.data.push(dataY.value)
-                })
-
-                if (payloadY.data.length < i) payloadY.data.push(0);
+                if (payloadY) payloadY.data.push(dataY.value);
+                else payload.data.y.find(y=> y.yTopic===dataY.topic && y.yRecord===dataY.record).push(0);
             });
-
-            i++;
-        })        
+        });
 
 
         return payload;
