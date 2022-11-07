@@ -1,4 +1,4 @@
-import GoalForm from "../../goal/goal-form";
+import GoalForm from "../../pages/goal/goal-form";
 
 
 export default{

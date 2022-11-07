@@ -1,4 +1,4 @@
-import PieChartWidget from '../../dashboard/widgets/chart/pie-chart';
+import PieChartWidget from '../../pages/dashboard/widgets/chart/pie-chart';
 
 export default{
     title: "Widgets/Pie Chart Widget",

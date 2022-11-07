@@ -1,4 +1,4 @@
-import LastEntryWidget from '../../dashboard/widgets/last-entry/last-entry';
+import LastEntryWidget from '../../pages/dashboard/widgets/last-entry/last-entry';
 
 export default{
     title: "Widgets/Last Entry Widget",

@@ -1,4 +1,4 @@
-import LineGraphWidget from '../../dashboard/widgets/chart/line-graph';
+import LineGraphWidget from '../../pages/dashboard/widgets/chart/line-graph';
 
 export default{
     title: "Widgets/Line Graph Widget",

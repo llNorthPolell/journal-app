@@ -1,4 +1,4 @@
-import PicCarouselWidget from '../../dashboard/widgets/pic-carousel/pic-carousel';
+import PicCarouselWidget from '../../pages/dashboard/widgets/pic-carousel/pic-carousel';
 
 export default{
     title: "Widgets/Pic Carousel Widget",

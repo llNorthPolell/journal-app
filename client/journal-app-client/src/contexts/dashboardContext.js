@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState, useMemo} from 'react';
 import useJournalEntryList from '../facades/hooks/useJournalEntryList';
 import useDashboardConfigList from '../facades/hooks/useDashboardConfigList';
 import listUtil from '../util/functions/list-util';
-import { processDashboardWidgets } from '../dashboard/widgets/widget-refinery';
+import { processDashboardWidgets } from '../pages/dashboard/widgets/widget-refinery';
 
 const DashboardContext = React.createContext();
 

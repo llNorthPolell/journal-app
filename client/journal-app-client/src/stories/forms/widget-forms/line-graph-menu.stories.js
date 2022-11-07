@@ -1,4 +1,4 @@
-import LineGraphMenu from '../../../dashboard/widgetMenu/chart/line-graph-menu/line-graph-menu';
+import LineGraphMenu from '../../../pages/dashboard/widgetMenu/chart/line-graph-menu/line-graph-menu';
 
 export default{
     title: "Forms/Widget Forms/Line Graph Menu",

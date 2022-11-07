@@ -1,5 +1,5 @@
-import JournalEntryForm from "../../journal-entry/journal-entry-form";
-import {DefaultJournalEntry} from '../../journal-entry/journal-entry-dto';
+import JournalEntryForm from "../../pages/journal-entry/journal-entry-form";
+import {DefaultJournalEntry} from '../../pages/journal-entry/journal-entry-dto';
 
 export default{
     title: "Forms/Journal Entry",

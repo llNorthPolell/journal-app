@@ -64,3 +64,11 @@ Thumbs.db
 
 #Audio Files
 audio
+
+#Firebase
+.firebaserc
+*.rules
+*.rules.json
+*.indexes.json
+y
+firebase.json

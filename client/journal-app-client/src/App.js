@@ -1,12 +1,12 @@
 import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
 
 // Scripts 
-import HomePage from './home/home';
-import LoginPage from './login/login';
-import JournalEntryPage from './journal-entry/journal-entry-page';
-import DashboardPage from './dashboard/dashboard';
+import HomePage from './pages/home/home';
+import LoginPage from './pages/login/login';
+import JournalEntryPage from './pages/journal-entry/journal-entry-page';
+import DashboardPage from './pages/dashboard/dashboard';
 
-import Navbar from './navbar/navbar';
+import Navbar from './layouts/navbar/navbar';
 
 import { AuthProvider } from './contexts/authContext';
 import { DashboardProvider } from './contexts/dashboardContext';
@@ -15,9 +15,9 @@ import PrivateRoute from './util/components/private-route';
 // Other Resources
 import logo from './logo.svg';
 import './App.css';
-import GoalPage from './goal/goal-page';
-import GoalsDashboardPage from './dashboard/goals-dashboard';
-import JournalEntriesDashboardPage from './dashboard/journal-entries-dashboard';
+import GoalPage from './pages/goal/goal-page';
+import GoalsDashboardPage from './pages/dashboard/goals-dashboard';
+import JournalEntriesDashboardPage from './pages/dashboard/journal-entries-dashboard';
 
 
 function App() {
