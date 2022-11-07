@@ -1,59 +1,46 @@
-import React, {useEffect} from 'react';
-import {useParams} from 'react-router-dom';
-import YDatasetForm from "./y-dataset-form";
 import {v4 as uuidv4} from 'uuid';
-import {useDashboard} from '../../../../contexts/dashboardContext';
-import useSession from '../../../../facades/hooks/useSession';
 import useSimpleForm from '../../../../util/hooks/useSimpleForm';
-
+import DatasetForm from './dataset-form';
 
 const DefaultPieChartMenu = {
     title: "",
-    type: "doughnut",
     labels:[],
-    data: [],
-    backgroundColor: [],
-    hoverOffset: 4
+    datasets: [],
+    cutout:""
 }
 
 function PieChartMenu (props){
-    const {journalId} = useParams();
-    const [formFields,updateForm,submit,resetForm] = useSimpleForm(DefaultPieChartMenu,);
-
-    const [currentJournal] = useSession(["currentJournal"]);
-
-    const {getOpenDashboardPosition, addNewWidgetConfig} = useDashboard();
+    const [formFields,updateForm,submit,] = useSimpleForm(DefaultPieChartMenu,props.submit);
 
     const handleChange = e => {
         updateForm({[e.target.name]: e.target.value});
     }
 
-    const handleAddYDataset = e => {
+    const handleAddDataset = e => {
         e.preventDefault();
         
-        const newYDataset = {
+        const newDataset = {
             id: uuidv4(),
-            yColor: "#000",
-            yDatasetName: "",
-            yTopic: currentJournal.schemas[0].topic,
-            yRecord: currentJournal.schemas[0].records[0]
+            label: "",
+            data: [],
+            backgroundColor: [],
+            hoverOffset: 4
         }
-        updateForm({yList: [...formFields.yList,newYDataset]});
+        updateForm({yList: [...formFields.datasets,newDataset]});
     } 
 
-    const changeYDataset = (payload) => {
+    const changeDataset = (payload) => {
         updateForm({
-            yList: formFields.yList.map(y=>(y.id === payload.id)?payload:y)
+            datasets: formFields.datasets.map(ds=>(ds.id === payload.id)?payload:ds)
         });
     }
+
 
     const handleSubmit = e => {
         e.preventDefault();
 
         const config = {
-            journal: journalId,
-            type: "pie",
-            position: getOpenDashboardPosition(),
+            type: "pie-chart",
             title: formFields.title.trim(),
             labels: {
                 x: formFields.xLabel.trim(),
@@ -73,23 +60,18 @@ function PieChartMenu (props){
                 )
             }
         }
-
-        addNewWidgetConfig(config);
-
-        console.log("Save widget as : " + JSON.stringify(config));
-
+        
+        submit(config);
         props.close();
     }
 
-    
-    const remove = id =>{
+    const removeDataset = id =>{
         updateForm({yList: formFields.yList.filter(y=>y.id !== id)});
     }
 
-
     return (
         <div className="container-fluid">
-            <h2> Line Graph </h2>
+            <h2> Pie Chart </h2>
 
             <form>
                 <fieldset>
@@ -99,9 +81,26 @@ function PieChartMenu (props){
                         <input id="titleField" type="text" className="form-control" name="title" value={formFields.title} onChange={handleChange} placeholder="Title"></input>
                     </div>
                 </fieldset>
-                
                 <fieldset>
-                    <button className="btn btn-link" onClick={handleAddYDataset}>Add Another Dataset</button> 
+                    <legend>Config</legend>
+                    <legend>Use Case</legend>
+                    <div className="mb-3">
+                        <label htmlFor="titleField">Use Case</label>
+                        <select id="useCaseField" className="form-select" name="useCase" value={formFields.useCase} onChange={handleChange}>
+                            <option value="activities">Activities Over Time</option>
+                            <option value="metric">Metric Comparison</option>
+                            <option value="progress">Progress vs Target</option>
+                        </select>
+                    </div>
+
+                    <legend>Dataset</legend>
+                    {
+                        formFields.datasets.map(y=> 
+                            <DatasetForm id={y.id} key={y.id} data={y} schemas={props.schemas} onChange={changeDataset} remove={removeDataset}></DatasetForm>
+                        )
+                    }
+
+                    <button className="btn btn-link" onClick={handleAddDataset}>Add Another Dataset</button> 
 
                 </fieldset>
                 <div className="mb-3">
@@ -112,5 +111,8 @@ function PieChartMenu (props){
         
 
     );
+
+
 }
 export default PieChartMenu;
+

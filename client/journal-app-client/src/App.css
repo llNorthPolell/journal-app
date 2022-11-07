@@ -154,10 +154,24 @@ section{
     display:grid;
 }
 
+.dashboard-widget>.card-body{
+    padding:0;
+}
+
+.chart-container{
+    display:inline-block;
+    padding:0;
+}
+
+.chart-container > canvas{
+    height:32vh;
+}
+
 .widget-category-name{
     margin-top:2vh;
     text-decoration: underline;
 }
+
 
 .widget-card{
     width:5vw;
@@ -180,10 +194,6 @@ section{
     object-fit:cover;
     object-position:50% 50%;
     
-}
-
-.widget-card>.card-body{
-    height:30%;
 }
 
 .dashboard-widget {

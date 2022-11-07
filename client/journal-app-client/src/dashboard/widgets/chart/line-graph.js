@@ -52,7 +52,7 @@ function LineGraphWidget(props) {
     };
 
     return(
-        <div className="card dashboard-widget">
+        <div className="card dashboard-widget widget-size-2-2">
             <h3 className="card-header">{props.title}</h3>
             <div className="card-body">
                 <Line
