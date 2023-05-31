@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,8 @@ public class JournalEntryPublisherControllerTest {
     private JournalEntry mockJournalEntry;
 
     private ObjectMapper objectMapper;
+
+    private final String ENDPOINT = "/publishJournalEntry";
 
     @MockBean
     private JournalEntryPublisherService journalEntryPublisherService;
@@ -84,17 +87,36 @@ public class JournalEntryPublisherControllerTest {
                 .build();
     }
 
+    private enum API_RESULT {
+        FAIL(status().isBadRequest()), PASS(status().isOk());
+
+        private ResultMatcher result;
+
+        API_RESULT(ResultMatcher result){
+            this.result=result;
+        }
+
+        public ResultMatcher value(){
+            return this.result;
+        }
+
+    }
+
+    private MvcResult postPublishJournalEntry(String testJson,API_RESULT result) throws Exception{
+        return mockMvc.perform(
+                MockMvcRequestBuilders.post("/publishJournalEntry")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(testJson))
+                .andExpect(result.value()).andReturn();
+    }
+
     @DisplayName("should pass validation and return UUID")
     @Test
     public void publishJournalEntrySuccess() throws Exception {
         UUID mockUUID = UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7b3e5c8");
         when(journalEntryPublisherService.processJournalEntry(any(JournalEntry.class))).thenReturn(mockUUID);
         String testJson = objectMapper.writeValueAsString(mockJournalEntry);
-        MvcResult mvcResult = mockMvc.perform(
-                MockMvcRequestBuilders.post("/publishJournalEntry")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(testJson))
-                .andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.PASS);
 
         assertTrue(
                 mvcResult.getResponse()
@@ -106,14 +128,146 @@ public class JournalEntryPublisherControllerTest {
     @DisplayName("should fail validation when journal is missing")
     @Test
     public void publishJournalEntryMissingJournal() throws Exception {
-        mockJournalEntry.setJournal(null);
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"journal\":3,","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail validation when summary is missing")
+    @Test
+    public void publishJournalEntryMissingSummary() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"summary\":\"My First Post\",","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail validation when summary is empty")
+    @Test
+    public void publishJournalEntryEmptySummary() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"summary\":\"My First Post\",","\"summary\":\"\",");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail when overview is missing")
+    @Test
+    public void publishJournalEntryMissingOverview() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"overview\":\"Woohoo! My First Post!! test\",","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should pass when overview is empty")
+    @Test
+    public void publishJournalEntryEmptyOverview() throws Exception {
         UUID mockUUID = UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7b3e5c8");
         when(journalEntryPublisherService.processJournalEntry(any(JournalEntry.class))).thenReturn(mockUUID);
-        String testJson = objectMapper.writeValueAsString(mockJournalEntry);
-        MvcResult mvcResult = mockMvc.perform(
-                        MockMvcRequestBuilders.post("/publishJournalEntry")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(testJson))
-                .andExpect(status().is4xxClientError()).andReturn();
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"overview\":\"Woohoo! My First Post!! test\",","\"overview\":\"\",");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.PASS);
+
+        assertTrue(
+                mvcResult.getResponse()
+                        .getContentAsString()
+                        .startsWith("{\"status\":200,\"message\":\"" + mockUUID + "\"")
+        );
+    }
+
+    @DisplayName("should fail when dateOfEntry is missing")
+    @Test
+    public void publishJournalEntryMissingDateOfEntry() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"dateOfEntry\":\"2022-08-19T00:00:00\",","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail when journal entry body is missing")
+    @Test
+    public void publishJournalEntryMissingJournalBody() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace(",\"journalBodyItems\":[{\"topic\":\"My first topic\",\"description\":\"My first topic ever!!!\",\"recordList\":[{\"recKey\":\"a\",\"recValue\":\"1\"},{\"recKey\":\"targetA\",\"recValue\":\"2\"}]","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+
+    @DisplayName("should fail when a topic in the journal entry body is missing")
+    @Test
+    public void publishJournalEntryMissingTopic() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"topic\":\"My first topic\",","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail when a topic in the journal entry body is empty")
+    @Test
+    public void publishJournalEntryEmptyTopic() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"topic\":\"My first topic\",","\"topic\":\"\",");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail when a description in the journal entry body is missing")
+    @Test
+    public void publishJournalEntryMissingDescription() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"description\":\"This is my second topic...\",","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should pass when a description in the journal entry body is empty")
+    @Test
+    public void publishJournalEntryEmptyDescription() throws Exception {
+        UUID mockUUID = UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7b3e5c8");
+        when(journalEntryPublisherService.processJournalEntry(any(JournalEntry.class))).thenReturn(mockUUID);
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"description\":\"This is my second topic...\",","\"description\":\"\",");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.PASS);
+
+        assertTrue(
+                mvcResult.getResponse()
+                        .getContentAsString()
+                        .startsWith("{\"status\":200,\"message\":\"" + mockUUID + "\"")
+        );
+    }
+
+    @DisplayName("should fail when a record list in the journal entry body is missing")
+    @Test
+    public void publishJournalEntryMissingRecordList() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace(",\"recordList\":[{\"recKey\":\"a\",\"recValue\":\"1\"},{\"recKey\":\"targetA\",\"recValue\":\"2\"}]","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+
+    @DisplayName("should fail when a recKey in the record list is missing")
+    @Test
+    public void publishJournalEntryMissingRecKey() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"recKey\":\"a\",","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail when a recKey in the record list is empty")
+    @Test
+    public void publishJournalEntryEmptyRecKey() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace("\"recKey\":\"a\"","\"recKey\":\"\"");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail when a recValue in the record list is missing")
+    @Test
+    public void publishJournalEntryMissingRecValue() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace(",\"recValue\":\"2\"","");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
+    }
+
+    @DisplayName("should fail when a recValue in the record list is empty")
+    @Test
+    public void publishJournalEntryEmptyRecValue() throws Exception {
+        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
+                .replace(",\"recValue\":\"2\"",",\"recValue\":\"\"");
+        MvcResult mvcResult = postPublishJournalEntry(testJson,API_RESULT.FAIL);
     }
 }

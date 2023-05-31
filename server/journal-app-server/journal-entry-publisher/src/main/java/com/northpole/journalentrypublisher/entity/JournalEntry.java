@@ -1,5 +1,6 @@
 package com.northpole.journalentrypublisher.entity;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,16 +23,22 @@ public class JournalEntry {
     @NotNull
     private Integer journal;
 
+    @NotNull
+    @NotEmpty
     private String summary;
 
+    @NotNull
     private String overview;
 
+    @NotNull
     private LocalDateTime dateOfEntry;
 
     private LocalDateTime creationTimestamp;
 
     private LocalDateTime lastUpdated;
 
+    @NotNull
+    @Valid
     private List<JournalBodyItem> journalBodyItems;
 
 }
