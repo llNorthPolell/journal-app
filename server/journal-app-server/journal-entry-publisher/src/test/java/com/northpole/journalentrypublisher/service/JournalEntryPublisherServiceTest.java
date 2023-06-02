@@ -41,6 +41,9 @@ public class JournalEntryPublisherServiceTest {
     @InjectMocks
     private JournalEntryPublisherServiceImpl journalEntryPublisherService;
 
+    private final String MOCK_UUID_STRING="7aa881bc-f6e1-4621-9325-c199d7b3e5c8";
+    private final String MOCK_KAFKA_TOPIC="journalEntry.published";
+
     @Autowired
     public JournalEntryPublisherServiceTest(
             KafkaConfigProps kafkaConfigProps,
@@ -90,11 +93,11 @@ public class JournalEntryPublisherServiceTest {
                 .journalBodyItems(bodyList)
                 .build();
 
-        UUID mockUUID = UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7b3e5c8");
+        UUID mockUUID = UUID.fromString(MOCK_UUID_STRING);
         mockStatic(UUID.class);
 
         when(UUID.randomUUID()).thenReturn(mockUUID);
-        when(kafkaConfigProps.getTopic()).thenReturn("journalEntry.published");
+        when(kafkaConfigProps.getTopic()).thenReturn(MOCK_KAFKA_TOPIC);
         when(kafkaTemplate.send(anyString(), anyString())).thenReturn(null);
 
         // verify output is equal to hypothetical UUID
