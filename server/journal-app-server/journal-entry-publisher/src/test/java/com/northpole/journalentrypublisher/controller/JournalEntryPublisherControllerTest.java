@@ -1,9 +1,9 @@
 package com.northpole.journalentrypublisher.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.northpole.journalentrypublisher.entity.JournalBodyItem;
-import com.northpole.journalentrypublisher.entity.JournalEntry;
-import com.northpole.journalentrypublisher.entity.Record;
+import com.northpole.common.entity.JournalBodyItem;
+import com.northpole.common.entity.JournalEntry;
+import com.northpole.common.entity.Record;
 import com.northpole.journalentrypublisher.service.JournalEntryPublisherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,7 +1,7 @@
 package com.northpole.journalentrypublisher.service;
 
 
-import com.northpole.journalentrypublisher.entity.JournalEntry;
+import com.northpole.common.entity.JournalEntry;
 
 import java.util.UUID;
 

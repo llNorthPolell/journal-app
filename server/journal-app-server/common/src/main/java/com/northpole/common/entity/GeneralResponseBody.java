@@ -1,4 +1,4 @@
-package com.northpole.journalentrypublisher.entity;
+package com.northpole.common.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

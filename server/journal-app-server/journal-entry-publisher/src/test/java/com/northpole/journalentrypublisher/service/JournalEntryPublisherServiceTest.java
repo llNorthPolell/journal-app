@@ -2,10 +2,10 @@ package com.northpole.journalentrypublisher.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.northpole.common.entity.Record;
+import com.northpole.common.entity.JournalBodyItem;
+import com.northpole.common.entity.JournalEntry;
 import com.northpole.journalentrypublisher.config.KafkaConfigProps;
-import com.northpole.journalentrypublisher.entity.JournalBodyItem;
-import com.northpole.journalentrypublisher.entity.JournalEntry;
-import com.northpole.journalentrypublisher.entity.Record;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -1,7 +1,7 @@
 package com.northpole.journalentrypublisher.controller;
 
-import com.northpole.journalentrypublisher.entity.GeneralResponseBody;
-import com.northpole.journalentrypublisher.entity.JournalEntry;
+import com.northpole.common.entity.GeneralResponseBody;
+import com.northpole.common.entity.JournalEntry;
 import com.northpole.journalentrypublisher.service.JournalEntryPublisherService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

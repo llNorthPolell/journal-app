@@ -1,4 +1,4 @@
-package com.northpole.journalentrypublisher.entity;
+package com.northpole.common.entity;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

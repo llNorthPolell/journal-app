@@ -2,8 +2,8 @@ package com.northpole.journalentrypublisher.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.northpole.common.entity.JournalEntry;
 import com.northpole.journalentrypublisher.config.KafkaConfigProps;
-import com.northpole.journalentrypublisher.entity.JournalEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
