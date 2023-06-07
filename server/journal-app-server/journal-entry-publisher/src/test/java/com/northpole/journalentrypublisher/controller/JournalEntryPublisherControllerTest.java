@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureMockMvc
 @SpringBootTest
-@TestPropertySource(locations="classpath:application-test.properties")
 public class JournalEntryPublisherControllerTest {
 
     private MockMvc mockMvc;
@@ -125,7 +124,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should pass validation and return UUID")
     @Test
-    public void publishJournalEntrySuccess() throws Exception {
+    public void publishJournalEntrySuccess_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest("","",API_RESULT.PASS);
         assertTrue(
                 mvcResult.getResponse()
@@ -136,7 +135,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail validation when journal is missing")
     @Test
-    public void publishJournalEntryMissingJournal() throws Exception {
+    public void publishJournalEntryMissingJournal_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"journal\":3,",
                 "",
@@ -145,7 +144,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail validation when summary is missing")
     @Test
-    public void publishJournalEntryMissingSummary() throws Exception {
+    public void publishJournalEntryMissingSummary_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"summary\":\"My First Post\",",
                 "",
@@ -154,7 +153,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail validation when summary is empty")
     @Test
-    public void publishJournalEntryEmptySummary() throws Exception {
+    public void publishJournalEntryEmptySummary_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"summary\":\"My First Post\",",
                 "\"summary\":\"\",",
@@ -163,7 +162,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when overview is missing")
     @Test
-    public void publishJournalEntryMissingOverview() throws Exception {
+    public void publishJournalEntryMissingOverview_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"overview\":\"Woohoo! My First Post!! test\",",
                 "",
@@ -172,7 +171,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should pass when overview is empty")
     @Test
-    public void publishJournalEntryEmptyOverview() throws Exception {
+    public void publishJournalEntryEmptyOverview_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"overview\":\"Woohoo! My First Post!! test\",",
                 "\"overview\":\"\",",
@@ -187,7 +186,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when dateOfEntry is missing")
     @Test
-    public void publishJournalEntryMissingDateOfEntry() throws Exception {
+    public void publishJournalEntryMissingDateOfEntry_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"dateOfEntry\":\"2022-08-19T00:00:00\",",
                 "",
@@ -196,7 +195,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when journal entry body is missing")
     @Test
-    public void publishJournalEntryMissingJournalBody() throws Exception {
+    public void publishJournalEntryMissingJournalBody_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 ",\"journalBodyItems\":[{\"topic\":\"My first topic\",\"description\":\"My first topic ever!!!\",\"recordList\":[{\"recKey\":\"a\",\"recValue\":\"1\"},{\"recKey\":\"targetA\",\"recValue\":\"2\"}]",
                 "",
@@ -206,7 +205,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when a topic in the journal entry body is missing")
     @Test
-    public void publishJournalEntryMissingTopic() throws Exception {
+    public void publishJournalEntryMissingTopic_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"topic\":\"My first topic\",",
                 "",
@@ -215,7 +214,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when a topic in the journal entry body is empty")
     @Test
-    public void publishJournalEntryEmptyTopic() throws Exception {
+    public void publishJournalEntryEmptyTopic_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"topic\":\"My first topic\",",
                 "\"topic\":\"\",",
@@ -224,7 +223,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when a description in the journal entry body is missing")
     @Test
-    public void publishJournalEntryMissingDescription() throws Exception {
+    public void publishJournalEntryMissingDescription_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"description\":\"This is my second topic...\",",
                 "",
@@ -233,7 +232,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should pass when a description in the journal entry body is empty")
     @Test
-    public void publishJournalEntryEmptyDescription() throws Exception {
+    public void publishJournalEntryEmptyDescription_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"description\":\"This is my second topic...\",",
                 "\"description\":\"\",",
@@ -248,7 +247,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when a record list in the journal entry body is missing")
     @Test
-    public void publishJournalEntryMissingRecordList() throws Exception {
+    public void publishJournalEntryMissingRecordList_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 ",\"recordList\":[{\"recKey\":\"a\",\"recValue\":\"1\"},{\"recKey\":\"targetA\",\"recValue\":\"2\"}]",
                 "",
@@ -258,7 +257,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when a recKey in the record list is missing")
     @Test
-    public void publishJournalEntryMissingRecKey() throws Exception {
+    public void publishJournalEntryMissingRecKey_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"recKey\":\"a\",",
                 "",
@@ -267,7 +266,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when a recKey in the record list is empty")
     @Test
-    public void publishJournalEntryEmptyRecKey() throws Exception {
+    public void publishJournalEntryEmptyRecKey_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 "\"recKey\":\"a\"",
                 "\"recKey\":\"\"",
@@ -276,7 +275,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when a recValue in the record list is missing")
     @Test
-    public void publishJournalEntryMissingRecValue() throws Exception {
+    public void publishJournalEntryMissingRecValue_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 ",\"recValue\":\"2\"",
                 "",
@@ -285,7 +284,7 @@ public class JournalEntryPublisherControllerTest {
 
     @DisplayName("should fail when a recValue in the record list is empty")
     @Test
-    public void publishJournalEntryEmptyRecValue() throws Exception {
+    public void publishJournalEntryEmptyRecValue_UnitTest() throws Exception {
         MvcResult mvcResult = doGenericValidationTest(
                 ",\"recValue\":\"2\"",
                 ",\"recValue\":\"\"",

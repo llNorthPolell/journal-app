@@ -26,7 +26,6 @@ import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
-@TestPropertySource(locations="classpath:application-test.properties")
 public class JournalEntryPublisherServiceTest {
 
     @Mock
@@ -57,7 +56,7 @@ public class JournalEntryPublisherServiceTest {
 
     @DisplayName("should return UUID and send to Kafka topic once")
     @Test
-    void processJournalEntrySuccess() throws JsonProcessingException {
+    void processJournalEntrySuccess_UnitTest() throws JsonProcessingException {
         Record rec1 = Record.builder()
                 .recKey("a")
                 .recValue("1")
