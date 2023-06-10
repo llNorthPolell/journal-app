@@ -9,6 +9,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,16 +25,27 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class JournalEntryRepositoryTest {
+@Testcontainers
+public class JournalEntryRepositoryIntegrationTest {
+
+    @Container
+    private static MongoDBContainer mongodb = new MongoDBContainer(DockerImageName.parse("mongo:latest"));
 
     private JournalEntryRepository journalEntryRepository;
 
     private JournalEntry mockJournalEntry;
 
     @Autowired
-    public JournalEntryRepositoryTest(JournalEntryRepository journalEntryRepository){
+    public JournalEntryRepositoryIntegrationTest(JournalEntryRepository journalEntryRepository){
         this.journalEntryRepository = journalEntryRepository;
     }
+
+    @DynamicPropertySource
+    public static void overrideProps(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri",mongodb::getReplicaSetUrl);
+    }
+
+
 
     @BeforeEach
     public void setupEachTest (){
