@@ -1,5 +1,6 @@
 # journal-app
-Journal app built using React and Firebase. App can be accessed via https://journal-app-75df1.firebaseapp.com.
+Journal app built using React and Firebase. Note Firebase is being used to prototype the frontend application features. I am currently working on writing a Java Spring Boot backend to replace Firebase. 
+App can be accessed via https://journal-app-75df1.firebaseapp.com.
 
 
 # Why use Journal App?
@@ -15,6 +16,7 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 
 
 ## Work in Progress
+- backend services (see server branch)
 - edit dashboard
 - goals screen
 - journal entries and search results screens
@@ -25,6 +27,5 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 
 
 ## Backlog
-- home page
 - interactive widgets such as todo list, scribbleboard and personal kanban board
 - deletion of journal, journal entry and dashboard config
