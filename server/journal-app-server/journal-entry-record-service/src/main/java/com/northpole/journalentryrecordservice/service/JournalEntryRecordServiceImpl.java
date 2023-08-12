@@ -2,9 +2,12 @@ package com.northpole.journalentryrecordservice.service;
 
 import com.northpole.common.entity.*;
 import com.northpole.common.entity.Record;
+import com.northpole.journalentryrecordservice.entity.JournalEntryRecordDataSet;
+import com.northpole.journalentryrecordservice.entity.JournalEntryRecordServiceInput;
 import com.northpole.journalentryrecordservice.repository.FlatRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -76,7 +79,7 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
             status=HttpStatus.INTERNAL_SERVER_ERROR.value();
             message=e.getMessage();
 
-            // send to retry loop
+            // TODO: send to retry topic
 
             return GeneralResponseBody.builder()
                     .status(status)
@@ -84,6 +87,34 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
                     .timeStamp(System.currentTimeMillis())
                     .build();
         }
+    }
+
+    @Override
+    public List<FlatRecord> getRecords(JournalEntryRecordServiceInput payload) {
+        return flatRecordRepository.findAllByIndices(
+                payload.getJournal(), payload.getTopic(), payload.getRecKey());
 
     }
+
+    @Override
+    public JournalEntryRecordDataSet getDataset(JournalEntryRecordServiceInput testInput) {
+        AggregationResults<JournalEntryRecordDataSet> result =
+                (testInput.getRecKeyX()==null || testInput.getRecKeyX().equals("dateOfEntry")) ?
+            flatRecordRepository.getDataByDateOfEntry(
+                    testInput.getJournal(),
+                    testInput.getTopic(),
+                    testInput.getRecKeyY()
+            ) :
+            flatRecordRepository.getDataByCustomField(
+              testInput.getJournal(),
+              testInput.getTopic(),
+              testInput.getRecKeyX(),
+              testInput.getRecKeyY()
+            );
+
+
+        return result.getMappedResults().get(0);
+    }
+
+
 }
