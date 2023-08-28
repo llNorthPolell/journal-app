@@ -1,13 +1,11 @@
 package com.northpole.journalappserver.controller;
 
 import com.northpole.journalappserver.entity.DashboardWidget;
-import com.northpole.journalappserver.entity.JournalEntry;
-import com.northpole.journalappserver.entity.requestbody.DashboardRequestBody;
+import com.northpole.journalappserver.entity.GeneralResponseBody;
 import com.northpole.journalappserver.service.DashboardWidgetService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,8 +23,17 @@ public class DashboardWidgetController {
     }
 
 
+    @GetMapping("/dashboard")
+    public List<DashboardWidget> getDashboard(
+            @RequestHeader(name="journalId") int journalId
+    ){
+        return dashboardWidgetService.getDashboardWidgetData(journalId);
+    }
+
     @PostMapping("/dashboard")
-    public List<DashboardWidget> getDashboard(@RequestBody DashboardRequestBody payload){
-        return dashboardWidgetService.getDashboardWidgetData(payload.getJournal());
+    public GeneralResponseBody createDashboardWidget(
+            @RequestBody @Valid DashboardWidget payload
+    ){
+        return dashboardWidgetService.createDashboardWidget(payload);
     }
 }

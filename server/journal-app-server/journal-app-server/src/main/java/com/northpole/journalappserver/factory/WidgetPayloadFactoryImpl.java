@@ -6,58 +6,39 @@ import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.entity.WidgetDataConfig;
 import com.northpole.journalappserver.entity.widgetpayload.*;
 import com.northpole.journalappserver.service.JournalEntryService;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class WidgetPayloadFactory {
-    private int journal;
-    private List<FlatRecord> dataStore;
+@Component
+public class WidgetPayloadFactoryImpl implements WidgetPayloadFactory {
     private JournalEntryService journalEntryService;
 
-    public enum WidgetType{
-        NOT_EXISTS(""),
-        LAST_ENTRY("last-entry"),
-        LINE_GRAPH("line-graph");
-
-        public final String value;
-
-        private WidgetType(String value){
-            this.value=value;
-        }
-
-        public static WidgetType getWidgetType(String input){
-            for(WidgetType e : values())
-                if (e.value.equals(input))
-                    return e;
-
-            return null;
-        }
-    }
-
-    public WidgetPayloadFactory(
-            int journal,
-            List<FlatRecord> dataStore,
+    public WidgetPayloadFactoryImpl(
             JournalEntryService journalEntryService
     ){
-        this.journal=journal;
-        this.dataStore=dataStore;
         this.journalEntryService=journalEntryService;
     }
 
-    public DashboardWidgetPayload getPayload(WidgetType type, List<WidgetDataConfig> configs){
+    public DashboardWidgetPayload getPayload(
+            WidgetType type,
+            List<WidgetDataConfig> configs,
+            int journalId,
+            List<FlatRecord> recordData
+    ){
         switch (type){
             case LAST_ENTRY:
-                return createTextPayload(configs);
+                return createTextPayload(configs, journalId);
             case LINE_GRAPH:
-                return createChartPayload(configs);
+                return createChartPayload(configs,recordData);
             default:
                 return null;
         }
     }
 
-    private TextPayload createTextPayload(List<WidgetDataConfig> configs){
-        JournalEntry lastEntry = this.journalEntryService.getLastEntryInJournal(this.journal);
+    // configs is a placeholder for now; will modify this when time comes where new text-based widget is required
+    private TextPayload createTextPayload(List<WidgetDataConfig> configs, int journalId){
+        JournalEntry lastEntry = this.journalEntryService.getLastEntryInJournal(journalId);
 
         if (lastEntry == null)
             return new TextPayload("There are no entries in this journal. Please publish a new journal entry to see contents here.");
@@ -66,7 +47,10 @@ public class WidgetPayloadFactory {
     }
 
 
-    private ChartPayload createChartPayload(List<WidgetDataConfig> configs) {
+    private ChartPayload createChartPayload(
+            List<WidgetDataConfig> configs,
+            List<FlatRecord> recordData
+    ) {
         String xRule = null;
         List<String> yRules = new ArrayList<>();
 
@@ -104,7 +88,7 @@ public class WidgetPayloadFactory {
         }
 
         // Filter and Group Datasets
-        for (FlatRecord r : dataStore){
+        for (FlatRecord r : recordData){
             String key = r.getDateOfEntry().toString();
             for (int i = 0 ; i < yRules.size(); i ++)
                 if (yRules.get(i).equals(r.getRecKey())){

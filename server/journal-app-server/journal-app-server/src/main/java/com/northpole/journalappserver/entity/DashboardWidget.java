@@ -1,6 +1,8 @@
 package com.northpole.journalappserver.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,12 +21,14 @@ public class DashboardWidget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private int id;
+    private Integer id;
 
     @Column(name="journal")
-    private int journal;
+    @NotNull
+    private Integer journal;
 
     @Column(name="type")
+    @NotNull
     private String type;
 
     @Column(name="creation_timestamp")
@@ -34,13 +38,15 @@ public class DashboardWidget {
     private LocalDateTime lastUpdated;
 
     @Column(name="position")
-    private int position;
+    private Integer position;
 
     @Column(name="title")
+    @NotNull
     private String title;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="widget")
+    @Valid
     private List<WidgetDataConfig> configs;
 
     @Transient

@@ -6,6 +6,8 @@ import com.northpole.journalappserver.entity.JournalBodyItem;
 import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.entity.Record;
 import com.northpole.journalappserver.service.JournalEntryService;
+import com.northpole.journalappserver.util.enums.APIResult;
+import com.northpole.journalappserver.util.enums.GenericAPITestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
@@ -27,7 +27,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureMockMvc
@@ -46,6 +45,8 @@ public class JournalEntryControllerTest {
     private long testTimestamp = System.currentTimeMillis();
     private GeneralResponseBody mockSuccessResult=null;
 
+    private GenericAPITestUtil genericAPITestUtil;
+
     @MockBean
     private JournalEntryService journalEntryService;
 
@@ -53,6 +54,11 @@ public class JournalEntryControllerTest {
     public JournalEntryControllerTest(MockMvc mockMvc,ObjectMapper objectMapper){
         this.mockMvc=mockMvc;
         this.objectMapper=objectMapper;
+        this.genericAPITestUtil = new GenericAPITestUtil(
+                this.mockMvc,
+                this.objectMapper,
+                this.ENDPOINT
+        );
     }
 
     @BeforeEach
@@ -104,88 +110,68 @@ public class JournalEntryControllerTest {
                 .thenReturn(mockSuccessResult);
     }
 
-    private enum API_RESULT {
-        FAIL(status().isBadRequest()), PASS(status().isOk());
-
-        private ResultMatcher result;
-
-        API_RESULT(ResultMatcher result){
-            this.result=result;
-        }
-
-        public ResultMatcher value(){
-            return this.result;
-        }
-
-    }
-
-    private MvcResult postPublishJournalEntry(String testJson,API_RESULT result) throws Exception{
-        return mockMvc.perform(
-                        MockMvcRequestBuilders.post(ENDPOINT)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(testJson))
-                .andExpect(result.value()).andReturn();
-    }
-
-    private MvcResult doGenericValidationTest(String keyValueString, String replace, API_RESULT result) throws Exception{
-        String testJson = objectMapper.writeValueAsString(mockJournalEntry)
-                .replace(keyValueString,replace);
-        return postPublishJournalEntry(testJson,result);
-    }
-
-    @DisplayName("should pass validation and return UUID")
+    @DisplayName("Should pass validation and return UUID")
     @Test
     public void publishJournalEntrySuccess_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest("","",API_RESULT.PASS);
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
+                "",
+                "",
+                APIResult.PASS);
         assertEquals(
                 objectMapper.writeValueAsString(mockSuccessResult),
                 mvcResult.getResponse().getContentAsString()
         );
     }
 
-    @DisplayName("should fail validation when journal is missing")
+    @DisplayName("Should fail validation when journal is missing")
     @Test
     public void publishJournalEntryMissingJournal_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"journal\":3,",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail validation when summary is missing")
+    @DisplayName("Should fail validation when summary is missing")
     @Test
     public void publishJournalEntryMissingSummary_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"summary\":\"My First Post\",",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail validation when summary is empty")
+    @DisplayName("Should fail validation when summary is empty")
     @Test
     public void publishJournalEntryEmptySummary_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"summary\":\"My First Post\",",
                 "\"summary\":\"\",",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail when overview is missing")
+    @DisplayName("Should fail when overview is missing")
     @Test
     public void publishJournalEntryMissingOverview_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"overview\":\"Woohoo! My First Post!! test\",",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should pass when overview is empty")
+    @DisplayName("Should pass when overview is empty")
     @Test
     public void publishJournalEntryEmptyOverview_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"overview\":\"Woohoo! My First Post!! test\",",
                 "\"overview\":\"\",",
-                API_RESULT.PASS);
+                APIResult.PASS);
 
         assertEquals(
                 objectMapper.writeValueAsString(mockSuccessResult),
@@ -193,59 +179,65 @@ public class JournalEntryControllerTest {
         );
     }
 
-    @DisplayName("should fail when dateOfEntry is missing")
+    @DisplayName("Should fail when dateOfEntry is missing")
     @Test
     public void publishJournalEntryMissingDateOfEntry_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"dateOfEntry\":\"2022-08-19T00:00:00\",",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail when journal entry body is missing")
+    @DisplayName("Should fail when journal entry body is missing")
     @Test
     public void publishJournalEntryMissingJournalBody_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 ",\"journalBodyItems\":[{\"topic\":\"My first topic\",\"description\":\"My first topic ever!!!\",\"recordList\":[{\"recKey\":\"a\",\"recValue\":\"1\"},{\"recKey\":\"targetA\",\"recValue\":\"2\"}]",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
 
-    @DisplayName("should fail when a topic in the journal entry body is missing")
+    @DisplayName("Should fail when a topic in the journal entry body is missing")
     @Test
     public void publishJournalEntryMissingTopic_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"topic\":\"My first topic\",",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail when a topic in the journal entry body is empty")
+    @DisplayName("Should fail when a topic in the journal entry body is empty")
     @Test
     public void publishJournalEntryEmptyTopic_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"topic\":\"My first topic\",",
                 "\"topic\":\"\",",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail when a description in the journal entry body is missing")
+    @DisplayName("Should fail when a description in the journal entry body is missing")
     @Test
     public void publishJournalEntryMissingDescription_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"description\":\"This is my second topic...\",",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should pass when a description in the journal entry body is empty")
+    @DisplayName("Should pass when a description in the journal entry body is empty")
     @Test
     public void publishJournalEntryEmptyDescription_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"description\":\"This is my second topic...\",",
                 "\"description\":\"\",",
-                API_RESULT.PASS);
+                APIResult.PASS);
 
         assertEquals(
                 objectMapper.writeValueAsString(mockSuccessResult),
@@ -253,49 +245,54 @@ public class JournalEntryControllerTest {
         );
     }
 
-    @DisplayName("should fail when a record list in the journal entry body is missing")
+    @DisplayName("Should fail when a record list in the journal entry body is missing")
     @Test
     public void publishJournalEntryMissingRecordList_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 ",\"recordList\":[{\"recKey\":\"a\",\"recValue\":\"1\"},{\"recKey\":\"targetA\",\"recValue\":\"2\"}]",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
 
-    @DisplayName("should fail when a recKey in the record list is missing")
+    @DisplayName("Should fail when a recKey in the record list is missing")
     @Test
     public void publishJournalEntryMissingRecKey_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"recKey\":\"a\",",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail when a recKey in the record list is empty")
+    @DisplayName("Should fail when a recKey in the record list is empty")
     @Test
     public void publishJournalEntryEmptyRecKey_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 "\"recKey\":\"a\"",
                 "\"recKey\":\"\"",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail when a recValue in the record list is missing")
+    @DisplayName("Should fail when a recValue in the record list is missing")
     @Test
     public void publishJournalEntryMissingRecValue_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 ",\"recValue\":\"2\"",
                 "",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 
-    @DisplayName("should fail when a recValue in the record list is empty")
+    @DisplayName("Should fail when a recValue in the record list is empty")
     @Test
     public void publishJournalEntryEmptyRecValue_UnitTest() throws Exception {
-        MvcResult mvcResult = doGenericValidationTest(
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
                 ",\"recValue\":\"2\"",
                 ",\"recValue\":\"\"",
-                API_RESULT.FAIL);
+                APIResult.FAIL);
     }
 }
