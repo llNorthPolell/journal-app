@@ -1,5 +1,7 @@
 # journal-app
-Journal app built using React and Firebase. I am currently working on a backend (coded in Java with Spring Boot, see "server" branch) to replace Firebase. App can be accessed via https://journal-app-75df1.firebaseapp.com.
+Journal app built using React and hosted on Firebase. Prototype of the app can be accessed via https://journal-app-75df1.firebaseapp.com.
+
+Due to the limitations of Firebase, a Spring Boot backend is currently in development, and progress is stored in the monolith-server branch. Once the goal tracking/achievement system is completed, planning to host it on a free backend hosting service like Render.com. 
 
 
 
@@ -8,17 +10,24 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 
 
 ## Implemented Features
+
+### Client
 - Google authentication
 - Journal creation
 - Journal entry creation and update
 - dynamic widget creation via widget menu
 - dynamic journal entry filtering
 
+### Server
+- journal entry creation
+- fetch, compile and return dashboard widget data
+  
 
 ## Work in Progress
-- edit dashboard
-- goals screen
-- journal entries and search results screens
+### Server
+- Goal Tracking / Achievement System
+- Updating Dashboard
+- Editing Journal Entries
 
 
 ## Known Issues
@@ -29,3 +38,6 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 - home page
 - interactive widgets such as todo list, scribbleboard and personal kanban board
 - deletion of journal, journal entry and dashboard config
+- edit dashboard
+- goals screen
+- journal entries and search results screens
