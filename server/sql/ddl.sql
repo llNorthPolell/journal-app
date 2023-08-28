@@ -1,0 +1,36 @@
+CREATE DATABASE journal_app;
+
+-- journal 
+CREATE TABLE journal
+(id SERIAL PRIMARY KEY NOT NULL,
+name VARCHAR(255) NOT NULL,
+author VARCHAR(255) NOT NULL,
+img TEXT DEFAULT NULL,
+creation_timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+last_updated TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL
+);
+
+
+
+
+-- dashboard widget
+CREATE TABLE dashboard_widget
+(id SERIAL PRIMARY KEY NOT NULL,
+journal INTEGER REFERENCES journal,
+creation_timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+last_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+type VARCHAR(255) NOT NULL,
+position INTEGER NOT NULL,
+title VARCHAR(255) DEFAULT NULL
+);
+
+
+-- widget data config
+CREATE TABLE widget_data_config
+(id SERIAL PRIMARY KEY NOT NULL,
+widget INTEGER REFERENCES dashboard_widget,
+type VARCHAR(1) NOT NULL,
+label VARCHAR(255) NOT NULL,
+color VARCHAR(7) NOT NULL,
+rule VARCHAR(255) NOT NULL
+);
