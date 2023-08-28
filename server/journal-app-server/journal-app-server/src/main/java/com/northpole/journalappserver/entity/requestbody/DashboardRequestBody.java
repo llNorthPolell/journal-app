@@ -1,4 +1,4 @@
-package com.northpole.journalappserver.entity;
+package com.northpole.journalappserver.entity.requestbody;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,15 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JournalEntryRecordServiceInput {
+public class DashboardRequestBody {
     @NotNull
     private int journal;
-
-    private String topic;
-
-    private String recKey;
-
-    private String recKeyX;
-
-    private String recKeyY;
 }

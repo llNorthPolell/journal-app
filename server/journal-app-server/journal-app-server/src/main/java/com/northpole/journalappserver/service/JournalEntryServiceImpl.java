@@ -6,8 +6,11 @@ import com.northpole.journalappserver.entity.GeneralResponseBody;
 import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.repository.JournalEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -50,5 +53,25 @@ public class JournalEntryServiceImpl implements JournalEntryService {
                     .timeStamp(System.currentTimeMillis())
                     .build();
         }
+    }
+
+    @Override
+    public List<JournalEntry> getJournalEntriesById(int journalId) {
+        AggregationResults<JournalEntry> result = this.journalEntryRepository.findAllByJournal(journalId);
+
+        if (result == null)
+            return null;
+
+        return result.getMappedResults();
+    }
+
+    @Override
+    public JournalEntry getLastEntryInJournal(int journalId) {
+        AggregationResults<JournalEntry> result = this.journalEntryRepository.findLastEntryInJournal(journalId);
+        List<JournalEntry> resultList = result.getMappedResults();
+        if (resultList.isEmpty())
+            return null;
+
+        return resultList.get(0);
     }
 }

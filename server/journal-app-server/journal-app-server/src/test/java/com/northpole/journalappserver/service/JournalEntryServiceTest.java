@@ -6,6 +6,7 @@ import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.entity.Record;
 import com.northpole.journalappserver.repository.FlatRecordRepository;
 import com.northpole.journalappserver.repository.JournalEntryRepository;
+import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,11 +38,14 @@ public class JournalEntryServiceTest {
 
     private JournalEntry mockJournalEntry;
 
+    private List<JournalEntry> mockJournalEntryResultList;
+
+
     @Autowired
     public JournalEntryServiceTest(
             JournalEntryService journalEntryService,
-            JournalEntryRepository journalEntryRepository,
-            FlatRecordRepository flatRecordRepository){
+            JournalEntryRecordService journalEntryRecordService,
+            JournalEntryRepository journalEntryRepository){
         this.journalEntryService=journalEntryService;
         this.journalEntryRepository=journalEntryRepository;
         this.journalEntryRecordService=journalEntryRecordService;
@@ -84,8 +89,14 @@ public class JournalEntryServiceTest {
                 .journalBodyItems(bodyList)
                 .build();
 
+        this.mockJournalEntryResultList = new ArrayList<>();
+        this.mockJournalEntryResultList.add(mockJournalEntry);
+
         when(journalEntryRepository.save(any(JournalEntry.class)))
                 .thenReturn(this.mockJournalEntry);
+
+        when(journalEntryRepository.findAllByJournal(anyInt()))
+                .thenReturn(new AggregationResults<>(mockJournalEntryResultList, new Document()));
 
         when(journalEntryRecordService.save(any(JournalEntry.class)))
                 .thenReturn(GeneralResponseBody.builder()
@@ -96,7 +107,7 @@ public class JournalEntryServiceTest {
     }
 
     @Test
-    @DisplayName("should pass journal entry JSON to DAO to save once")
+    @DisplayName("Should pass journal entry JSON to DAO to save once")
     public void saveSuccess_UnitTest(){
         GeneralResponseBody result = journalEntryService.save(mockJournalEntry);
 
@@ -104,5 +115,17 @@ public class JournalEntryServiceTest {
         verify(journalEntryRepository,times(1)).save(any(JournalEntry.class));
         verify(journalEntryRecordService,times(1)).save(any(JournalEntry.class));
     }
+
+
+    @Test
+    @DisplayName("Should call JournalEntryRepository.findAllByJournal() once to return all journal entries for a given journalId")
+    public void getJournalEntriesById_UnitTest(){
+        int journalId=3;
+        List<JournalEntry> result = journalEntryService.getJournalEntriesById(journalId);
+
+        verify(journalEntryRepository,times(1)).findAllByJournal(anyInt());
+        assertEquals(1,result.size());
+    }
+
 
 }

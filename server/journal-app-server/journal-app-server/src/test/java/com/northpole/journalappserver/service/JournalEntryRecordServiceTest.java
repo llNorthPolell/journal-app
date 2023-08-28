@@ -3,8 +3,6 @@ package com.northpole.journalappserver.service;
 import com.northpole.journalappserver.entity.*;
 import com.northpole.journalappserver.entity.Record;
 import com.northpole.journalappserver.entity.DateAndValue;
-import com.northpole.journalappserver.entity.JournalEntryRecordDataSet;
-import com.northpole.journalappserver.entity.JournalEntryRecordServiceInput;
 import com.northpole.journalappserver.repository.FlatRecordRepository;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +51,7 @@ public class JournalEntryRecordServiceTest {
 
     @Test
     @DisplayName("Should take json and flat map to list of FlattenedRecord objects, then call repository save() method")
-    public void save_test(){
+    public void save_UnitTest(){
         Record rec1 = Record.builder()
                 .recKey("a")
                 .recValue("1")
@@ -124,119 +122,4 @@ public class JournalEntryRecordServiceTest {
         verify(flatRecordRepository,times(1)).saveAll(anyList());
     }
 
-    @Test
-    @DisplayName("Should take input json and return dataset with dateOfEntry as X and provided recKey field as Y")
-    public void getDataset_byDateOfEntry_test(){
-        JournalEntryRecordServiceInput testInput = JournalEntryRecordServiceInput.builder()
-                .journal(3)
-                .topic("My First Post")
-                .recKeyX("dateOfEntry")
-                .recKeyY("targetA")
-                .build();
-
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        DateAndValue x1 = new DateAndValue(
-                LocalDateTime.parse("2022-08-19 04:00",formatter),
-                "2022-08-19T04:00:00.000Z");
-
-
-        DateAndValue x2 = new DateAndValue(
-                LocalDateTime.parse("2022-08-21 04:00",formatter),
-                "2022-08-21T04:00:00.000Z");
-
-
-        DateAndValue y1 = new DateAndValue(
-                LocalDateTime.parse("2022-08-19 04:00",formatter),
-                "1");
-
-
-        DateAndValue y2 = new DateAndValue(
-                LocalDateTime.parse("2022-08-21 04:00",formatter),
-                "6");
-
-        List<DateAndValue> x = new ArrayList();
-        x.add(x1);
-        x.add(x2);
-
-        List<DateAndValue> y = new ArrayList<>();
-        y.add(y1);
-        y.add(y2);
-
-        JournalEntryRecordDataSet mockResult = JournalEntryRecordDataSet.builder()
-                .x(x)
-                .y(y)
-                .build();
-
-        List<JournalEntryRecordDataSet> mockResultList = new ArrayList<>();
-        mockResultList.add(mockResult);
-
-        Document mockDoc = new Document();
-
-        AggregationResults<JournalEntryRecordDataSet> mockMongoResult=new AggregationResults<>(mockResultList,mockDoc);
-
-        when(flatRecordRepository.getDataByDateOfEntry(anyInt(),anyString(),anyString())).thenReturn(mockMongoResult);
-        JournalEntryRecordDataSet result = journalEntryRecordService.getDataset(testInput);
-
-        assertEquals(mockResult, result);
-    }
-
-    @Test
-    @DisplayName("Should take input json and return dataset with recKeyX as X and provided recKeyY field as Y")
-    public void getDataset_byCustomField_test(){
-        JournalEntryRecordServiceInput testInput = JournalEntryRecordServiceInput.builder()
-                .journal(3)
-                .topic("My First Post")
-                .recKeyX("a")
-                .recKeyY("targetA")
-                .build();
-
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        DateAndValue x1 = new DateAndValue(
-                LocalDateTime.parse("2022-08-19 04:00",formatter),
-                "2022-08-19T04:00:00.000Z");
-
-
-        DateAndValue x2 = new DateAndValue(
-                LocalDateTime.parse("2022-08-21 04:00",formatter),
-                "2022-08-21T04:00:00.000Z");
-
-
-        DateAndValue y1 = new DateAndValue(
-                LocalDateTime.parse("2022-08-19 04:00",formatter),
-                "1");
-
-
-        DateAndValue y2 = new DateAndValue(
-                LocalDateTime.parse("2022-08-21 04:00",formatter),
-                "6");
-
-        List<DateAndValue> x = new ArrayList();
-        x.add(x1);
-        x.add(x2);
-
-        List<DateAndValue> y = new ArrayList<>();
-        y.add(y1);
-        y.add(y2);
-
-        JournalEntryRecordDataSet mockResult = JournalEntryRecordDataSet.builder()
-                .x(x)
-                .y(y)
-                .build();
-
-        List<JournalEntryRecordDataSet> mockResultList = new ArrayList<>();
-        mockResultList.add(mockResult);
-
-        Document mockDoc = new Document();
-
-        AggregationResults<JournalEntryRecordDataSet> mockMongoResult=new AggregationResults<>(mockResultList,mockDoc);
-
-        when(flatRecordRepository.getDataByCustomField(anyInt(), anyString(),anyString(),anyString())).thenReturn(mockMongoResult);
-        JournalEntryRecordDataSet result = journalEntryRecordService.getDataset(testInput);
-
-        assertEquals(mockResult, result);
-    }
 }

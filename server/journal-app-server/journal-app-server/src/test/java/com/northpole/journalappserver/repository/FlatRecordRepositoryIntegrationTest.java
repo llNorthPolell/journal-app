@@ -148,114 +148,36 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordRepository.deleteAll();
     }
 
-    //TODO: Test case fails only with testcontainers as it compares *T04:00 to *T08:00 (looks like time zone was added)
-    @Test
-    @DisplayName("Should return expected JournalEntryRecordDataSet object with x as recKey=dateOfEntry and y as recKey=\"a\"")
-    public void getDataByDateOfEntry_IntegrationTest(){
-        int journal= 3;
-        String topic = "My first topic";
-        String recKey= "a";
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        DateAndValue x1 = new DateAndValue(
-                LocalDateTime.parse("2022-08-19 04:00",formatter),
-                "2022-08-19T04:00:00.000Z");
-
-
-        DateAndValue x2 = new DateAndValue(
-                LocalDateTime.parse("2022-08-21 04:00",formatter),
-                "2022-08-21T04:00:00.000Z");
-
-
-        DateAndValue y1 = new DateAndValue(
-                LocalDateTime.parse("2022-08-19 04:00",formatter),
-                "1");
-
-
-        DateAndValue y2 = new DateAndValue(
-                LocalDateTime.parse("2022-08-21 04:00",formatter),
-                "6");
-
-        List<DateAndValue> x = new ArrayList();
-        x.add(x1);
-        x.add(x2);
-
-        List<DateAndValue> y = new ArrayList<>();
-        y.add(y1);
-        y.add(y2);
-
-        JournalEntryRecordDataSet expected = JournalEntryRecordDataSet.builder()
-                .x(x)
-                .y(y)
-                .build();
-
-        AggregationResults<JournalEntryRecordDataSet> result = flatRecordRepository.getDataByDateOfEntry(journal,topic,recKey);
-
-        JournalEntryRecordDataSet actual = result.getMappedResults().get(0);
-
-
-        List<FlatRecord> result2 = flatRecordRepository.findAll();
-
-        assertNotNull(result);
-        assertEquals(expected,actual);
-    }
-
-
-
 
     @Test
-    @DisplayName("Should return expected JournalEntryRecordDataSet object with x as recKey=\"a\" and y as recKey=\"targetA\"")
-    public void getDataByCustomField_IntegrationTest(){
+    @DisplayName("Should return dashboard data from record data in journal entries sorted by dateOfEntry (desc), topic, and recKey")
+    public void getDashboardRecordData_IntegrationTest(){
         int journal= 3;
-        String topic = "My first topic";
-        String recKeyX= "a";
-        String recKeyY= "targetA";
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        DateAndValue x1 = new DateAndValue(
-                LocalDateTime.parse("2022-08-19 04:00",formatter),
-                "1");
-
-
-        DateAndValue x2 = new DateAndValue(
-                LocalDateTime.parse("2022-08-21 04:00",formatter),
-                "6");
-
-
-        DateAndValue y1 = new DateAndValue(
-                LocalDateTime.parse("2022-08-19 04:00",formatter),
-                "2");
-
-
-        DateAndValue y2 = new DateAndValue(
-                LocalDateTime.parse("2022-08-20 04:00",formatter),
-                "3");
-
-        DateAndValue y3 = new DateAndValue(
-                LocalDateTime.parse("2022-08-21 04:00",formatter),
-                "6");
-
-        List<DateAndValue> x = new ArrayList();
-        x.add(x1);
-        x.add(x2);
-
-        List<DateAndValue> y = new ArrayList<>();
-        y.add(y1);
-        y.add(y2);
-        y.add(y3);
-
-        JournalEntryRecordDataSet expected = JournalEntryRecordDataSet.builder()
-                .x(x)
-                .y(y)
-                .build();
-
-        AggregationResults<JournalEntryRecordDataSet> result = flatRecordRepository.getDataByCustomField(journal,topic,recKeyX,recKeyY);
-
-        JournalEntryRecordDataSet actual = result.getMappedResults().get(0);
+        AggregationResults<FlatRecord> result = flatRecordRepository.getDashboardData(journal);
 
         assertNotNull(result);
-        assertEquals(expected,actual);
+
+        List<FlatRecord> resultList = result.getMappedResults();
+
+        List<String> expected = new ArrayList<>();
+        expected.add("6");
+        expected.add("6");
+        expected.add("3");
+        expected.add("1");
+        expected.add("2");
+        expected.add("asdfasdf");
+        expected.add("5");
+        expected.add("3");
+
+        List<String> actual = new ArrayList<>();
+
+        for (FlatRecord r : resultList)
+            actual.add(r.getRecValue());
+
+        assertEquals(expected.size(),actual.size());
+
+        for (int i = 0; i < expected.size(); i++)
+            assertEquals(expected.get(i),actual.get(i));
+
     }
 }

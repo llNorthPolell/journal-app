@@ -2,8 +2,6 @@ package com.northpole.journalappserver.service;
 
 import com.northpole.journalappserver.entity.*;
 import com.northpole.journalappserver.entity.Record;
-import com.northpole.journalappserver.entity.JournalEntryRecordDataSet;
-import com.northpole.journalappserver.entity.JournalEntryRecordServiceInput;
 import com.northpole.journalappserver.repository.FlatRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -89,32 +87,14 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
         }
     }
 
-    @Override
-    public List<FlatRecord> getRecords(JournalEntryRecordServiceInput payload) {
-        return flatRecordRepository.findAllByIndices(
-                payload.getJournal(), payload.getTopic(), payload.getRecKey());
-
-    }
 
     @Override
-    public JournalEntryRecordDataSet getDataset(JournalEntryRecordServiceInput testInput) {
-        AggregationResults<JournalEntryRecordDataSet> result =
-                (testInput.getRecKeyX()==null || testInput.getRecKeyX().equals("dateOfEntry")) ?
-            flatRecordRepository.getDataByDateOfEntry(
-                    testInput.getJournal(),
-                    testInput.getTopic(),
-                    testInput.getRecKeyY()
-            ) :
-            flatRecordRepository.getDataByCustomField(
-              testInput.getJournal(),
-              testInput.getTopic(),
-              testInput.getRecKeyX(),
-              testInput.getRecKeyY()
-            );
-
-
-        return result.getMappedResults().get(0);
+    public List<FlatRecord> getDashboardData(int journalId) {
+        AggregationResults<FlatRecord> results = flatRecordRepository.getDashboardData(journalId);
+        return results.getMappedResults();
     }
+
+
 
 
 }

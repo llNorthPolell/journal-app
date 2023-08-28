@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
@@ -86,6 +87,55 @@ public class JournalEntryRepositoryIntegrationTest {
                 .journalBodyItems(bodyList)
                 .build();
 
+
+
+        List<JournalEntry> mockExistingJournalEntries = new ArrayList<>();
+
+        mockExistingJournalEntries.add(
+                JournalEntry.builder()
+                        .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7b3a1b2"))
+                        .journal(1)
+                        .summary("Dummy Entry")
+                        .overview("Test1")
+                        .dateOfEntry(LocalDateTime.of(2023,1,20,0,0,0,0))
+                        .journalBodyItems(bodyList)
+                        .build()
+        );
+
+        mockExistingJournalEntries.add(
+                JournalEntry.builder()
+                        .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7123456"))
+                        .journal(2)
+                        .summary("Dummy Entry 2")
+                        .overview("Test1")
+                        .dateOfEntry(LocalDateTime.of(2023,3,31,0,0,0,0))
+                        .journalBodyItems(bodyList)
+                        .build()
+        );
+
+        mockExistingJournalEntries.add(
+                JournalEntry.builder()
+                        .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7123456"))
+                        .journal(3)
+                        .summary("Dummy Entry 3")
+                        .overview("This one should be picked up by findAllByJournal!")
+                        .dateOfEntry(LocalDateTime.of(2023,6,30,0,0,0,0))
+                        .journalBodyItems(bodyList)
+                        .build()
+        );
+
+        mockExistingJournalEntries.add(
+                JournalEntry.builder()
+                        .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d71a3b5c"))
+                        .journal(3)
+                        .summary("Dummy Entry 4")
+                        .overview("This one should also be picked up by findAllByJournal, and this is the last entry!")
+                        .dateOfEntry(LocalDateTime.of(2023,7,1,0,0,0,0))
+                        .journalBodyItems(bodyList)
+                        .build()
+        );
+
+        journalEntryRepository.saveAll(mockExistingJournalEntries);
     }
 
     @AfterEach
@@ -96,11 +146,35 @@ public class JournalEntryRepositoryIntegrationTest {
 
 
     @Test
-    @DisplayName("should save to data source")
+    @DisplayName("Should save to data source")
     public void saveSuccess_IntegrationTest(){
         journalEntryRepository.save(mockJournalEntry);
         Optional<JournalEntry> searchResult = journalEntryRepository.findById(mockJournalEntry.getEntryId());
         assertNotEquals(Optional.empty(),searchResult);
     }
 
+    @Test
+    @DisplayName("Should return all journal entries with a given journalId")
+    public void findAllByJournal_IntegrationTest(){
+        int journalId=3;
+        AggregationResults<JournalEntry> result = journalEntryRepository.findAllByJournal(journalId);
+
+        List<JournalEntry> resultList = result.getMappedResults();
+
+        assertEquals(2,resultList.size());
+        assertEquals("This one should also be picked up by findAllByJournal, and this is the last entry!",resultList.get(0).getOverview());
+        assertEquals("This one should be picked up by findAllByJournal!",resultList.get(1).getOverview());
+    }
+
+    @Test
+    @DisplayName("Should return last journal entry with given journalId")
+    public void findLastEntryInJournal_IntegrationTest(){
+        int journalId=3;
+        AggregationResults<JournalEntry>result = journalEntryRepository.findLastEntryInJournal(journalId);
+
+        List<JournalEntry> resultList = result.getMappedResults();
+
+        assertEquals(1,resultList.size());
+        assertEquals("This one should also be picked up by findAllByJournal, and this is the last entry!",resultList.get(0).getOverview());
+    }
 }
