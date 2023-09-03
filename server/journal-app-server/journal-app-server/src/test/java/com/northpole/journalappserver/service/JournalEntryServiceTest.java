@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ public class JournalEntryServiceTest {
     @Mock
     private JournalEntryRecordService journalEntryRecordService;
 
+    @Mock
+    private GoalTrackerService goalTrackerService;
+
     @InjectMocks
     private JournalEntryService journalEntryService;
 
@@ -45,9 +49,11 @@ public class JournalEntryServiceTest {
     public JournalEntryServiceTest(
             JournalEntryService journalEntryService,
             JournalEntryRecordService journalEntryRecordService,
+            GoalTrackerService goalTrackerService,
             JournalEntryRepository journalEntryRepository){
         this.journalEntryService=journalEntryService;
         this.journalEntryRepository=journalEntryRepository;
+        this.goalTrackerService=goalTrackerService;
         this.journalEntryRecordService=journalEntryRecordService;
     }
 
@@ -104,6 +110,10 @@ public class JournalEntryServiceTest {
                         .message("{\"Content\":\"List of flat records.... \"}")
                         .timeStamp(System.currentTimeMillis())
                         .build());
+
+        ReflectionTestUtils.setField(journalEntryService,"journalEntryRepository", journalEntryRepository);
+        ReflectionTestUtils.setField(journalEntryService,"journalEntryRecordService", journalEntryRecordService);
+        ReflectionTestUtils.setField(journalEntryService,"goalTrackerService", goalTrackerService);
     }
 
     @Test
@@ -114,6 +124,7 @@ public class JournalEntryServiceTest {
         assertEquals(200,result.getStatus());
         verify(journalEntryRepository,times(1)).save(any(JournalEntry.class));
         verify(journalEntryRecordService,times(1)).save(any(JournalEntry.class));
+        verify(goalTrackerService,times(1)).updateProgress(anyString());
     }
 
 

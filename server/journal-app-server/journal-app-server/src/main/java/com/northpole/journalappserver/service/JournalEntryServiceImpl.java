@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.northpole.journalappserver.entity.GeneralResponseBody;
 import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.repository.JournalEntryRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
@@ -18,19 +19,23 @@ import java.util.UUID;
 public class JournalEntryServiceImpl implements JournalEntryService {
     private JournalEntryRepository journalEntryRepository;
     private JournalEntryRecordService journalEntryRecordService;
+    private GoalTrackerService goalTrackerService;
     private ObjectMapper objectMapper;
 
     @Autowired
     public JournalEntryServiceImpl(
             JournalEntryRepository journalEntryRepository,
             JournalEntryRecordService journalEntryRecordService,
+            GoalTrackerService goalTrackerService,
             ObjectMapper objectMapper) {
         this.journalEntryRepository=journalEntryRepository;
         this.journalEntryRecordService=journalEntryRecordService;
+        this.goalTrackerService=goalTrackerService;
         this.objectMapper = objectMapper;
     }
     
     @Override
+    @Transactional
     public GeneralResponseBody save(JournalEntry payload) {
         UUID saveId = UUID.randomUUID();
         payload.setEntryId(saveId);
@@ -38,6 +43,8 @@ public class JournalEntryServiceImpl implements JournalEntryService {
         try {
             JournalEntry saveResult = journalEntryRepository.save(payload);
             GeneralResponseBody extractAndSaveFlatRecordResult = journalEntryRecordService.save(payload);
+            GeneralResponseBody updateProgressResult = goalTrackerService.updateProgress(
+                    extractAndSaveFlatRecordResult.getMessage());
 
             return GeneralResponseBody.builder()
                     .status(200)

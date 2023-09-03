@@ -1,7 +1,6 @@
 package com.northpole.journalappserver.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,26 +9,42 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name="dashboard_widget")
+@Table(name="objective")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DashboardWidget {
+public class Objective {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Integer id;
 
-    @Column(name="journal")
-    @NotNull
-    private Integer journal;
+    @Column(name="goal")
+    private UUID goalId;
 
-    @Column(name="type")
+    @Column(name="journal")
+    private int journalId;
+
+    @Column(name="status")
+    private String status;
+
     @NotNull
-    private String type;
+    @Column(name="topic")
+    private String topic;
+
+    @NotNull
+    @Column(name="description")
+    private String description;
+
+    @Column(name="deadline")
+    private LocalDateTime deadline;
+
+    @Column(name="date_completed")
+    private LocalDateTime dateCompleted;
 
     @Column(name="creation_timestamp")
     private LocalDateTime creationTimestamp;
@@ -37,19 +52,10 @@ public class DashboardWidget {
     @Column(name="last_updated")
     private LocalDateTime lastUpdated;
 
-    @Column(name="position")
-    private Integer position;
-
-    @Column(name="title")
-    @NotNull
-    private String title;
+    @Column(name="completion_criteria")
+    private String completionCriteria;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="widget",nullable = false)
-    @Valid
-    private List<WidgetDataConfig> configs;
-
-    @Transient
-    private DashboardWidgetPayload payload;
-
+    @JoinColumn(name="objective", nullable = false)
+    private List<Progress> progressList;
 }

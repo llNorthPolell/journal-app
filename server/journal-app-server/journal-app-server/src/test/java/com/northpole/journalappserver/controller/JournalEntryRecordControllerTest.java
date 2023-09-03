@@ -2,7 +2,6 @@ package com.northpole.journalappserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.northpole.journalappserver.entity.FlatRecord;
-import com.northpole.journalappserver.entity.DateAndValue;
 import com.northpole.journalappserver.service.JournalEntryRecordService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

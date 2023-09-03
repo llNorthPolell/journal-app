@@ -1,5 +1,7 @@
 package com.northpole.journalappserver.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.northpole.journalappserver.entity.*;
 import com.northpole.journalappserver.entity.Record;
 import com.northpole.journalappserver.repository.FlatRecordRepository;
@@ -19,11 +21,15 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
 
     private FlatRecordRepository flatRecordRepository;
 
+    private ObjectMapper objectMapper;
+
     @Autowired
     public JournalEntryRecordServiceImpl(
-            FlatRecordRepository flatRecordRepository
+            FlatRecordRepository flatRecordRepository,
+            ObjectMapper objectMapper
     ){
         this.flatRecordRepository=flatRecordRepository;
+        this.objectMapper=objectMapper;
     }
 
     private List<FlatRecord> getFlattenedRecords(
@@ -49,9 +55,9 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
 
     @Override
     public GeneralResponseBody save(JournalEntry payload) {
-        List<FlatRecord> recordsToSave = new ArrayList<FlatRecord>();
+        List<FlatRecord> recordsToSave = new ArrayList<>();
         int status = HttpStatus.OK.value();
-        String message = "";
+        String message;
 
         for(JournalBodyItem j : payload.getJournalBodyItems()){
             List<Record> recordList = new ArrayList<>(j.getRecordList());
@@ -62,10 +68,11 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
         }
 
         try {
-            this.flatRecordRepository.saveAll(recordsToSave);
+            List<FlatRecord> saveResults = flatRecordRepository.saveAll(recordsToSave);
+            String flatRecordJson = objectMapper.writeValueAsString(saveResults);
 
             message = "{\"count\":"+recordsToSave.size()+","+
-                    "\"flatRecords\":" +recordsToSave.toString()+"}";
+                    "\"flatRecords\":" +flatRecordJson+"}";
 
             return GeneralResponseBody.builder()
                     .status(status)
@@ -73,7 +80,7 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
                     .timeStamp(System.currentTimeMillis())
                     .build();
         }
-        catch(DataAccessException e){
+        catch(DataAccessException | JsonProcessingException e){
             status=HttpStatus.INTERNAL_SERVER_ERROR.value();
             message=e.getMessage();
 

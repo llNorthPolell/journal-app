@@ -2,7 +2,6 @@ package com.northpole.journalappserver.service;
 
 import com.northpole.journalappserver.entity.*;
 import com.northpole.journalappserver.entity.Record;
-import com.northpole.journalappserver.entity.DateAndValue;
 import com.northpole.journalappserver.repository.FlatRecordRepository;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,6 +34,7 @@ public class JournalEntryRecordServiceTest {
 
     private JournalEntry mockJournalEntry;
 
+    private List<FlatRecord> mockFlatRecords;
 
     @Autowired
     public JournalEntryRecordServiceTest(
@@ -46,12 +47,10 @@ public class JournalEntryRecordServiceTest {
 
     @BeforeEach
     public void setupEachTest (){
+        List<Record> recList1 = new ArrayList<>();
+        List<Record> recList2 = new ArrayList<>();
+        mockFlatRecords= new ArrayList<>();
 
-    }
-
-    @Test
-    @DisplayName("Should take json and flat map to list of FlattenedRecord objects, then call repository save() method")
-    public void save_UnitTest(){
         Record rec1 = Record.builder()
                 .recKey("a")
                 .recValue("1")
@@ -77,10 +76,9 @@ public class JournalEntryRecordServiceTest {
                 .recValue("3")
                 .build();
 
-        List<Record> recList1 = new ArrayList<>();
+
         recList1.add(rec1);
         recList1.add(rec2);
-        List<Record> recList2 = new ArrayList<>();
         recList2.add(rec3);
         recList2.add(rec4);
         recList2.add(rec5);
@@ -114,8 +112,68 @@ public class JournalEntryRecordServiceTest {
                 .journalBodyItems(bodyList)
                 .build();
 
-        when(flatRecordRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
 
+        mockFlatRecords.add(
+                FlatRecord.builder()
+                        .id(UUID.fromString("a5e6346d-9967-4e23-b6b5-baaa9e619a1c"))
+                        .dateOfEntry(mockJournalEntry.getDateOfEntry())
+                        .journal(3)
+                        .recKey(rec1.getRecKey())
+                        .recValue(rec1.getRecValue())
+                        .topic(body1.getTopic())
+                        .build()
+        );
+
+        mockFlatRecords.add(
+                FlatRecord.builder()
+                        .id(UUID.fromString("3c13ecdd-f125-425e-a535-51bf093001cc"))
+                        .dateOfEntry(mockJournalEntry.getDateOfEntry())
+                        .journal(3)
+                        .recKey(rec2.getRecKey())
+                        .recValue(rec2.getRecValue())
+                        .topic(body1.getTopic())
+                        .build()
+        );
+
+        mockFlatRecords.add(
+                FlatRecord.builder()
+                        .id(UUID.fromString("2fcef89c-2f5c-461c-8411-539dd949605e"))
+                        .dateOfEntry(mockJournalEntry.getDateOfEntry())
+                        .journal(3)
+                        .recKey(rec3.getRecKey())
+                        .recValue(rec3.getRecValue())
+                        .topic(body2.getTopic())
+                        .build()
+        );
+
+        mockFlatRecords.add(
+                FlatRecord.builder()
+                        .id(UUID.fromString("8bd95d32-9a34-42f9-93c3-95bb7d431549"))
+                        .dateOfEntry(mockJournalEntry.getDateOfEntry())
+                        .journal(3)
+                        .recKey(rec4.getRecKey())
+                        .recValue(rec4.getRecValue())
+                        .topic(body2.getTopic())
+                        .build()
+        );
+
+        mockFlatRecords.add(
+                FlatRecord.builder()
+                        .id(UUID.fromString("271aa723-18be-4049-a9d9-61c18da98d92"))
+                        .dateOfEntry(mockJournalEntry.getDateOfEntry())
+                        .journal(3)
+                        .recKey(rec5.getRecKey())
+                        .recValue(rec5.getRecValue())
+                        .topic(body1.getTopic())
+                        .build()
+        );
+
+        when(flatRecordRepository.saveAll(anyList())).thenReturn(mockFlatRecords);
+    }
+
+    @Test
+    @DisplayName("Should take json and flat map to list of FlattenedRecord objects, then call repository save() method")
+    public void save_UnitTest(){
         GeneralResponseBody result = journalEntryRecordService.save(mockJournalEntry);
 
         assertTrue(result.getMessage().contains("\"count\":5"));
