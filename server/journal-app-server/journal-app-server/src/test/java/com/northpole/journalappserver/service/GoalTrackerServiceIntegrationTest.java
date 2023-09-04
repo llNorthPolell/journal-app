@@ -6,6 +6,7 @@ import com.northpole.journalappserver.entity.Objective;
 import com.northpole.journalappserver.entity.Progress;
 import com.northpole.journalappserver.repository.GoalRepository;
 import com.northpole.journalappserver.repository.ObjectiveRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -110,6 +111,11 @@ public class GoalTrackerServiceIntegrationTest {
         );
     }
 
+    @AfterEach
+    public void cleanupAfterEachTest(){
+        goalRepository.deleteAll();
+    }
+
 
     @Test
     @DisplayName("Should save entire Goal object to MongoDB, Objectives and Progress to Postgres")
@@ -117,8 +123,10 @@ public class GoalTrackerServiceIntegrationTest {
         GeneralResponseBody response = goalTrackerService.saveGoal(mockGoal);
         assertEquals(200,response.getStatus());
 
-        Optional<Objective> newObjective = objectiveRepository.findById(3);
-        Goal newGoal = goalRepository.findAll().get(0);
+        Optional<Objective> newObjective = objectiveRepository.findById(1);
+        List<Goal> allGoals = goalRepository.findAll();
+        Goal newGoal = allGoals.get(1);
+
         assertEquals("{\"goalId\":\"" + newGoal.getId()
                 + "\", \"objectiveIds\":["+newObjective.get().getId()+"]}",response.getMessage());
 
@@ -163,7 +171,7 @@ public class GoalTrackerServiceIntegrationTest {
         assertEquals(200,response.getStatus());
 
         List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
-        Optional<Objective> result = objectiveRepository.findById(1);
+        Optional<Objective> result = objectiveRepository.findById(7);
 
         assertTrue(result.isPresent());
         assertEquals("COMPLETE",result.get().getStatus());
@@ -171,7 +179,7 @@ public class GoalTrackerServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should update Objective to COMPLETE status when both tasks(progress entries) have met target_value")
+    @DisplayName("Should not update Objective to COMPLETE status when only one task(progress entry) meets target_value")
     public void updateProgress_compareTypeAND_notCompleted_IntegrationTest(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         String message = """
@@ -182,7 +190,7 @@ public class GoalTrackerServiceIntegrationTest {
                             "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a1c",
                             "dateOfEntry": "2022-08-19T00:00:00",
                             "journal": 3,
-                            "topic": "test",
+                            "topic": "test3",
                             "recKey": "Goals Created",
                             "recValue": "1"
                         },
@@ -190,7 +198,7 @@ public class GoalTrackerServiceIntegrationTest {
                             "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a2d",
                             "dateOfEntry": "2022-08-19T00:00:00",
                             "journal": 3,
-                            "topic": "test",
+                            "topic": "test3",
                             "recKey": "Tasks Tested",
                             "recValue": "1"
                         }
@@ -203,7 +211,7 @@ public class GoalTrackerServiceIntegrationTest {
         assertEquals(200,response.getStatus());
 
         List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
-        Optional<Objective> result = objectiveRepository.findById(1);
+        Optional<Objective> result = objectiveRepository.findById(9);
 
         assertTrue(result.isPresent());
         assertEquals("IN PROGRESS",result.get().getStatus());
@@ -242,7 +250,7 @@ public class GoalTrackerServiceIntegrationTest {
         assertEquals(200,response.getStatus());
 
         List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
-        Optional<Objective> result = objectiveRepository.findById(2);
+        Optional<Objective> result = objectiveRepository.findById(8);
 
         assertTrue(result.isPresent());
         assertEquals("COMPLETE",result.get().getStatus());
@@ -259,6 +267,6 @@ public class GoalTrackerServiceIntegrationTest {
         assertEquals(1,result.size());
         assertEquals("Get Goal By Journal ID Works", result.get(0).getDescription());
         assertEquals(1, result.get(0).getObjectives().size());
-        assertEquals(1, result.get(0).getObjectives().get(0).getId());
+        assertEquals(7, result.get(0).getObjectives().get(0).getId());
     }
 }

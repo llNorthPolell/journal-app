@@ -163,22 +163,32 @@ VALUES (
 );
 
 -- objective
-INSERT INTO objective (goal,journal,icon,status,topic,description,completion_criteria,creation_timestamp,last_updated)
-VALUES ('e6dc531c-2427-46bd-a7c6-748f86fd33ae',3,'someIcon.png','IN PROGRESS','test','Create one goal and test two objective tasks','AND',current_timestamp, current_timestamp);
+INSERT INTO objective (id,goal,journal,icon,status,topic,description,completion_criteria,creation_timestamp,last_updated)
+VALUES (7,'e6dc531c-2427-46bd-a7c6-748f86fd33ae',3,'someIcon.png','IN PROGRESS','test','Create one goal and test two objective tasks','AND',current_timestamp, current_timestamp);
 
-INSERT INTO objective (goal,journal,icon,status,topic,description,completion_criteria,creation_timestamp,last_updated)
-VALUES ('c74df696-0d90-425f-b989-c6d3a8351467',3,'someIcon.png','IN PROGRESS','test2','Create one goal or test two objective tasks','OR',current_timestamp, current_timestamp);
+INSERT INTO objective (id,goal,journal,icon,status,topic,description,completion_criteria,creation_timestamp,last_updated)
+VALUES (8,'c74df696-0d90-425f-b989-c6d3a8351467',3,'someIcon.png','IN PROGRESS','test2','Create one goal or test two objective tasks','OR',current_timestamp, current_timestamp);
+
+INSERT INTO objective (id,goal,journal,icon,status,topic,description,completion_criteria,creation_timestamp,last_updated)
+VALUES (9,'6ffb1ae2-7adb-4cbd-a2b5-a2423d655e69',3,'someIcon.png','IN PROGRESS','test3','Create one goal and test two objective tasks (but only one should actually be tested in this test case)','AND',current_timestamp, current_timestamp);
+
 
 
 -- progress
-INSERT INTO progress (objective,rec_key,current_value,compare_type,target_value)
-VALUES (1,'Goals Created',0,'>=',1);
+INSERT INTO progress (id, objective,rec_key,current_value,compare_type,target_value)
+VALUES (4,7,'Goals Created',0,'>=',1);
 
-INSERT INTO progress (objective,rec_key,current_value,compare_type,target_value)
-VALUES (1,'Tasks Tested',0,'=',2);
+INSERT INTO progress (id,objective,rec_key,current_value,compare_type,target_value)
+VALUES (5,7,'Tasks Tested',0,'=',2);
 
-INSERT INTO progress (objective,rec_key,current_value,compare_type,target_value)
-VALUES (2,'Goals Created',0,'>=',1);
+INSERT INTO progress (id,objective,rec_key,current_value,compare_type,target_value)
+VALUES (6,8,'Goals Created',0,'>=',1);
 
-INSERT INTO progress (objective,rec_key,current_value,compare_type,target_value)
-VALUES (2,'Tasks Tested',0,'=',2);
+INSERT INTO progress (id,objective,rec_key,current_value,compare_type,target_value)
+VALUES (7,8,'Tasks Tested',0,'=',2);
+
+INSERT INTO progress (id,objective,rec_key,current_value,compare_type,target_value)
+VALUES (8,9,'Goals Created',0,'>=',1);
+
+INSERT INTO progress (id,objective,rec_key,current_value,compare_type,target_value)
+VALUES (9,9,'Tasks Tested',0,'=',2);
