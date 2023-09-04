@@ -1,5 +1,7 @@
 .idea
 
-*/target
+/target/*
 
 src/main/resources/env.properties
+
+
