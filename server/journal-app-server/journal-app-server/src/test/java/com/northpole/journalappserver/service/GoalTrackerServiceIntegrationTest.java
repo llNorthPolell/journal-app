@@ -105,8 +105,6 @@ public class GoalTrackerServiceIntegrationTest {
                         .id(UUID.fromString("e6dc531c-2427-46bd-a7c6-748f86fd33ae"))
                         .description("Get Goal By Journal ID Works")
                         .journal(3)
-                        .creationTimestamp(LocalDateTime.now())
-                        .lastUpdated(LocalDateTime.now())
                         .build()
         );
     }

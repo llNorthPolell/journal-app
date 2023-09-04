@@ -1,0 +1,15 @@
+com\northpole\journalappserver\service\JournalEntryServiceTest.class
+com\northpole\journalappserver\controller\GoalControllerTest.class
+com\northpole\journalappserver\util\enums\GenericAPITestUtil.class
+com\northpole\journalappserver\util\enums\APIResult.class
+com\northpole\journalappserver\service\JournalEntryRecordServiceTest.class
+com\northpole\journalappserver\TestJournalAppServerApplication.class
+com\northpole\journalappserver\controller\DashboardWidgetControllerTest.class
+com\northpole\journalappserver\repository\JournalEntryRepositoryIntegrationTest.class
+com\northpole\journalappserver\controller\JournalEntryControllerTest.class
+com\northpole\journalappserver\service\DashboardWidgetServiceTest.class
+com\northpole\journalappserver\repository\FlatRecordRepositoryIntegrationTest.class
+com\northpole\journalappserver\service\GoalTrackerServiceTest.class
+com\northpole\journalappserver\JournalAppServerApplicationTests.class
+com\northpole\journalappserver\repository\DashboardWidgetRepositoryIntegrationTest.class
+com\northpole\journalappserver\service\GoalTrackerServiceIntegrationTest.class

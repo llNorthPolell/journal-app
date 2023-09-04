@@ -54,8 +54,6 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
         Goal resultGoal;
 
         payload.setId(saveId);
-        payload.setCreationTimestamp(now);
-        payload.setLastUpdated(now);
 
         List<Objective> objectives = payload.getObjectives();
         payload.setObjectives(null);    // strip objectives from MongoDB as not needed and takes up space
@@ -94,6 +92,18 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
                     .message(e.getMessage())
                     .timeStamp(System.currentTimeMillis())
                     .build();
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<Goal> getGoalPreviewsInJournal(int journalId){
+        try {
+            return goalRepository.findAllByJournalId(journalId);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
     }
 

@@ -26,7 +26,7 @@ CREATE TABLE widget_data_config
 widget INTEGER REFERENCES dashboard_widget,
 type VARCHAR(1) NOT NULL,
 label VARCHAR(255) NOT NULL,
-color VARCHAR(7) NOT NULL,
+color VARCHAR(7),
 rule VARCHAR(255) NOT NULL
 );
 
@@ -34,7 +34,8 @@ rule VARCHAR(255) NOT NULL
 
 -- TRIGGER CREATION
 -- dashboard_widget
-CREATE OR REPLACE FUNCTION move_to_last_position() RETURNS trigger AS $$
+CREATE OR REPLACE FUNCTION move_to_last_position() RETURNS trigger AS
+'
 	DECLARE
 		current_max INTEGER;
 
@@ -51,7 +52,7 @@ CREATE OR REPLACE FUNCTION move_to_last_position() RETURNS trigger AS $$
 
 		RETURN NEW;
 	END;
-$$ LANGUAGE plpgsql;
+' LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER move_to_last_position BEFORE INSERT ON dashboard_widget
     FOR EACH ROW EXECUTE FUNCTION move_to_last_position();

@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface GoalTrackerService {
     GeneralResponseBody saveGoal(Goal payload);
+    List<Goal> getGoalPreviewsInJournal(int journalId);
     List<Goal> getGoalsWithProgressInJournal(int journalId);
     GeneralResponseBody updateProgress(String message);
 }
