@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,7 +77,7 @@ public class GoalTrackerServiceIntegrationTest {
                 Progress.builder()
                         .recKey("Goals Created")
                         .compareType("=")
-                        .targetValue(1)
+                        .targetValue((double)1)
                         .build()
         );
 
@@ -97,6 +98,16 @@ public class GoalTrackerServiceIntegrationTest {
                 .description("Test if goals can be created and saved in MongoDB and tracked with Postgres")
                 .objectives(mockObjectives)
                 .build();
+
+        goalRepository.save(
+                Goal.builder()
+                        .id(UUID.fromString("e6dc531c-2427-46bd-a7c6-748f86fd33ae"))
+                        .description("Get Goal By Journal ID Works")
+                        .journal(3)
+                        .creationTimestamp(LocalDateTime.now())
+                        .lastUpdated(LocalDateTime.now())
+                        .build()
+        );
     }
 
 
@@ -238,5 +249,16 @@ public class GoalTrackerServiceIntegrationTest {
         assertEquals(LocalDateTime.parse("2022-08-19T00:00:00",formatter), result.get().getDateCompleted());
     }
 
+    @Test
+    @DisplayName("Should return consolidate Goals and Objectives for given journal ID as a list")
+    public void getGoalsByJournal_IntegrationTest(){
+        int journalId = 3;
+        List<Goal> result = goalTrackerService.getGoalsWithProgressInJournal(journalId);
 
+        assertNotNull(result);
+        assertEquals(1,result.size());
+        assertEquals("Get Goal By Journal ID Works", result.get(0).getDescription());
+        assertEquals(1, result.get(0).getObjectives().size());
+        assertEquals(1, result.get(0).getObjectives().get(0).getId());
+    }
 }

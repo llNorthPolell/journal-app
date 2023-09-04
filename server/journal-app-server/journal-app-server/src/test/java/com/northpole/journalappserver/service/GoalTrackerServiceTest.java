@@ -61,7 +61,7 @@ public class GoalTrackerServiceTest {
                 Progress.builder()
                         .recKey("Goals Created")
                         .compareType(">=")
-                        .targetValue(1)
+                        .targetValue((double)1)
                         .build()
         );
 

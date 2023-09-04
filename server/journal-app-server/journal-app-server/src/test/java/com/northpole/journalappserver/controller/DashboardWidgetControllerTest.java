@@ -209,4 +209,5 @@ public class DashboardWidgetControllerTest {
                 mvcResult.getResponse().getContentAsString()
         );
     }
+
 }

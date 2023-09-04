@@ -1,6 +1,7 @@
 package com.northpole.journalappserver.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class Objective {
     private UUID goalId;
 
     @Column(name="journal")
-    private int journalId;
+    private Integer journalId;
 
     @Column(name="status")
     private String status;
@@ -55,6 +56,8 @@ public class Objective {
     @Column(name="completion_criteria")
     private String completionCriteria;
 
+    @Valid
+    @NotNull
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="objective", nullable = false)
     private List<Progress> progressList;

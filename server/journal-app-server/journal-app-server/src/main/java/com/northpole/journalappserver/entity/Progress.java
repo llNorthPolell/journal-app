@@ -26,14 +26,15 @@ public class Progress {
     private String recKey;
 
     @Column(name="current_value")
-    private double currentValue;
+    private Double currentValue;
 
+    @NotNull
     @Column(name="compare_type")
     private String compareType;
 
     @NotNull
     @Column(name="target_value")
-    private double targetValue;
+    private Double targetValue;
 
     @Column (name="last_checked_entry_date")
     private LocalDateTime entryDateLastChecked;

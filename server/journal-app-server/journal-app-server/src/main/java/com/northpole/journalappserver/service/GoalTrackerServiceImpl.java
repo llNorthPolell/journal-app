@@ -58,6 +58,7 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
         payload.setLastUpdated(now);
 
         List<Objective> objectives = payload.getObjectives();
+        payload.setObjectives(null);    // strip objectives from MongoDB as not needed and takes up space
 
         for (Objective o : objectives) {
             o.setGoalId(saveId);
@@ -65,6 +66,9 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
             o.setCreationTimestamp(now);
             o.setLastUpdated(now);
             o.setStatus(defaultStatus);
+
+            if (o.getCompletionCriteria() == null)
+                o.setCompletionCriteria("AND");
         }
 
         try {
@@ -84,15 +88,46 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
                     .build();
         }
         catch(Exception e){
-            System.out.println(e.getStackTrace());
             e.printStackTrace();
             return GeneralResponseBody.builder()
                     .status(500)
-                    .message(e.getStackTrace().toString())
+                    .message(e.getMessage())
                     .timeStamp(System.currentTimeMillis())
                     .build();
         }
     }
+
+    @Override
+    @Transactional
+    public List<Goal> getGoalsWithProgressInJournal(int journalId){
+        try {
+            List<Goal> goals = goalRepository.findAllByJournalId(journalId);
+            List<Objective> objectiveList = objectiveRepository.findAllByJournalId(journalId);
+            Map<UUID, List<Objective>> goalObjectiveMap = new HashMap<>();
+
+            for (Objective o : objectiveList) {
+                if (!goalObjectiveMap.containsKey(o.getGoalId()))
+                    goalObjectiveMap.put(o.getGoalId(), new ArrayList<>());
+
+                goalObjectiveMap.get(o.getGoalId()).add(o);
+            }
+
+            for (Goal g : goals) {
+                if (!goalObjectiveMap.containsKey(g.getId())) {
+                    g.setObjectives(new ArrayList<>());
+                    continue;
+                }
+                g.setObjectives(goalObjectiveMap.get(g.getId()));
+            }
+
+            return goals;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     private FlatRecord[] extractFlatRecords(String message) throws JsonProcessingException {
         JsonNode root = objectMapper.readTree(message);
@@ -142,7 +177,6 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
                     .build();
         }
         catch (Exception e){
-            System.out.println(e.getStackTrace());
             e.printStackTrace();
             return GeneralResponseBody.builder()
                     .status(500)

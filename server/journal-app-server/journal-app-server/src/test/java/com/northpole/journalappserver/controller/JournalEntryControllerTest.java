@@ -199,6 +199,15 @@ public class JournalEntryControllerTest {
                 APIResult.FAIL);
     }
 
+    @DisplayName("Should pass when journal entry body is empty")
+    @Test
+    public void publishJournalEntryEmptyJournalBody_UnitTest() throws Exception {
+        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
+                mockJournalEntry,
+                ",\"journalBodyItems\":[{\"topic\":\"My first topic\",\"description\":\"My first topic ever!!!\",\"recordList\":[{\"recKey\":\"a\",\"recValue\":\"1\"},{\"recKey\":\"targetA\",\"recValue\":\"2\"}]",
+                "\"journalBodyItems\":[]",
+                APIResult.FAIL);
+    }
 
     @DisplayName("Should fail when a topic in the journal entry body is missing")
     @Test

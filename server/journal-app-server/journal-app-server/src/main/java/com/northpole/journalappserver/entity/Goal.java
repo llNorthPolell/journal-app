@@ -1,5 +1,6 @@
 package com.northpole.journalappserver.entity;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,8 @@ public class Goal {
 
     private LocalDateTime lastUpdated;
 
+    @NotNull
+    @Valid
     private List<Objective> objectives;
 
 }
