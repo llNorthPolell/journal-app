@@ -1,13 +1,14 @@
 package com.northpole.journalappserver.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.northpole.journalappserver.entity.FlatRecord;
-import com.northpole.journalappserver.entity.GeneralResponseBody;
 import com.northpole.journalappserver.entity.JournalEntry;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface JournalEntryRecordService {
-    GeneralResponseBody save(JournalEntry payload);
+    String save(JournalEntry payload) throws JsonProcessingException;
 
-    List<FlatRecord> getDashboardData(int journalId);
+    List<FlatRecord> getDashboardData(UUID journalRef);
 }

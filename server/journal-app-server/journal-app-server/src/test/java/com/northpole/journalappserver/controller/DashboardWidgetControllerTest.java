@@ -2,9 +2,9 @@ package com.northpole.journalappserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.northpole.journalappserver.entity.DashboardWidget;
-import com.northpole.journalappserver.entity.GeneralResponseBody;
 import com.northpole.journalappserver.entity.WidgetDataConfig;
 import com.northpole.journalappserver.service.DashboardWidgetService;
+import com.northpole.journalappserver.service.JournalService;
 import com.northpole.journalappserver.util.enums.APIResult;
 import com.northpole.journalappserver.util.enums.GenericAPITestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,15 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @AutoConfigureMockMvc
@@ -35,18 +36,21 @@ public class DashboardWidgetControllerTest {
 
     private DashboardWidget mockPayload;
 
-    private GeneralResponseBody mockSuccessResult;
 
-    private final String ENDPOINT = "/dashboard";
+    private String expectedSaveSuccessResult;
+
+    private final UUID MOCK_JOURNAL_REF=UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+    private final String ENDPOINT = "/"+MOCK_JOURNAL_REF+"/dashboard";
 
     private final int MOCK_ID=3;
-
-    private final long MOCK_TIMESTAMP = System.currentTimeMillis();
 
     private GenericAPITestUtil genericAPITestUtil;
 
     @MockBean
     private DashboardWidgetService dashboardWidgetService;
+
+    @MockBean
+    private JournalService journalService;
 
     @Autowired
     public DashboardWidgetControllerTest(MockMvc mockMvc, ObjectMapper objectMapper){
@@ -61,39 +65,46 @@ public class DashboardWidgetControllerTest {
 
     @BeforeEach
     public void setupBeforeEachTest(){
-        HttpStatus status = HttpStatus.OK;
-        mockSuccessResult = GeneralResponseBody.builder()
-                        .status(status.value())
-                        .message("{\"id\":\""+MOCK_ID+"\"}")
-                        .timeStamp(MOCK_TIMESTAMP)
-                        .build();
+        List<WidgetDataConfig> configs = new ArrayList<>();
 
-        when(dashboardWidgetService.createDashboardWidget(any(DashboardWidget.class)))
-                .thenReturn(mockSuccessResult);
+        mockPayload = DashboardWidget.builder()
+                .type("line-graph")
+                .title("Widget Creation Test")
+                .configs(configs)
+                .build();
 
-        List<WidgetDataConfig> mockConfigs = new ArrayList<>();
-        mockConfigs.add(
+
+        configs.add(
                 WidgetDataConfig.builder()
                         .type("x")
                         .label("Test X")
                         .rule("a")
                         .build()
         );
-
-        mockConfigs.add(
+        configs.add(
                 WidgetDataConfig.builder()
                         .type("y")
                         .label("Test Y")
                         .rule("b")
+                        .color("#a1b298")
                         .build()
         );
 
-        mockPayload = DashboardWidget.builder()
+        DashboardWidget mockSaveResult = DashboardWidget.builder()
+                .id(1)
                 .journal(3)
-                .title("Test Widget")
                 .type("line-graph")
-                .configs(mockConfigs)
                 .build();
+
+
+        when(dashboardWidgetService.createDashboardWidget(any(UUID.class),any(DashboardWidget.class)))
+                .thenReturn(mockSaveResult);
+
+        when(journalService.ownsJournal(anyString(), any(UUID.class)))
+                .thenReturn(true);
+
+        expectedSaveSuccessResult = "{\"id\":1}";
+
     }
 
 
@@ -107,19 +118,9 @@ public class DashboardWidgetControllerTest {
                 "",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
-    }
-
-    @Test
-    @DisplayName("Should fail when journal is missing")
-    public void publicDashboardWidgetMissingJournal_UnitTest() throws Exception {
-        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
-                mockPayload,
-                "\"journal\":3,",
-                "",
-                APIResult.FAIL);
     }
 
     @Test
@@ -137,7 +138,7 @@ public class DashboardWidgetControllerTest {
     public void publicDashboardWidgetMissingTitle_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
-                "\"title\":\"Test Widget\",",
+                "\"title\":\"Widget Creation Test\",",
                 "",
                 APIResult.FAIL);
     }
@@ -177,8 +178,8 @@ public class DashboardWidgetControllerTest {
     public void publicDashboardWidgetInvalidConfigColor_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
-                ":\"a\"",
-                ":\"a\",\"color\":\"#ZABCD\"",
+                "\"rule\":\"a\"",
+                "\"rule\":\"a\",\"color\":\"#ZABCD\"",
                 APIResult.FAIL);
     }
 
@@ -187,11 +188,11 @@ public class DashboardWidgetControllerTest {
     public void publishDashboardWidgetSuccessWithConfigColor_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
-                ":\"a\"",
-                ":\"a\",\"color\":\"#FFFFFF\"",
+                "\"rule\":\"a\"",
+                "\"rule\":\"a\",\"color\":\"#FFFFFF\"",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }
@@ -201,11 +202,11 @@ public class DashboardWidgetControllerTest {
     public void publishDashboardWidgetSuccessWithConfigColorLowercase_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
-                ":\"a\"",
-                ":\"a\",\"color\":\"#ffffff\"",
+                "\"rule\":\"a\"",
+                "\"rule\":\"a\",\"color\":\"#ffffff\"",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }

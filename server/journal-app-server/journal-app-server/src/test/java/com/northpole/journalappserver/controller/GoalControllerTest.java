@@ -3,12 +3,12 @@ package com.northpole.journalappserver.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.northpole.journalappserver.entity.*;
 import com.northpole.journalappserver.service.GoalTrackerService;
+import com.northpole.journalappserver.service.JournalService;
 import com.northpole.journalappserver.util.enums.APIResult;
 import com.northpole.journalappserver.util.enums.GenericAPITestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,9 +18,11 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -33,16 +35,20 @@ public class GoalControllerTest {
 
     private ObjectMapper objectMapper;
 
-    private final String ENDPOINT = "/goal";
-    private final String MOCK_UUID_STRING="82605ca2-0b83-47ca-b0b4-0836991a2df0";
-    private final long MOCK_TIMESTAMP = System.currentTimeMillis();
 
-    private GeneralResponseBody mockSuccessResult=null;
+    private final String MOCK_SAVE_UUID_STRING="82605ca2-0b83-47ca-b0b4-0836991a2df0";
+    private final UUID MOCK_JOURNAL_REF=UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+    private final String ENDPOINT = "/"+MOCK_JOURNAL_REF+"/goals";
+
+    private String expectedSaveSuccessResult;
 
     private GenericAPITestUtil genericAPITestUtil;
 
     @MockBean
     private GoalTrackerService goalTrackerService;
+
+    @MockBean
+    private JournalService journalService;
 
     @Autowired
     public GoalControllerTest(
@@ -89,7 +95,6 @@ public class GoalControllerTest {
         mockObjectives.add(mockObjective1);
 
         mockGoal = Goal.builder()
-                .journal(3)
                 .assumptions("This is a unit test for Goal Controller...")
                 .icon("Some/Location.png")
                 .gains("Goal endpoints will work properly...")
@@ -97,15 +102,17 @@ public class GoalControllerTest {
                 .objectives(mockObjectives)
                 .build();
 
-        mockSuccessResult=GeneralResponseBody.builder()
-                .status(200)
-                .message("{\"goalId\":\"" + MOCK_UUID_STRING + "\", \"objectiveIds\":[1,2]}")
-                .timeStamp(MOCK_TIMESTAMP)
-                .build();
+        expectedSaveSuccessResult= "{\"id\":\"" + MOCK_SAVE_UUID_STRING + "\"}";
 
-        when(goalTrackerService.saveGoal(any(Goal.class)))
-                .thenReturn(mockSuccessResult);
 
+        when(goalTrackerService.saveGoal(any(UUID.class),any(Goal.class)))
+                .thenReturn(Goal.builder()
+                        .id(UUID.fromString(MOCK_SAVE_UUID_STRING))
+                        .build()
+                );
+
+        when(journalService.ownsJournal(anyString(),any(UUID.class)))
+               .thenReturn(true);
     }
 
     @DisplayName("Should pass validation and return UUID")
@@ -117,19 +124,9 @@ public class GoalControllerTest {
                 "",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
-    }
-
-    @Test
-    @DisplayName("Should fail when journal is missing")
-    public void publicGoalMissingJournal_UnitTest() throws Exception {
-        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
-                mockGoal,
-                "\"journal\":3,",
-                "",
-                APIResult.FAIL);
     }
 
 
@@ -142,7 +139,7 @@ public class GoalControllerTest {
                 "",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }
@@ -156,7 +153,7 @@ public class GoalControllerTest {
                 "",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }
@@ -180,7 +177,7 @@ public class GoalControllerTest {
                 "",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }
@@ -208,7 +205,7 @@ public class GoalControllerTest {
                 "\"objectives\":[]",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }
@@ -240,7 +237,7 @@ public class GoalControllerTest {
         String progressListJson = objectMapper.writeValueAsString(mockObjective.getProgressList());
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockGoal,
-                "\"progressList\":"+progressListJson,
+                "\"measurableTasks\":"+progressListJson,
                 "",
                 APIResult.FAIL);
     }
@@ -255,11 +252,11 @@ public class GoalControllerTest {
 
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockGoal,
-                "\"progressList\":"+progressListJson,
-                "\"progressList\":[]",
+                "\"measurableTasks\":"+progressListJson,
+                "\"measurableTasks\":[]",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }
@@ -289,7 +286,7 @@ public class GoalControllerTest {
     public void publishGoalMissingProgressTargetValue_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockGoal,
-                "\"targetValue\":1.0,",
+                "\"targetValue\":1.0",
                 "",
                 APIResult.FAIL);
     }

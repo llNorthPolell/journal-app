@@ -33,6 +33,8 @@ public class FlatRecordRepositoryIntegrationTest {
 
     private FlatRecordRepository flatRecordRepository;
 
+    private final UUID MOCK_JOURNAL_REF=UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+
     @Autowired
     public FlatRecordRepositoryIntegrationTest (
             FlatRecordRepository flatRecordRepository
@@ -53,7 +55,7 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("3")
@@ -64,7 +66,7 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("6")
@@ -75,7 +77,7 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("a")
                         .recValue("6")
@@ -86,7 +88,7 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("2")
@@ -98,7 +100,7 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("Second")
                         .recKey("b")
                         .recValue("asdfasdf")
@@ -109,7 +111,7 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("a")
                         .recValue("1")
@@ -120,7 +122,7 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("Second")
                         .recKey("d")
                         .recValue("3")
@@ -131,7 +133,7 @@ public class FlatRecordRepositoryIntegrationTest {
         flatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("Second")
                         .recKey("c")
                         .recValue("5")
@@ -152,8 +154,7 @@ public class FlatRecordRepositoryIntegrationTest {
     @Test
     @DisplayName("Should return dashboard data from record data in journal entries sorted by dateOfEntry (desc), topic, and recKey")
     public void getDashboardRecordData_IntegrationTest(){
-        int journal= 3;
-        AggregationResults<FlatRecord> result = flatRecordRepository.getDashboardData(journal);
+        AggregationResults<FlatRecord> result = flatRecordRepository.getDashboardData(MOCK_JOURNAL_REF);
 
         assertNotNull(result);
 

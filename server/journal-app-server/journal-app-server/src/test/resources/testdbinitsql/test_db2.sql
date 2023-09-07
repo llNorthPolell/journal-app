@@ -2,6 +2,7 @@
 -- journal
 CREATE TABLE journal
 (id SERIAL PRIMARY KEY NOT NULL,
+journal_ref UUID NOT NULL,
 name VARCHAR(255) NOT NULL,
 author VARCHAR(255) NOT NULL,
 img TEXT DEFAULT NULL,
@@ -135,8 +136,9 @@ CREATE OR REPLACE TRIGGER check_completed_objective AFTER UPDATE ON progress
 
 -- INSERTS
 --- journals
-INSERT INTO journal (name,author,img,creation_timestamp,last_updated)
+INSERT INTO journal (journal_ref,name,author,img,creation_timestamp,last_updated)
 VALUES (
+    'b4a2679a-bf33-4835-85c2-08c4e41c284b',
 	'test',
 	'northpole',
 	'https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/c1a2ba41-1911-48a3-b9d8-9e21e84eaf88.PNG?alt=media&token=f845a0be-6d50-4afc-aef1-be0d6b6ee011',
@@ -144,8 +146,9 @@ VALUES (
 	CURRENT_TIMESTAMP
 );
 
-INSERT INTO journal (name,author,img,creation_timestamp,last_updated)
+INSERT INTO journal (journal_ref,name,author,img,creation_timestamp,last_updated)
 VALUES (
+    'ab8526d6-ccb8-4cd1-a6ff-6a8108f1a703',
 	'test2',
 	'northpole',
 	'https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/c1a2ba41-1911-48a3-b9d8-9e21e84eaf88.PNG?alt=media&token=f845a0be-6d50-4afc-aef1-be0d6b6ee011',
@@ -153,8 +156,9 @@ VALUES (
 	CURRENT_TIMESTAMP
 );
 
-INSERT INTO journal (name,author,img,creation_timestamp,last_updated)
+INSERT INTO journal (journal_ref,name,author,img,creation_timestamp,last_updated)
 VALUES (
+    'e958ac56-2f12-4d35-ba8e-979aca28b4a6',
 	'test3',
 	'northpole',
 	'https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/c1a2ba41-1911-48a3-b9d8-9e21e84eaf88.PNG?alt=media&token=f845a0be-6d50-4afc-aef1-be0d6b6ee011',

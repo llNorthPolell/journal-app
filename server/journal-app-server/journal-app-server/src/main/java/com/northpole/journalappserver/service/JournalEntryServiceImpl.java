@@ -2,7 +2,6 @@ package com.northpole.journalappserver.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.northpole.journalappserver.entity.GeneralResponseBody;
 import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.repository.JournalEntryRepository;
 import jakarta.transaction.Transactional;
@@ -10,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -36,35 +36,34 @@ public class JournalEntryServiceImpl implements JournalEntryService {
     
     @Override
     @Transactional
-    public GeneralResponseBody save(JournalEntry payload) {
+    public JournalEntry save(UUID journalRef, JournalEntry payload) throws JsonProcessingException{
+        LocalDateTime now = LocalDateTime.now();
         UUID saveId = UUID.randomUUID();
         payload.setEntryId(saveId);
+        payload.setJournal(journalRef);
+        payload.setCreationTimestamp(now);
+        payload.setLastUpdated(now);
+        JournalEntry saveResult = journalEntryRepository.save(payload);
+        String extractAndSaveFlatRecordResult = journalEntryRecordService.save(payload);
+        String updateProgressResult = goalTrackerService.updateProgress(
+                extractAndSaveFlatRecordResult);
 
-        try {
-            JournalEntry saveResult = journalEntryRepository.save(payload);
-            GeneralResponseBody extractAndSaveFlatRecordResult = journalEntryRecordService.save(payload);
-            GeneralResponseBody updateProgressResult = goalTrackerService.updateProgress(
-                    extractAndSaveFlatRecordResult.getMessage());
+        if (saveResult==null || extractAndSaveFlatRecordResult==null || updateProgressResult==null)
+            return null;
 
-            return GeneralResponseBody.builder()
-                    .status(200)
-                    .message("{\"id\":\"" + saveId + "\"}")
-                    .timeStamp(System.currentTimeMillis())
-                    .build();
-        }
-        catch(Exception e){
-            System.out.println(e.getStackTrace());
-            return GeneralResponseBody.builder()
-                    .status(500)
-                    .message(e.getStackTrace().toString())
-                    .timeStamp(System.currentTimeMillis())
-                    .build();
-        }
+        return saveResult;
+
     }
 
     @Override
-    public List<JournalEntry> getJournalEntriesById(int journalId) {
-        AggregationResults<JournalEntry> result = this.journalEntryRepository.findAllByJournal(journalId);
+    public JournalEntry getJournalEntryById(UUID journalEntryId) {
+        Optional<JournalEntry> result = journalEntryRepository.findById(journalEntryId);
+        return (result.isPresent())? result.get() : null;
+    }
+
+    @Override
+    public List<JournalEntry> getJournalEntriesInJournal(UUID journalRef) {
+        AggregationResults<JournalEntry> result = this.journalEntryRepository.findAllByJournal(journalRef);
 
         if (result == null)
             return null;
@@ -73,8 +72,8 @@ public class JournalEntryServiceImpl implements JournalEntryService {
     }
 
     @Override
-    public JournalEntry getLastEntryInJournal(int journalId) {
-        AggregationResults<JournalEntry> result = this.journalEntryRepository.findLastEntryInJournal(journalId);
+    public JournalEntry getLastEntryInJournal(UUID journalRef) {
+        AggregationResults<JournalEntry> result = this.journalEntryRepository.findLastEntryInJournal(journalRef);
         List<JournalEntry> resultList = result.getMappedResults();
         if (resultList.isEmpty())
             return null;

@@ -20,10 +20,13 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class DashboardWidgetServiceTest {
+    @Mock
+    private JournalService journalService;
 
     @Mock
     private JournalEntryRecordService journalEntryRecordService;
@@ -34,12 +37,16 @@ public class DashboardWidgetServiceTest {
     @InjectMocks
     private DashboardWidgetService dashboardWidgetService;
 
+    private final UUID MOCK_JOURNAL_REF=UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+
     @Autowired
     public DashboardWidgetServiceTest(
+            JournalService journalService,
             JournalEntryRecordService journalEntryRecordService,
             DashboardWidgetService dashboardWidgetService,
             DashboardWidgetRepository dashboardWidgetRepository
     ){
+        this.journalService=journalService;
         this.journalEntryRecordService=journalEntryRecordService;
         this.dashboardWidgetService=dashboardWidgetService;
         this.dashboardWidgetRepository=dashboardWidgetRepository;
@@ -109,7 +116,7 @@ public class DashboardWidgetServiceTest {
         mockFlatRecords.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("a")
                         .recValue("6")
@@ -120,7 +127,7 @@ public class DashboardWidgetServiceTest {
         mockFlatRecords.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("6")
@@ -131,7 +138,7 @@ public class DashboardWidgetServiceTest {
         mockFlatRecords.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("3")
@@ -142,7 +149,7 @@ public class DashboardWidgetServiceTest {
         mockFlatRecords.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("a")
                         .recValue("1")
@@ -153,7 +160,7 @@ public class DashboardWidgetServiceTest {
         mockFlatRecords.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("2")
@@ -161,17 +168,18 @@ public class DashboardWidgetServiceTest {
                         .build()
         );
 
+        when(journalService.getJournalId(any(UUID.class))).thenReturn(3);
         when(dashboardWidgetRepository.getDashboardWidgetsByJournal(3))
                 .thenReturn(mockDashboardWidgetRepoResult);
 
-        when(journalEntryRecordService.getDashboardData(3))
+        when(journalEntryRecordService.getDashboardData(MOCK_JOURNAL_REF))
                 .thenReturn(mockFlatRecords);
     }
 
     @Test
     @DisplayName("Should return dataset for widgets")
     public void get_widget_data_UnitTest(){
-        List<DashboardWidget> resultList = dashboardWidgetService.getDashboardWidgetData(3);
+        List<DashboardWidget> resultList = dashboardWidgetService.getDashboardWidgetData(MOCK_JOURNAL_REF);
 
         assertEquals(2,resultList.size());
     }
@@ -179,7 +187,7 @@ public class DashboardWidgetServiceTest {
     @Test
     @DisplayName("Should return dataset for chart-type widgets, sorted by dateOfEntry (desc), topic(asc) and recKey(asc)")
     public void get_chart_data_UnitTest(){
-        List<DashboardWidget> resultList = dashboardWidgetService.getDashboardWidgetData(3);
+        List<DashboardWidget> resultList = dashboardWidgetService.getDashboardWidgetData(MOCK_JOURNAL_REF);
 
         assertEquals(2,resultList.size());
 

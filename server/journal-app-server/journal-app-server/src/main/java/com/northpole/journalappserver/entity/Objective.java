@@ -1,5 +1,8 @@
 package com.northpole.journalappserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -22,11 +25,14 @@ public class Objective {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
+    @JsonIgnore
     private Integer id;
 
+    @JsonIgnore
     @Column(name="goal")
     private UUID goalId;
 
+    @JsonIgnore
     @Column(name="journal")
     private Integer journalId;
 
@@ -41,6 +47,7 @@ public class Objective {
     @Column(name="description")
     private String description;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Column(name="deadline")
     private LocalDateTime deadline;
 
@@ -60,5 +67,6 @@ public class Objective {
     @NotNull
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="objective", nullable = false)
+    @JsonProperty("measurableTasks")
     private List<Progress> progressList;
 }

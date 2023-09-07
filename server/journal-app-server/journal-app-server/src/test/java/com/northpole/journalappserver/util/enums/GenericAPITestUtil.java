@@ -6,6 +6,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+
 public class GenericAPITestUtil {
 
     private MockMvc mockMvc;
@@ -31,7 +35,10 @@ public class GenericAPITestUtil {
         return mockMvc.perform(
                         MockMvcRequestBuilders.post(endpoint)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(testJson))
+                                .content(testJson)
+                                .with(jwt())
+                )
                 .andExpect(result.value()).andReturn();
     }
+
 }

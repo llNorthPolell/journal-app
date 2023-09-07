@@ -1,19 +1,16 @@
 package com.northpole.journalappserver.controller;
 
-import com.northpole.journalappserver.entity.GeneralResponseBody;
 import com.northpole.journalappserver.entity.Goal;
 import com.northpole.journalappserver.service.GoalTrackerService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class GoalController {
@@ -27,20 +24,46 @@ public class GoalController {
         this.goalTrackerService=goalTrackerService;
     }
 
-    @PostMapping("/goal")
-    public ResponseEntity<GeneralResponseBody> createGoal(@Valid @RequestBody Goal payload){
-        GeneralResponseBody output = goalTrackerService.saveGoal(payload);
-        return new ResponseEntity<GeneralResponseBody>(output,HttpStatus.valueOf(output.getStatus()));
+    @PostMapping("/{journalRef}/goals")
+    @PreAuthorize("@securityService.ownsJournal(#journalRef)")
+    public ResponseEntity<String> createGoal(@PathVariable("journalRef") UUID journalRef,
+                                             @Valid @RequestBody Goal payload){
+        try {
+            Goal output = goalTrackerService.saveGoal(journalRef,payload);
+            String message =  "{\"id\":\""+output.getId() +"\"}";
+            return new ResponseEntity<>(
+                    message,
+                    HttpStatus.OK);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(
+                    e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @GetMapping("/goal")
-    public List<Goal> getGoalPreviewsInJournal(int journalId){
-        return goalTrackerService.getGoalPreviewsInJournal(journalId);
+    @GetMapping("/{journalRef}/goals")
+    @PreAuthorize("@securityService.ownsJournal(#journalRef)")
+    public List<Goal> getGoalPreviewsInJournal(
+            @PathVariable("journalRef") UUID journalRef){
+        return goalTrackerService.getGoalPreviewsInJournal(journalRef);
     }
 
-    @GetMapping("/goalWithTracking")
-    public List<Goal> getGoalsInJournal(int journalId){
-        return goalTrackerService.getGoalsWithProgressInJournal(journalId);
+    @GetMapping("/{journalRef}/goalWithTracking")
+    @PreAuthorize("@securityService.ownsJournal(#journalRef)")
+    public List<Goal> getGoalsInJournal(
+            @PathVariable("journalRef") UUID journalRef){
+        return goalTrackerService.getGoalsWithProgressInJournal(journalRef);
+    }
+
+    @GetMapping("/{journalRef}/goals/{goalId}")
+    @PreAuthorize("@securityService.ownsJournal(#journalRef) && @securityService.ownsGoal(#journalRef,#goalId)")
+    public Goal getGoalById(
+            @PathVariable("journalRef") UUID journalRef,
+            @PathVariable("goalId") UUID goalId
+    ){
+        return goalTrackerService.getGoalById(goalId);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.northpole.journalappserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -18,6 +20,7 @@ public class WidgetDataConfig {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
+    @JsonIgnore
     private int id;
 
     @NotNull
@@ -30,6 +33,7 @@ public class WidgetDataConfig {
 
     @Column(name="color")
     @Pattern(regexp = "#[a-fA-F0-9]{6}")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String color;
 
     @NotNull

@@ -21,7 +21,7 @@ public class FlatRecord {
 
     private LocalDateTime dateOfEntry;
 
-    private Integer journal;
+    private UUID journal;
 
     private String topic;
 

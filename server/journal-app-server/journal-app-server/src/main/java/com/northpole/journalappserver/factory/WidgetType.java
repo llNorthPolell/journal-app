@@ -3,7 +3,8 @@ package com.northpole.journalappserver.factory;
 public enum WidgetType{
     NOT_EXISTS(""),
     LAST_ENTRY("last-entry"),
-    LINE_GRAPH("line-graph");
+    LINE_GRAPH("line-graph"),
+    BAR_GRAPH("bar-graph");
 
     public final String value;
 
@@ -16,6 +17,6 @@ public enum WidgetType{
             if (e.value.equals(input))
                 return e;
 
-        return null;
+        return NOT_EXISTS;
     }
 }

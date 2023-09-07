@@ -36,6 +36,11 @@ public class JournalEntryRepositoryIntegrationTest {
 
     private JournalEntry mockJournalEntry;
 
+    private final UUID MOCK_NEW_JOURNAL_ENTRY_ID=UUID.fromString("8ee6d6e8-cd5f-43a6-870b-06745befc7e3");
+    private final UUID MOCK_EXISTING_JOURNAL_REF=UUID.fromString("b4a2679a-bf33-4835-85c2-08c4e41c284b");
+    private final UUID MOCK_EXISTING_JOURNAL_REF2=UUID.fromString("ab8526d6-ccb8-4cd1-a6ff-6a8108f1a703");
+    private final UUID MOCK_EXISTING_JOURNAL_REF3=UUID.fromString("73dc2074-4be8-45a3-ac16-8031751ccb69");
+
     @Autowired
     public JournalEntryRepositoryIntegrationTest(JournalEntryRepository journalEntryRepository){
         this.journalEntryRepository = journalEntryRepository;
@@ -78,9 +83,9 @@ public class JournalEntryRepositoryIntegrationTest {
         bodyList.add(body1);
         bodyList.add(body2);
 
-        this.mockJournalEntry = JournalEntry.builder()
-                .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7b3e5c8"))
-                .journal(3)
+        mockJournalEntry = JournalEntry.builder()
+                .entryId(MOCK_NEW_JOURNAL_ENTRY_ID)
+                .journal(MOCK_EXISTING_JOURNAL_REF3)
                 .summary("My First Post")
                 .overview("Woohoo! My First Post!! test")
                 .dateOfEntry(LocalDateTime.of(2022,8,19,0,0,0,0))
@@ -94,7 +99,7 @@ public class JournalEntryRepositoryIntegrationTest {
         mockExistingJournalEntries.add(
                 JournalEntry.builder()
                         .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7b3a1b2"))
-                        .journal(1)
+                        .journal(MOCK_EXISTING_JOURNAL_REF)
                         .summary("Dummy Entry")
                         .overview("Test1")
                         .dateOfEntry(LocalDateTime.of(2023,1,20,0,0,0,0))
@@ -105,7 +110,7 @@ public class JournalEntryRepositoryIntegrationTest {
         mockExistingJournalEntries.add(
                 JournalEntry.builder()
                         .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7123456"))
-                        .journal(2)
+                        .journal(MOCK_EXISTING_JOURNAL_REF2)
                         .summary("Dummy Entry 2")
                         .overview("Test1")
                         .dateOfEntry(LocalDateTime.of(2023,3,31,0,0,0,0))
@@ -116,7 +121,7 @@ public class JournalEntryRepositoryIntegrationTest {
         mockExistingJournalEntries.add(
                 JournalEntry.builder()
                         .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7123456"))
-                        .journal(3)
+                        .journal(MOCK_EXISTING_JOURNAL_REF3)
                         .summary("Dummy Entry 3")
                         .overview("This one should be picked up by findAllByJournal!")
                         .dateOfEntry(LocalDateTime.of(2023,6,30,0,0,0,0))
@@ -127,7 +132,7 @@ public class JournalEntryRepositoryIntegrationTest {
         mockExistingJournalEntries.add(
                 JournalEntry.builder()
                         .entryId(UUID.fromString("7aa881bc-f6e1-4621-9325-c199d71a3b5c"))
-                        .journal(3)
+                        .journal(MOCK_EXISTING_JOURNAL_REF3)
                         .summary("Dummy Entry 4")
                         .overview("This one should also be picked up by findAllByJournal, and this is the last entry!")
                         .dateOfEntry(LocalDateTime.of(2023,7,1,0,0,0,0))
@@ -148,16 +153,45 @@ public class JournalEntryRepositoryIntegrationTest {
     @Test
     @DisplayName("Should save to data source")
     public void saveSuccess_IntegrationTest(){
-        journalEntryRepository.save(mockJournalEntry);
-        Optional<JournalEntry> searchResult = journalEntryRepository.findById(mockJournalEntry.getEntryId());
-        assertNotEquals(Optional.empty(),searchResult);
+        JournalEntry saveResult = journalEntryRepository.save(mockJournalEntry);
+
+        Optional<JournalEntry> findNewEntryResult = journalEntryRepository.findById(saveResult.getEntryId());
+        assertTrue(findNewEntryResult.isPresent());
+
+        JournalEntry newJournalEntry=findNewEntryResult.get();
+
+        assertEquals(mockJournalEntry.getJournal(),newJournalEntry.getJournal());
+        assertEquals(mockJournalEntry.getOverview(),newJournalEntry.getOverview());
+        assertEquals(mockJournalEntry.getSummary(),newJournalEntry.getSummary());
+
+        List<JournalBodyItem> mockBodyItems = mockJournalEntry.getJournalBodyItems();
+        List<JournalBodyItem> newBodyItems = newJournalEntry.getJournalBodyItems();
+
+        assertEquals(mockBodyItems.size(), newBodyItems.size());
+
+        JournalBodyItem sampleMockBodyItem = mockBodyItems.get(0);
+        JournalBodyItem sampleNewBodyItem = newBodyItems.get(0);
+
+        assertEquals(sampleMockBodyItem.getTopic(),sampleNewBodyItem.getTopic());
+        assertEquals(sampleMockBodyItem.getDescription(),sampleNewBodyItem.getDescription());
+
+        List<Record> mockRecords = sampleMockBodyItem.getRecordList();
+        List<Record> newRecords = sampleNewBodyItem.getRecordList();
+
+        assertEquals(mockRecords.size(), newRecords.size());
+
+        Record sampleMockRecord = mockRecords.get(0);
+        Record sampleNewRecord = newRecords.get(0);
+
+        assertEquals(sampleMockRecord.getRecKey(),sampleNewRecord.getRecKey());
+        assertEquals(sampleMockRecord.getRecValue(),sampleNewRecord.getRecValue());
+
     }
 
     @Test
     @DisplayName("Should return all journal entries with a given journalId")
     public void findAllByJournal_IntegrationTest(){
-        int journalId=3;
-        AggregationResults<JournalEntry> result = journalEntryRepository.findAllByJournal(journalId);
+        AggregationResults<JournalEntry> result = journalEntryRepository.findAllByJournal(MOCK_EXISTING_JOURNAL_REF3);
 
         List<JournalEntry> resultList = result.getMappedResults();
 
@@ -169,8 +203,7 @@ public class JournalEntryRepositoryIntegrationTest {
     @Test
     @DisplayName("Should return last journal entry with given journalId")
     public void findLastEntryInJournal_IntegrationTest(){
-        int journalId=3;
-        AggregationResults<JournalEntry>result = journalEntryRepository.findLastEntryInJournal(journalId);
+        AggregationResults<JournalEntry>result = journalEntryRepository.findLastEntryInJournal(MOCK_EXISTING_JOURNAL_REF3);
 
         List<JournalEntry> resultList = result.getMappedResults();
 

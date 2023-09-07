@@ -1,5 +1,7 @@
 package com.northpole.journalappserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -23,8 +25,8 @@ public class DashboardWidget {
     @Column(name="id")
     private Integer id;
 
+    @JsonIgnore
     @Column(name="journal")
-    @NotNull
     private Integer journal;
 
     @Column(name="type")
@@ -50,6 +52,7 @@ public class DashboardWidget {
     private List<WidgetDataConfig> configs;
 
     @Transient
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private DashboardWidgetPayload payload;
 
 }

@@ -6,6 +6,7 @@ import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.entity.WidgetDataConfig;
 import com.northpole.journalappserver.entity.widgetpayload.*;
 import com.northpole.journalappserver.service.JournalEntryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -14,6 +15,7 @@ import java.util.*;
 public class WidgetPayloadFactoryImpl implements WidgetPayloadFactory {
     private JournalEntryService journalEntryService;
 
+    @Autowired
     public WidgetPayloadFactoryImpl(
             JournalEntryService journalEntryService
     ){
@@ -23,13 +25,14 @@ public class WidgetPayloadFactoryImpl implements WidgetPayloadFactory {
     public DashboardWidgetPayload getPayload(
             WidgetType type,
             List<WidgetDataConfig> configs,
-            int journalId,
+            UUID journalRef,
             List<FlatRecord> recordData
     ){
         switch (type){
             case LAST_ENTRY:
-                return createTextPayload(configs, journalId);
+                return createTextPayload(configs, journalRef);
             case LINE_GRAPH:
+            case BAR_GRAPH:
                 return createChartPayload(configs,recordData);
             default:
                 return null;
@@ -37,8 +40,8 @@ public class WidgetPayloadFactoryImpl implements WidgetPayloadFactory {
     }
 
     // configs is a placeholder for now; will modify this when time comes where new text-based widget is required
-    private TextPayload createTextPayload(List<WidgetDataConfig> configs, int journalId){
-        JournalEntry lastEntry = this.journalEntryService.getLastEntryInJournal(journalId);
+    private TextPayload createTextPayload(List<WidgetDataConfig> configs, UUID journalRef){
+        JournalEntry lastEntry = this.journalEntryService.getLastEntryInJournal(journalRef);
 
         if (lastEntry == null)
             return new TextPayload("There are no entries in this journal. Please publish a new journal entry to see contents here.");

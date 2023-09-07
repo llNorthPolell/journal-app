@@ -1,5 +1,6 @@
 package com.northpole.journalappserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,8 @@ public class Goal {
 
     private UUID id;
 
-    @NotNull
-    private Integer journal;
+    @JsonIgnore
+    private UUID journal;
 
     private String icon;
 
@@ -33,6 +34,7 @@ public class Goal {
 
     private String gains;
 
+    private String status;
 
     @NotNull
     @Valid

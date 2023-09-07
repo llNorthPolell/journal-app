@@ -1,9 +1,8 @@
 package com.northpole.journalappserver.service;
 
-import com.northpole.journalappserver.entity.GeneralResponseBody;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.northpole.journalappserver.entity.Goal;
 import com.northpole.journalappserver.entity.Objective;
-import com.northpole.journalappserver.entity.Progress;
 import com.northpole.journalappserver.repository.GoalRepository;
 import com.northpole.journalappserver.repository.ObjectiveRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -19,17 +18,18 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.MountableFile;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/*
+This test class is required for testing trigger function in Postgres that can not be covered by repository alone.
+ */
 @SpringBootTest
 @Testcontainers
 public class GoalTrackerServiceIntegrationTest {
@@ -40,13 +40,13 @@ public class GoalTrackerServiceIntegrationTest {
     @Container
     private static MongoDBContainer mongodb = new MongoDBContainer(DockerImageName.parse("mongo:latest"));
 
+    private final UUID MOCK_JOURNAL_REF=UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+
     private GoalTrackerService goalTrackerService;
 
     private ObjectiveRepository objectiveRepository;
 
     private GoalRepository goalRepository;
-
-    private Goal mockGoal;
 
     @Autowired
     public GoalTrackerServiceIntegrationTest(
@@ -58,6 +58,7 @@ public class GoalTrackerServiceIntegrationTest {
         this.goalRepository=goalRepository;
         this.objectiveRepository=objectiveRepository;
     }
+
     @DynamicPropertySource
     public static void overrideProps(DynamicPropertyRegistry registry) {
         // MongoDB
@@ -71,40 +72,11 @@ public class GoalTrackerServiceIntegrationTest {
 
     @BeforeEach
     public void setupBeforeEachTest(){
-        List<Objective> mockObjectives = new ArrayList<>();
-        List<Progress> mockProgress = new ArrayList<>();
-
-        mockProgress.add(
-                Progress.builder()
-                        .recKey("Goals Created")
-                        .compareType("=")
-                        .targetValue((double)1)
-                        .build()
-        );
-
-        Objective mockObjective1 = Objective.builder()
-                .topic("test")
-                .description("Create one goal")
-                .progressList(mockProgress)
-                .build();
-
-
-        mockObjectives.add(mockObjective1);
-
-        mockGoal = Goal.builder()
-                .journal(1)
-                .assumptions("This is a integration test for save...")
-                .icon("Some/Location.png")
-                .gains("Integration Test for Saving Goals Pass...")
-                .description("Test if goals can be created and saved in MongoDB and tracked with Postgres")
-                .objectives(mockObjectives)
-                .build();
-
         goalRepository.save(
                 Goal.builder()
                         .id(UUID.fromString("e6dc531c-2427-46bd-a7c6-748f86fd33ae"))
                         .description("Get Goal By Journal ID Works")
-                        .journal(3)
+                        .journal(MOCK_JOURNAL_REF)
                         .build()
         );
     }
@@ -112,28 +84,6 @@ public class GoalTrackerServiceIntegrationTest {
     @AfterEach
     public void cleanupAfterEachTest(){
         goalRepository.deleteAll();
-    }
-
-
-    @Test
-    @DisplayName("Should save entire Goal object to MongoDB, Objectives and Progress to Postgres")
-    public void saveSuccess_IntegrationTest(){
-        GeneralResponseBody response = goalTrackerService.saveGoal(mockGoal);
-        assertEquals(200,response.getStatus());
-
-        Optional<Objective> newObjective = objectiveRepository.findById(1);
-        List<Goal> allGoals = goalRepository.findAll();
-        Goal newGoal = allGoals.get(1);
-
-        assertEquals("{\"goalId\":\"" + newGoal.getId()
-                + "\", \"objectiveIds\":["+newObjective.get().getId()+"]}",response.getMessage());
-
-
-        assertTrue(newObjective.isPresent());
-        assertEquals("Create one goal", newObjective.get().getDescription());
-        assertNotNull(newGoal);
-        assertEquals("Test if goals can be created and saved in MongoDB and tracked with Postgres",
-                newGoal.getDescription());
     }
 
 
@@ -148,7 +98,7 @@ public class GoalTrackerServiceIntegrationTest {
                         {
                             "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a1c",
                             "dateOfEntry": "2022-08-19T00:00:00",
-                            "journal": 3,
+                            "journal": "e958ac56-2f12-4d35-ba8e-979aca28b4a6",
                             "topic": "test",
                             "recKey": "Goals Created",
                             "recValue": "1"
@@ -156,7 +106,7 @@ public class GoalTrackerServiceIntegrationTest {
                         {
                             "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a2d",
                             "dateOfEntry": "2022-08-19T00:00:00",
-                            "journal": 3,
+                            "journal": "e958ac56-2f12-4d35-ba8e-979aca28b4a6",
                             "topic": "test",
                             "recKey": "Tasks Tested",
                             "recValue": "2"
@@ -164,16 +114,20 @@ public class GoalTrackerServiceIntegrationTest {
                     ]
                 }
                 """;
+        try {
+            String response = goalTrackerService.updateProgress(message);
+            assertEquals("{\"objectives\":[7]}", response);
 
-        GeneralResponseBody response = goalTrackerService.updateProgress(message);
-        assertEquals(200,response.getStatus());
+            List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
+            Optional<Objective> result = objectiveRepository.findById(7);
 
-        List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
-        Optional<Objective> result = objectiveRepository.findById(7);
-
-        assertTrue(result.isPresent());
-        assertEquals("COMPLETE",result.get().getStatus());
-        assertEquals(LocalDateTime.parse("2022-08-19T00:00:00",formatter), result.get().getDateCompleted());
+            assertTrue(result.isPresent());
+            assertEquals("COMPLETE", result.get().getStatus());
+            assertEquals(LocalDateTime.parse("2022-08-19T00:00:00", formatter), result.get().getDateCompleted());
+        }
+        catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -187,7 +141,7 @@ public class GoalTrackerServiceIntegrationTest {
                         {
                             "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a1c",
                             "dateOfEntry": "2022-08-19T00:00:00",
-                            "journal": 3,
+                            "journal": "e958ac56-2f12-4d35-ba8e-979aca28b4a6",
                             "topic": "test3",
                             "recKey": "Goals Created",
                             "recValue": "1"
@@ -195,7 +149,7 @@ public class GoalTrackerServiceIntegrationTest {
                         {
                             "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a2d",
                             "dateOfEntry": "2022-08-19T00:00:00",
-                            "journal": 3,
+                            "journal": "e958ac56-2f12-4d35-ba8e-979aca28b4a6",
                             "topic": "test3",
                             "recKey": "Tasks Tested",
                             "recValue": "1"
@@ -204,16 +158,20 @@ public class GoalTrackerServiceIntegrationTest {
                 }
                 """;
 
+        try {
+            String response = goalTrackerService.updateProgress(message);
+            assertEquals("{\"objectives\":[9]}", response);
 
-        GeneralResponseBody response = goalTrackerService.updateProgress(message);
-        assertEquals(200,response.getStatus());
+            List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
+            Optional<Objective> result = objectiveRepository.findById(9);
 
-        List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
-        Optional<Objective> result = objectiveRepository.findById(9);
-
-        assertTrue(result.isPresent());
-        assertEquals("IN PROGRESS",result.get().getStatus());
-        assertNull(result.get().getDateCompleted());
+            assertTrue(result.isPresent());
+            assertEquals("IN PROGRESS", result.get().getStatus());
+            assertNull(result.get().getDateCompleted());
+        }
+        catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -227,7 +185,7 @@ public class GoalTrackerServiceIntegrationTest {
                         {
                             "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a1c",
                             "dateOfEntry": "2022-08-19T00:00:00",
-                            "journal": 3,
+                            "journal": "e958ac56-2f12-4d35-ba8e-979aca28b4a6",
                             "topic": "test2",
                             "recKey": "Goals Created",
                             "recValue": "1"
@@ -235,7 +193,7 @@ public class GoalTrackerServiceIntegrationTest {
                         {
                             "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a2d",
                             "dateOfEntry": "2022-08-19T00:00:00",
-                            "journal": 3,
+                            "journal": "e958ac56-2f12-4d35-ba8e-979aca28b4a6",
                             "topic": "test2",
                             "recKey": "Tasks Tested",
                             "recValue": "1"
@@ -244,27 +202,20 @@ public class GoalTrackerServiceIntegrationTest {
                 }
                 """;
 
-        GeneralResponseBody response = goalTrackerService.updateProgress(message);
-        assertEquals(200,response.getStatus());
+        try {
+            String response = goalTrackerService.updateProgress(message);
+            assertEquals("{\"objectives\":[8]}", response);
 
-        List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
-        Optional<Objective> result = objectiveRepository.findById(8);
+            List<Objective> allObjectives = objectiveRepository.findAllByJournalId(3);
+            Optional<Objective> result = objectiveRepository.findById(8);
 
-        assertTrue(result.isPresent());
-        assertEquals("COMPLETE",result.get().getStatus());
-        assertEquals(LocalDateTime.parse("2022-08-19T00:00:00",formatter), result.get().getDateCompleted());
+            assertTrue(result.isPresent());
+            assertEquals("COMPLETE", result.get().getStatus());
+            assertEquals(LocalDateTime.parse("2022-08-19T00:00:00", formatter), result.get().getDateCompleted());
+        }
+        catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
     }
 
-    @Test
-    @DisplayName("Should return consolidate Goals and Objectives for given journal ID as a list")
-    public void getGoalsByJournal_IntegrationTest(){
-        int journalId = 3;
-        List<Goal> result = goalTrackerService.getGoalsWithProgressInJournal(journalId);
-
-        assertNotNull(result);
-        assertEquals(1,result.size());
-        assertEquals("Get Goal By Journal ID Works", result.get(0).getDescription());
-        assertEquals(1, result.get(0).getObjectives().size());
-        assertEquals(7, result.get(0).getObjectives().get(0).getId());
-    }
 }

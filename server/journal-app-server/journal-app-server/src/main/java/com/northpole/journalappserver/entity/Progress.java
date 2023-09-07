@@ -1,5 +1,6 @@
 package com.northpole.journalappserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class Progress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
+    @JsonIgnore
     private Integer id;
 
     @NotNull
@@ -36,6 +38,7 @@ public class Progress {
     @Column(name="target_value")
     private Double targetValue;
 
+    @JsonIgnore
     @Column (name="last_checked_entry_date")
     private LocalDateTime entryDateLastChecked;
 }

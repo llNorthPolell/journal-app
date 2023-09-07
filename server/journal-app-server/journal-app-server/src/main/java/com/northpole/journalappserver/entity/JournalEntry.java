@@ -1,5 +1,6 @@
 package com.northpole.journalappserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -24,8 +25,8 @@ public class JournalEntry {
     @Id
     private UUID entryId;
 
-    @NotNull
-    private Integer journal;
+    @JsonIgnore
+    private UUID journal;
 
     @NotNull
     @NotEmpty

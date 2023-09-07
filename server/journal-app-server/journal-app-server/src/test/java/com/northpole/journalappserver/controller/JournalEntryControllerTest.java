@@ -1,11 +1,12 @@
 package com.northpole.journalappserver.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.northpole.journalappserver.entity.GeneralResponseBody;
 import com.northpole.journalappserver.entity.JournalBodyItem;
 import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.entity.Record;
 import com.northpole.journalappserver.service.JournalEntryService;
+import com.northpole.journalappserver.service.JournalService;
 import com.northpole.journalappserver.util.enums.APIResult;
 import com.northpole.journalappserver.util.enums.GenericAPITestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,16 +39,20 @@ public class JournalEntryControllerTest {
 
     private ObjectMapper objectMapper;
 
-    private final String ENDPOINT = "/journalEntry";
-    private final String MOCK_UUID_STRING="7aa881bc-f6e1-4621-9325-c199d7b3e5c8";
 
-    private long testTimestamp = System.currentTimeMillis();
-    private GeneralResponseBody mockSuccessResult=null;
+    private final UUID MOCK_JOURNAL_REF = UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+    private final UUID MOCK_SAVE_ID=UUID.fromString("7aa881bc-f6e1-4621-9325-c199d7b3e5c8");
+    private final String ENDPOINT = "/"+MOCK_JOURNAL_REF+"/journalEntries";
+
+    private String expectedSaveSuccessResult;
 
     private GenericAPITestUtil genericAPITestUtil;
 
     @MockBean
     private JournalEntryService journalEntryService;
+
+    @MockBean
+    private JournalService journalService;
 
     @Autowired
     public JournalEntryControllerTest(MockMvc mockMvc,ObjectMapper objectMapper){
@@ -60,7 +66,7 @@ public class JournalEntryControllerTest {
     }
 
     @BeforeEach
-    public void setupEachTest(){
+    public void setupEachTest() throws JsonProcessingException {
         Record rec1 = Record.builder()
                 .recKey("a")
                 .recValue("1")
@@ -82,7 +88,7 @@ public class JournalEntryControllerTest {
         JournalBodyItem body2 = JournalBodyItem.builder()
                 .topic("Second")
                 .description("This is my second topic...")
-                .recordList(new ArrayList<Record>())
+                .recordList(new ArrayList<>())
                 .build();
 
         List<JournalBodyItem> bodyList = new ArrayList<>();
@@ -90,22 +96,22 @@ public class JournalEntryControllerTest {
         bodyList.add(body2);
 
         this.mockJournalEntry = JournalEntry.builder()
-                .journal(3)
                 .summary("My First Post")
                 .overview("Woohoo! My First Post!! test")
                 .dateOfEntry(LocalDateTime.of(2022,8,19,0,0,0,0))
                 .journalBodyItems(bodyList)
                 .build();
 
-        UUID mockUUID = UUID.fromString(MOCK_UUID_STRING);
-        this.mockSuccessResult = GeneralResponseBody.builder()
-                .status(200)
-                .message("{\"id\":\""+mockUUID+"\"}")
-                .timeStamp(testTimestamp)
-                .build();
+        this.expectedSaveSuccessResult = "{\"id\":\""+ MOCK_SAVE_ID +"\"}";
 
-        when(journalEntryService.save(any(JournalEntry.class)))
-                .thenReturn(mockSuccessResult);
+
+        when(journalEntryService.save(any(UUID.class),any(JournalEntry.class)))
+                .thenReturn(JournalEntry.builder()
+                        .entryId(MOCK_SAVE_ID)
+                        .build());
+
+        when(journalService.ownsJournal(anyString(),any(UUID.class)))
+                .thenReturn(true);
     }
 
     @DisplayName("Should pass validation and return UUID")
@@ -117,20 +123,11 @@ public class JournalEntryControllerTest {
                 "",
                 APIResult.PASS);
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }
 
-    @DisplayName("Should fail validation when journal is missing")
-    @Test
-    public void publishJournalEntryMissingJournal_UnitTest() throws Exception {
-        MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
-                mockJournalEntry,
-                "\"journal\":3,",
-                "",
-                APIResult.FAIL);
-    }
 
     @DisplayName("Should fail validation when summary is missing")
     @Test
@@ -172,7 +169,7 @@ public class JournalEntryControllerTest {
                 APIResult.PASS);
 
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }
@@ -247,7 +244,7 @@ public class JournalEntryControllerTest {
                 APIResult.PASS);
 
         assertEquals(
-                objectMapper.writeValueAsString(mockSuccessResult),
+                expectedSaveSuccessResult,
                 mvcResult.getResponse().getContentAsString()
         );
     }

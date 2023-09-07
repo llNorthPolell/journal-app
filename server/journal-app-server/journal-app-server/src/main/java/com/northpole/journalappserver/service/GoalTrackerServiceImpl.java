@@ -21,16 +21,20 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
 
     private ObjectiveRepository objectiveRepository;
 
+    private JournalService journalService;
+
     private ObjectMapper objectMapper;
 
     @Autowired
     public GoalTrackerServiceImpl(
             GoalRepository goalRepository,
             ObjectiveRepository objectiveRepository,
+            JournalService journalService,
             ObjectMapper objectMapper
     ){
         this.goalRepository=goalRepository;
         this.objectiveRepository=objectiveRepository;
+        this.journalService=journalService;
         this.objectMapper=objectMapper;
     }
 
@@ -46,96 +50,106 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
 
     @Override
     @Transactional
-    public GeneralResponseBody saveGoal(Goal payload) {
+    public Goal saveGoal(UUID journalRef, Goal payload) {
         LocalDateTime now = LocalDateTime.now();
         UUID saveId = UUID.randomUUID();
-        int journalId = payload.getJournal();
-        String defaultStatus="IN PROGRESS";
-        Goal resultGoal;
+        String defaultStatus = "IN PROGRESS";
+        Goal saveGoal;
+        List<Objective> saveObjectives;
+        List<Objective> objectives = payload.getObjectives();
 
         payload.setId(saveId);
-
-        List<Objective> objectives = payload.getObjectives();
+        payload.setJournal(journalRef);
         payload.setObjectives(null);    // strip objectives from MongoDB as not needed and takes up space
 
         for (Objective o : objectives) {
             o.setGoalId(saveId);
-            o.setJournalId(journalId);
+            o.setJournalId(journalService.getJournalId(journalRef));
             o.setCreationTimestamp(now);
             o.setLastUpdated(now);
             o.setStatus(defaultStatus);
 
             if (o.getCompletionCriteria() == null)
                 o.setCompletionCriteria("AND");
+
+            for (Progress p : o.getProgressList())
+                if (p.getCurrentValue()==null)
+                    p.setCurrentValue(0d);
         }
 
-        try {
-            resultGoal=goalRepository.save(payload);
+        saveGoal = goalRepository.save(payload);
+        saveObjectives = objectiveRepository.saveAll(objectives);
 
-            List<Objective> objectiveSaveResults = objectiveRepository.saveAll(objectives);
+        saveGoal.setObjectives(saveObjectives);
 
-            String objectiveIds = objectiveSaveResults.stream()
-                    .map(o-> o.getId())
-                    .collect(Collectors.toList())
-                    .toString();
+        return saveGoal;
+    }
 
-            return GeneralResponseBody.builder()
-                    .status(200)
-                    .message("{\"goalId\":\"" + resultGoal.getId().toString() + "\", \"objectiveIds\":"+objectiveIds+"}")
-                    .timeStamp(System.currentTimeMillis())
-                    .build();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return GeneralResponseBody.builder()
-                    .status(500)
-                    .message(e.getMessage())
-                    .timeStamp(System.currentTimeMillis())
-                    .build();
-        }
+    @Override
+    public Goal getGoalById(UUID id) {
+        Optional<Goal> goal = goalRepository.findById(id);
+        Goal output;
+        List<Objective> objectives;
+
+        if (goal.isEmpty()) return null;
+
+        output = goal.get();
+        objectives=objectiveRepository.findAllByGoalId(id);
+
+        output.setObjectives(objectives);
+
+        return output;
     }
 
     @Override
     @Transactional
-    public List<Goal> getGoalPreviewsInJournal(int journalId){
-        try {
-            return goalRepository.findAllByJournalId(journalId);
+    public List<Goal> getGoalPreviewsInJournal(UUID journalRef){
+            return goalRepository.findAllByJournal(journalRef);
+    }
+
+    private void packageGoals(List<Goal> goals, List<Objective> objectives){
+        Map<UUID, List<Objective>> goalObjectiveMap = new HashMap<>();
+        for (Objective o : objectives) {
+            if (!goalObjectiveMap.containsKey(o.getGoalId()))
+                goalObjectiveMap.put(o.getGoalId(), new ArrayList<>());
+
+            goalObjectiveMap.get(o.getGoalId()).add(o);
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return null;
+
+        for (Goal g : goals) {
+            if (!goalObjectiveMap.containsKey(g.getId())) {
+                g.setObjectives(new ArrayList<>());
+                continue;
+            }
+            g.setObjectives(goalObjectiveMap.get(g.getId()));
         }
     }
 
+
     @Override
     @Transactional
-    public List<Goal> getGoalsWithProgressInJournal(int journalId){
-        try {
-            List<Goal> goals = goalRepository.findAllByJournalId(journalId);
-            List<Objective> objectiveList = objectiveRepository.findAllByJournalId(journalId);
-            Map<UUID, List<Objective>> goalObjectiveMap = new HashMap<>();
+    public List<Goal> getGoalsWithProgressInJournal(UUID journalRef) {
+        List<Goal> goals = goalRepository.findAllByJournal(journalRef);
+        List<Objective> objectiveList = objectiveRepository.findAllByJournalId(
+                journalService.getJournalId(journalRef));
+        packageGoals(goals,objectiveList);
 
-            for (Objective o : objectiveList) {
-                if (!goalObjectiveMap.containsKey(o.getGoalId()))
-                    goalObjectiveMap.put(o.getGoalId(), new ArrayList<>());
+        return goals;
+    }
 
-                goalObjectiveMap.get(o.getGoalId()).add(o);
-            }
+    @Override
+    public List<Goal> getCompletedGoals(UUID journalRef) {
+        return goalRepository.findCompletedGoalsInJournal(journalRef);
+    }
 
-            for (Goal g : goals) {
-                if (!goalObjectiveMap.containsKey(g.getId())) {
-                    g.setObjectives(new ArrayList<>());
-                    continue;
-                }
-                g.setObjectives(goalObjectiveMap.get(g.getId()));
-            }
+    @Override
+    public Goal updateGoal(Goal payload) {
+        return null;
+    }
 
-            return goals;
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
+    @Override
+    public Goal deleteGoal(Goal goalId) {
+        return null;
     }
 
 
@@ -146,54 +160,51 @@ public class GoalTrackerServiceImpl implements GoalTrackerService{
     }
 
     @Override
-    public GeneralResponseBody updateProgress(String message)  {
-        try {
-            // extract flatRecords from message (output of JournalEntryRecordService.save)
-            FlatRecord[] flatRecords = extractFlatRecords(message);
-            Set<String> topics = Arrays.stream(flatRecords)
-                    .map(f-> f.getTopic())
-                    .collect(Collectors.toSet());
+    public String updateProgress(String message) throws JsonProcessingException {
+        // extract flatRecords from message (output of JournalEntryRecordService.save)
+        FlatRecord[] flatRecords = extractFlatRecords(message);
+        Set<String> topics = Arrays.stream(flatRecords)
+                .map(f -> f.getTopic())
+                .collect(Collectors.toSet());
 
-            // find list of objectives with topic and recKey
-            List<Objective> objectives = objectiveRepository.findAllByJournalIdIsAndTopicInAndStatusIs(
-                    flatRecords[0].getJournal(),topics, "IN PROGRESS");
+        // find list of objectives with topic and recKey
+        List<Objective> objectives = objectiveRepository.findAllByJournalIdIsAndTopicInAndStatusIs(
+                journalService.getJournalId(flatRecords[0].getJournal()), topics, "IN PROGRESS");
 
-            for (FlatRecord f: flatRecords){
-                if (!isNumeric(f.getRecValue()))
-                    continue;
-                for (Objective o : objectives)
-                    for (Progress p: o.getProgressList()) {
-                        if (p.getEntryDateLastChecked() !=null &&
-                                p.getEntryDateLastChecked().isBefore(f.getDateOfEntry()))
-                            continue;
+        for (FlatRecord f : flatRecords) {
+            if (!isNumeric(f.getRecValue()))
+                continue;
+            for (Objective o : objectives)
+                for (Progress p : o.getProgressList()) {
+                    if (p.getEntryDateLastChecked() != null &&
+                            p.getEntryDateLastChecked().isBefore(f.getDateOfEntry()))
+                        continue;
 
-                        if (o.getTopic().equals(f.getTopic()) && p.getRecKey().equals(f.getRecKey())) {
-                            p.setCurrentValue(Double.parseDouble(f.getRecValue()));
-                            o.setLastUpdated(LocalDateTime.now());
-                            p.setEntryDateLastChecked(f.getDateOfEntry());
-                        }
-
+                    if (o.getTopic().equals(f.getTopic()) && p.getRecKey().equals(f.getRecKey())) {
+                        p.setCurrentValue(Double.parseDouble(f.getRecValue()));
+                        o.setLastUpdated(LocalDateTime.now());
+                        p.setEntryDateLastChecked(f.getDateOfEntry());
                     }
-            }
 
-            // save updates
-            List<Objective> saveResults = objectiveRepository.saveAll(objectives);
-            String saveResultJson = objectMapper.writeValueAsString(saveResults);
-
-            return GeneralResponseBody.builder()
-                    .status(200)
-                    .message("{\"objectives\":"+saveResultJson+"}")
-                    .timeStamp(System.currentTimeMillis())
-                    .build();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return GeneralResponseBody.builder()
-                    .status(500)
-                    .message(e.getStackTrace().toString())
-                    .timeStamp(System.currentTimeMillis())
-                    .build();
+                }
         }
 
+        // save updates
+        List<Objective> saveResults = objectiveRepository.saveAll(objectives);
+
+        String saveIds = saveResults.stream()
+                .map(o->o.getId())
+                .collect(Collectors.toList())
+                .toString();
+
+
+        return "{\"objectives\":" + saveIds + "}";
+
+    }
+
+    public boolean ownsGoal(UUID journalRef,UUID goalId){
+        Optional<Goal> goal= goalRepository.findById(goalId);
+        if (goal.isEmpty()) return false;
+        return goal.get().getJournal().equals(journalRef);
     }
 }
