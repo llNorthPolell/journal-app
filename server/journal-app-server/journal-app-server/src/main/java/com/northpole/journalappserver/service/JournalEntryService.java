@@ -10,11 +10,17 @@ import java.util.UUID;
 
 public interface JournalEntryService {
 
-    JournalEntry save(UUID journalRef, JournalEntry payload) throws JsonProcessingException;
+    JournalEntry publishJournalEntry(UUID journalRef, JournalEntry payload) throws JsonProcessingException;
 
     JournalEntry getJournalEntryById(UUID journalEntryId);
 
     List<JournalEntry> getJournalEntriesInJournal(UUID journalRef);
 
     JournalEntry getLastEntryInJournal(UUID journalRef);
+
+    JournalEntry updateJournalEntry(UUID journalEntryId, JournalEntry payload) throws JsonProcessingException;
+
+    JournalEntry deleteJournalEntry(UUID journalEntryId);
+
+    boolean ownsJournalEntry(UUID journalRef, UUID journalEntryId);
 }

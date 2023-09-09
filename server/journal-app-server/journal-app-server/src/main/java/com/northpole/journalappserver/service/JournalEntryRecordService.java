@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JournalEntryRecordService {
-    String save(JournalEntry payload) throws JsonProcessingException;
+    List<FlatRecord> save(JournalEntry payload);
 
     List<FlatRecord> getDashboardData(UUID journalRef);
 }

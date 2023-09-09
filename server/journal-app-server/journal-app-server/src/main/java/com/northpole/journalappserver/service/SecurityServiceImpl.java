@@ -10,6 +10,7 @@ import java.util.UUID;
 public class SecurityServiceImpl implements SecurityService{
 
     private JournalService journalService;
+    private JournalEntryService journalEntryService;
     private DashboardWidgetService dashboardWidgetService;
     private GoalTrackerService goalTrackerService;
 
@@ -17,10 +18,12 @@ public class SecurityServiceImpl implements SecurityService{
 
     public SecurityServiceImpl(
             JournalService journalService,
+            JournalEntryService journalEntryService,
             DashboardWidgetService dashboardWidgetService,
             GoalTrackerService goalTrackerService
     ){
         this.journalService=journalService;
+        this.journalEntryService=journalEntryService;
         this.dashboardWidgetService=dashboardWidgetService;
         this.goalTrackerService=goalTrackerService;
     }
@@ -29,6 +32,11 @@ public class SecurityServiceImpl implements SecurityService{
     public boolean ownsJournal(UUID journalRef){
         this.authentication = SecurityContextHolder.getContext().getAuthentication();
         return journalService.ownsJournal(authentication.getName(),journalRef);
+    }
+
+    @Override
+    public boolean ownsJournalEntry(UUID journalRef, UUID journalEntryId) {
+        return journalEntryService.ownsJournalEntry(journalRef, journalEntryId);
     }
 
     @Override

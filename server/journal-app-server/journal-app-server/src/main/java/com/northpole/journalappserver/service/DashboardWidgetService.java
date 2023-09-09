@@ -11,7 +11,9 @@ public interface DashboardWidgetService {
 
     List<DashboardWidget> getDashboardWidgetData(UUID journalRef);
 
-    DashboardWidget updateDashboardWidget(UUID journalRef,DashboardWidget payload);
+    DashboardWidget updateDashboardWidget(int widgetId, DashboardWidget payload);
 
     boolean ownsWidget(UUID journalRef, int widgetId);
+
+    DashboardWidget deleteDashboardWidget(UUID journalRef, int widgetId);
 }

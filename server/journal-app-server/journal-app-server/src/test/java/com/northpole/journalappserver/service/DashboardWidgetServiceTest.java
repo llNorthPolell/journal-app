@@ -17,11 +17,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class DashboardWidgetServiceTest {
@@ -38,6 +39,8 @@ public class DashboardWidgetServiceTest {
     private DashboardWidgetService dashboardWidgetService;
 
     private final UUID MOCK_JOURNAL_REF=UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+    private final int MOCK_JOURNAL_ID=3;
+    private final int MOCK_WIDGET_ID=10;
 
     @Autowired
     public DashboardWidgetServiceTest(
@@ -169,18 +172,41 @@ public class DashboardWidgetServiceTest {
         );
 
         when(journalService.getJournalId(any(UUID.class))).thenReturn(3);
-        when(dashboardWidgetRepository.getDashboardWidgetsByJournal(3))
+        when(dashboardWidgetRepository.getDashboardWidgetsByJournal(anyInt()))
                 .thenReturn(mockDashboardWidgetRepoResult);
 
-        when(journalEntryRecordService.getDashboardData(MOCK_JOURNAL_REF))
+        when(dashboardWidgetRepository.findById(anyInt()))
+                .thenReturn(
+                        Optional.of(
+                                DashboardWidget.builder()
+                                        .id(MOCK_WIDGET_ID)
+                                        .journal(MOCK_JOURNAL_ID)
+                                        .configs(new ArrayList<>())
+                                        .build()
+                        )
+                );
+
+        when(journalEntryRecordService.getDashboardData(any(UUID.class)))
                 .thenReturn(mockFlatRecords);
     }
 
     @Test
+    @DisplayName("Should call dashboardWidgetRepository.save when creating a widget")
+    public void createDashboardWidget_UnitTest(){
+        DashboardWidget mockPayload = DashboardWidget.builder().build();
+        DashboardWidget saveResult = dashboardWidgetService.createDashboardWidget(MOCK_JOURNAL_REF,mockPayload);
+        verify(dashboardWidgetRepository,times(1)).save(any(DashboardWidget.class));
+    }
+
+
+    @Test
     @DisplayName("Should return dataset for widgets")
     public void get_widget_data_UnitTest(){
+        int journalId = 3;
         List<DashboardWidget> resultList = dashboardWidgetService.getDashboardWidgetData(MOCK_JOURNAL_REF);
 
+        verify(dashboardWidgetRepository,times(1)).getDashboardWidgetsByJournal(anyInt());
+        verify(journalEntryRecordService,times(1)).getDashboardData(any(UUID.class));
         assertEquals(2,resultList.size());
     }
 
@@ -188,6 +214,9 @@ public class DashboardWidgetServiceTest {
     @DisplayName("Should return dataset for chart-type widgets, sorted by dateOfEntry (desc), topic(asc) and recKey(asc)")
     public void get_chart_data_UnitTest(){
         List<DashboardWidget> resultList = dashboardWidgetService.getDashboardWidgetData(MOCK_JOURNAL_REF);
+
+        verify(dashboardWidgetRepository,times(1)).getDashboardWidgetsByJournal(anyInt());
+        verify(journalEntryRecordService,times(1)).getDashboardData(any(UUID.class));
 
         assertEquals(2,resultList.size());
 
@@ -226,5 +255,22 @@ public class DashboardWidgetServiceTest {
         expectedTargetA.add("2");
 
         assertEquals(expectedTargetA,actualTargetA);
+    }
+
+    @Test
+    @DisplayName("Should call dashboardWidgetRepository.findById and dashboardWidgetRepository.save when updating a widget")
+    public void updateDashboardWidget_UnitTest(){
+        DashboardWidget mockPayload = DashboardWidget.builder().configs(new ArrayList<>()).build();
+        DashboardWidget updateResult = dashboardWidgetService.updateDashboardWidget(MOCK_WIDGET_ID,mockPayload);
+        verify(dashboardWidgetRepository,times(1)).findById(anyInt());
+        verify(dashboardWidgetRepository,times(1)).save(any(DashboardWidget.class));
+    }
+
+    @Test
+    @DisplayName("Should call dashboardWidgetRepository.findById and dashboardWidgetRepository.delete when deleting a widget")
+    public void deleteDashboardWidget_UnitTest(){
+        DashboardWidget deleteResult = dashboardWidgetService.deleteDashboardWidget(MOCK_JOURNAL_REF,MOCK_WIDGET_ID);
+        verify(dashboardWidgetRepository,times(1)).findById(anyInt());
+        verify(dashboardWidgetRepository,times(1)).delete(any(DashboardWidget.class));
     }
 }

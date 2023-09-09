@@ -182,16 +182,13 @@ public class JournalEntryRecordServiceTest {
 
     @Test
     @DisplayName("Should take json and flat map to list of FlattenedRecord objects, then call repository save() method")
-    public void save_UnitTest(){
-        try {
-            String result = journalEntryRecordService.save(mockJournalEntry);
+    public void save_UnitTest() {
 
-            assertTrue(result.contains("\"count\":5"));
-            verify(flatRecordRepository, times(1)).saveAll(anyList());
-        }
-        catch(JsonProcessingException e){
-            e.printStackTrace();
-        }
+        List<FlatRecord> results = journalEntryRecordService.save(mockJournalEntry);
+
+        assertEquals(5, results.size());
+        verify(flatRecordRepository, times(1)).saveAll(anyList());
+
     }
 
 }

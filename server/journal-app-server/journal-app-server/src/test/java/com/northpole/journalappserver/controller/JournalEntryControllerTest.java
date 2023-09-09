@@ -105,7 +105,7 @@ public class JournalEntryControllerTest {
         this.expectedSaveSuccessResult = "{\"id\":\""+ MOCK_SAVE_ID +"\"}";
 
 
-        when(journalEntryService.save(any(UUID.class),any(JournalEntry.class)))
+        when(journalEntryService.publishJournalEntry(any(UUID.class),any(JournalEntry.class)))
                 .thenReturn(JournalEntry.builder()
                         .entryId(MOCK_SAVE_ID)
                         .build());

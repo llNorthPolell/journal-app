@@ -13,7 +13,7 @@ public interface GoalRepository extends MongoRepository<Goal, UUID> {
     @Query("{journal: ?0}")
     List<Goal> findAllByJournal(UUID journalRef);
 
-    @Query("{journal: ?0, status:'COMPLETE'}")
-    List<Goal> findCompletedGoalsInJournal(UUID journalRef);
+    @Query("{journal: ?0, status:?1}")
+    List<Goal> findByStatusInJournal(UUID journalRef, String status);
 
 }

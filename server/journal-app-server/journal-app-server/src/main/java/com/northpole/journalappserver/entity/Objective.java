@@ -25,7 +25,6 @@ public class Objective {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    @JsonIgnore
     private Integer id;
 
     @JsonIgnore
@@ -65,7 +64,7 @@ public class Objective {
 
     @Valid
     @NotNull
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name="objective", nullable = false)
     @JsonProperty("measurableTasks")
     private List<Progress> progressList;

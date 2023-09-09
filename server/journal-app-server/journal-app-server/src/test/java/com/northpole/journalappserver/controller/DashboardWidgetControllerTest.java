@@ -125,7 +125,7 @@ public class DashboardWidgetControllerTest {
 
     @Test
     @DisplayName("Should fail when widget type is missing")
-    public void publicDashboardWidgetMissingType_UnitTest() throws Exception {
+    public void publishDashboardWidgetMissingType_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
                 "\"type\":\"line-graph\",",
@@ -135,7 +135,7 @@ public class DashboardWidgetControllerTest {
 
     @Test
     @DisplayName("Should fail when title is missing")
-    public void publicDashboardWidgetMissingTitle_UnitTest() throws Exception {
+    public void publishDashboardWidgetMissingTitle_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
                 "\"title\":\"Widget Creation Test\",",
@@ -145,7 +145,7 @@ public class DashboardWidgetControllerTest {
 
     @Test
     @DisplayName("Should fail when type field is missing in a config")
-    public void publicDashboardWidgetMissingConfigType_UnitTest() throws Exception {
+    public void publishDashboardWidgetMissingConfigType_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
                 "\"type\":\"x\",",
@@ -155,7 +155,7 @@ public class DashboardWidgetControllerTest {
 
     @Test
     @DisplayName("Should fail when label field is missing in a config")
-    public void publicDashboardWidgetMissingConfigLabel_UnitTest() throws Exception {
+    public void publishDashboardWidgetMissingConfigLabel_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
                 "\"label\":\"Test Y\",",
@@ -165,7 +165,7 @@ public class DashboardWidgetControllerTest {
 
     @Test
     @DisplayName("Should fail when rule field is missing in a config")
-    public void publicDashboardWidgetMissingConfigRule_UnitTest() throws Exception {
+    public void publishDashboardWidgetMissingConfigRule_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
                 "\"rule\":\"a\"",
@@ -175,7 +175,7 @@ public class DashboardWidgetControllerTest {
 
     @Test
     @DisplayName("Should fail when color field is not hex format in a config")
-    public void publicDashboardWidgetInvalidConfigColor_UnitTest() throws Exception {
+    public void publishDashboardWidgetInvalidConfigColor_UnitTest() throws Exception {
         MvcResult mvcResult = genericAPITestUtil.doGenericPostValidationTest(
                 mockPayload,
                 "\"rule\":\"a\"",

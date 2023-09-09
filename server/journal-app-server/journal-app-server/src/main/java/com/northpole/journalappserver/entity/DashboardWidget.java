@@ -46,7 +46,7 @@ public class DashboardWidget {
     @NotNull
     private String title;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,orphanRemoval=true)
     @JoinColumn(name="widget",nullable = false)
     @Valid
     private List<WidgetDataConfig> configs;

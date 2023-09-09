@@ -2,6 +2,7 @@ package com.northpole.journalappserver.service;
 
 import com.northpole.journalappserver.entity.DashboardWidget;
 import com.northpole.journalappserver.entity.FlatRecord;
+import com.northpole.journalappserver.entity.WidgetDataConfig;
 import com.northpole.journalappserver.factory.WidgetPayloadFactory;
 import com.northpole.journalappserver.factory.WidgetType;
 import com.northpole.journalappserver.repository.DashboardWidgetRepository;
@@ -9,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardWidgetServiceImpl implements DashboardWidgetService{
@@ -72,14 +72,48 @@ public class DashboardWidgetServiceImpl implements DashboardWidgetService{
     }
 
     @Override
-    public DashboardWidget updateDashboardWidget(UUID journalRef,DashboardWidget payload) {
-        // check if user owns widget
+    public DashboardWidget updateDashboardWidget(int widgetId, DashboardWidget payload) {
         LocalDateTime now = LocalDateTime.now();
+        Optional<DashboardWidget> findWidgetToUpdate = dashboardWidgetRepository.findById(widgetId);
 
-        payload.setLastUpdated(now);
-        payload.setJournal(journalService.getJournalId(journalRef));
+        if (findWidgetToUpdate.isEmpty()) return null;
 
-        return dashboardWidgetRepository.save(payload);
+        DashboardWidget widgetToUpdate = findWidgetToUpdate.get();
+
+        widgetToUpdate.setLastUpdated(now);
+        widgetToUpdate.setTitle(payload.getTitle());
+        widgetToUpdate.setType(payload.getType());
+        widgetToUpdate.setPosition(payload.getPosition());
+
+        List<WidgetDataConfig> payloadConfigs = payload.getConfigs();
+        Set<Integer> payloadConfigIds = payloadConfigs
+                .stream()
+                .map(c->c.getId())
+                .collect(Collectors.toSet());
+
+        List<WidgetDataConfig> configsToUpdate = widgetToUpdate.getConfigs();
+
+        List<WidgetDataConfig> toDelete = configsToUpdate
+                .stream()
+                .filter(c->!payloadConfigIds.contains(c.getId()))
+                .collect(Collectors.toList());
+
+
+        configsToUpdate.clear();
+        configsToUpdate.addAll(payloadConfigs);
+        configsToUpdate.removeAll(toDelete);
+        widgetToUpdate.setPayload(null);
+
+        return dashboardWidgetRepository.save(widgetToUpdate);
+    }
+
+    @Override
+    public DashboardWidget deleteDashboardWidget(UUID journalRef, int widgetId){
+        Optional<DashboardWidget> findWidgetToDelete = dashboardWidgetRepository.findById(widgetId);
+        if(findWidgetToDelete.isEmpty()) return null;
+        DashboardWidget widgetToDelete = findWidgetToDelete.get();
+        dashboardWidgetRepository.delete(widgetToDelete);
+        return widgetToDelete;
     }
 
     @Override

@@ -1,9 +1,6 @@
 package com.northpole.journalappserver.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.northpole.journalappserver.entity.Goal;
-import com.northpole.journalappserver.entity.Objective;
-import com.northpole.journalappserver.entity.Progress;
+import com.northpole.journalappserver.entity.*;
 import com.northpole.journalappserver.repository.GoalRepository;
 import com.northpole.journalappserver.repository.ObjectiveRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +30,7 @@ public class GoalTrackerServiceTest {
     @Mock
     private ObjectiveRepository objectiveRepository;
 
-    private final int MOCK_JOURNAL_ID=3;
+    private final int MOCK_JOURNAL_ID = 3;
     private final UUID MOCK_JOURNAL_REF = UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
     private final UUID MOCK_GOAL_ID = UUID.fromString("9a8bac07-b2b0-47fc-a0fe-17966c3bde7b");
 
@@ -50,16 +46,16 @@ public class GoalTrackerServiceTest {
             GoalRepository goalRepository,
             ObjectiveRepository objectiveRepository,
             GoalTrackerService goalTrackerService
-    ){
-        this.journalService=journalService;
-        this.goalRepository=goalRepository;
-        this.objectiveRepository=objectiveRepository;
-        this.goalTrackerService=goalTrackerService;
+    ) {
+        this.journalService = journalService;
+        this.goalRepository = goalRepository;
+        this.objectiveRepository = objectiveRepository;
+        this.goalTrackerService = goalTrackerService;
     }
 
 
     @BeforeEach
-    public void setupEachTest(){
+    public void setupEachTest() {
         List<Progress> mockProgress = new ArrayList<>();
         List<Objective> mockSaveObjectiveResult = new ArrayList<>();
 
@@ -67,7 +63,7 @@ public class GoalTrackerServiceTest {
                 Progress.builder()
                         .recKey("Goals Created")
                         .compareType(">=")
-                        .targetValue((double)1)
+                        .targetValue((double) 1)
                         .build()
         );
 
@@ -125,79 +121,121 @@ public class GoalTrackerServiceTest {
 
     @Test
     @DisplayName("Should run GoalRepository.save and ObjectiveRepository.save")
-    public void SaveGoal_UnitTest(){
-        Goal result = goalTrackerService.saveGoal(MOCK_JOURNAL_REF,mockGoal);
+    public void saveGoal_UnitTest() {
+        Goal result = goalTrackerService.saveGoal(MOCK_JOURNAL_REF, mockGoal);
 
-        verify(goalRepository,times(1)).save(any(Goal.class));
-        verify(objectiveRepository,times(1)).saveAll(any(List.class));
+        verify(goalRepository, times(1)).save(any(Goal.class));
+        verify(objectiveRepository, times(1)).saveAll(any(List.class));
 
-        assertEquals(MOCK_JOURNAL_REF,result.getJournal());
-        assertEquals(mockGoal.getAssumptions(),result.getAssumptions());
-        assertEquals(mockGoal.getGains(),result.getGains());
-        assertEquals(mockGoal.getDescription(),result.getDescription());
-        assertEquals(mockGoal.getIcon(),result.getIcon());
-        assertEquals(mockObjectives.size(),result.getObjectives().size());
+        assertEquals(MOCK_JOURNAL_REF, result.getJournal());
+        assertEquals(mockGoal.getAssumptions(), result.getAssumptions());
+        assertEquals(mockGoal.getGains(), result.getGains());
+        assertEquals(mockGoal.getDescription(), result.getDescription());
+        assertEquals(mockGoal.getIcon(), result.getIcon());
+        assertEquals(mockObjectives.size(), result.getObjectives().size());
 
         Objective mockObjective = mockObjectives.get(0);
         Objective newObjective = result.getObjectives().get(0);
 
 
-        assertEquals(MOCK_GOAL_ID,newObjective.getGoalId());
-        assertEquals(MOCK_JOURNAL_ID,newObjective.getJournalId());
-        assertEquals(mockObjective.getDescription(),newObjective.getDescription());
-        assertEquals(mockObjective.getTopic(),newObjective.getTopic());
-        assertEquals(mockObjective.getProgressList().size(),newObjective.getProgressList().size());
+        assertEquals(MOCK_GOAL_ID, newObjective.getGoalId());
+        assertEquals(MOCK_JOURNAL_ID, newObjective.getJournalId());
+        assertEquals(mockObjective.getDescription(), newObjective.getDescription());
+        assertEquals(mockObjective.getTopic(), newObjective.getTopic());
+        assertEquals(mockObjective.getProgressList().size(), newObjective.getProgressList().size());
 
         Progress mockProgress = mockObjective.getProgressList().get(0);
         Progress newProgress = newObjective.getProgressList().get(0);
 
-        assertEquals(0,newProgress.getCurrentValue());
-        assertEquals(mockProgress.getRecKey(),newProgress.getRecKey());
-        assertEquals(mockProgress.getCompareType(),newProgress.getCompareType());
-        assertEquals(mockProgress.getTargetValue(),newProgress.getTargetValue());
+        assertEquals(0, newProgress.getCurrentValue());
+        assertEquals(mockProgress.getRecKey(), newProgress.getRecKey());
+        assertEquals(mockProgress.getCompareType(), newProgress.getCompareType());
+        assertEquals(mockProgress.getTargetValue(), newProgress.getTargetValue());
 
     }
-
 
 
     @Test
-    @DisplayName("Should update progress when a journal entry is created")
-    public void UpdateProgress_UnitTest(){
-        String message = """
-                {
-                    "count": 2,
-                    "flatRecords": [
-                        {
-                            "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a1c",
-                            "dateOfEntry": "2022-08-19T00:00:00",
-                            "journal": "e958ac56-2f12-4d35-ba8e-979aca28b4a6",
-                            "topic": "test",
-                            "recKey": "Goals Created",
-                            "recValue": "1"
-                        },
-                        {
-                            "id": "a5e6346d-9967-4e23-b6b5-baaa9e619a2d",
-                            "dateOfEntry": "2022-08-19T00:00:00",
-                            "journal": "e958ac56-2f12-4d35-ba8e-979aca28b4a6",
-                            "topic": "test",
-                            "recKey": "Tested",
-                            "recValue": "2"
-                        }
-                    ]
-                }
-                """;
-        try {
-            String result = goalTrackerService.updateProgress(message);
+    @DisplayName("Should call objectiveRepository.findAllByJournalIdIsAndTopicInAndStatusIs" +
+            "and objectiveRepository.saveAll when a journal entry is created")
+    public void updateProgress_UnitTest() {
+        List<FlatRecord> mockFlatRecords = new ArrayList<>();
+        mockFlatRecords.add(
+                FlatRecord.builder()
+                        .id(UUID.fromString("a5e6346d-9967-4e23-b6b5-baaa9e619a1c"))
+                        .journal(UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6"))
+                        .dateOfEntry(LocalDateTime.of(2022, 8, 19, 0, 0))
+                        .topic("test")
+                        .recKey("Goals Created")
+                        .recValue("1")
+                        .build()
+        );
+        mockFlatRecords.add(
+                FlatRecord.builder()
+                        .id(UUID.fromString("a5e6346d-9967-4e23-b6b5-baaa9e619a2d"))
+                        .journal(UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6"))
+                        .dateOfEntry(LocalDateTime.of(2022, 8, 19, 0, 0))
+                        .topic("test")
+                        .recKey("Tested")
+                        .recValue("2")
+                        .build()
+        );
 
-            assertEquals("{\"objectives\":[1]}", result);
-            verify(objectiveRepository, times(1)).findAllByJournalIdIsAndTopicInAndStatusIs(
-                    anyInt(), anySet(), anyString()
-            );
-            verify(objectiveRepository, times(1)).saveAll(any(List.class));
-        }
-        catch(JsonProcessingException e){
-            e.printStackTrace();
-        }
+        String result = goalTrackerService.updateProgress(mockFlatRecords);
+
+        assertEquals("{\"objectives\":[1]}", result);
+        verify(objectiveRepository, times(1)).findAllByJournalIdIsAndTopicInAndStatusIs(
+                anyInt(), anySet(), anyString()
+        );
+        verify(objectiveRepository, times(1)).saveAll(any(List.class));
     }
 
+
+    @Test
+    @DisplayName("Should mark goals with fully completed objectives with COMPLETE status")
+    public void checkAndUpdateCompletedGoals_UnitTest(){
+        final UUID mockGoalId=UUID.fromString("9d2f45b8-e67c-40b1-82f5-ff24cf8b3bb0");
+        List<Goal> findInProgressResult = new ArrayList<>();
+        List<Objective> mockObjectives = new ArrayList<>();
+
+        mockObjectives.add(
+                Objective.builder()
+                        .id(1)
+                        .goalId(mockGoalId)
+                        .status(JournalAppStatus.COMPLETE.value())
+                        .build()
+        );
+        mockObjectives.add(
+                Objective.builder()
+                        .id(2)
+                        .goalId(mockGoalId)
+                        .status(JournalAppStatus.COMPLETE.value())
+                        .build()
+        );
+
+        Goal mockGoal = Goal.builder()
+                .id(mockGoalId)
+                .status(JournalAppStatus.IN_PROGRESS.value())
+                .build();
+
+        findInProgressResult.add(mockGoal);
+
+        when (goalRepository.findByStatusInJournal(MOCK_JOURNAL_REF, JournalAppStatus.IN_PROGRESS.value()))
+                .thenReturn(findInProgressResult);
+
+        when(objectiveRepository.findAllByGoalIdIn(any(Set.class)))
+                .thenReturn(mockObjectives);
+
+        when(goalRepository.findById(any(UUID.class)))
+                .thenReturn(Optional.of(mockGoal));
+        goalTrackerService.checkAndUpdateCompletedGoals(MOCK_JOURNAL_REF);
+
+        verify(goalRepository,times(1)).findByStatusInJournal(any(UUID.class),anyString());
+        verify(objectiveRepository,times(1)).findAllByGoalIdIn(any(Set.class));
+        verify(goalRepository,times(1)).findById(any(UUID.class));
+        verify(goalRepository,times(1)).save(any(Goal.class));
+        // should get called for updates and creates (2 times in total)
+        verify(objectiveRepository,times(2)).saveAll(any(List.class));
+        assertEquals("COMPLETE",mockGoal.getStatus());
+    }
 }

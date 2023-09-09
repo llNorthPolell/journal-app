@@ -27,7 +27,7 @@ public class JournalController {
     @PostMapping("/journals")
     public ResponseEntity<String> createJournal(@RequestBody Journal payload, Principal principal){
         try {
-            Journal outputJournal = journalService.createJournal(payload,principal.getName());
+            Journal outputJournal = journalService.createJournal(principal.getName(),payload);
             return new ResponseEntity<>(
                     "{\"id\":\""+outputJournal.getJournalRef()+"\"}",
                     HttpStatus.OK);
@@ -52,7 +52,7 @@ public class JournalController {
                     payload);
 
             return new ResponseEntity<>(
-                    "{\"id\":\""+outputJournal.getJournalRef().toString()+"\"}",
+                    "{\"id\":\""+outputJournal.getJournalRef()+"\"}",
                     HttpStatus.OK);
         }
         catch(Exception e){

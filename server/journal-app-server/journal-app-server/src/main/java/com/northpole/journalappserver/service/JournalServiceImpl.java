@@ -22,7 +22,7 @@ public class JournalServiceImpl implements JournalService{
     }
 
     @Override
-    public Journal createJournal(Journal payload, String author) {
+    public Journal createJournal(String author, Journal payload) {
         LocalDateTime now = LocalDateTime.now();
         UUID saveRef = UUID.randomUUID();
         payload.setAuthor(author);
@@ -57,13 +57,14 @@ public class JournalServiceImpl implements JournalService{
     @Override
     public Journal updateJournal(UUID journalRef, String uid, Journal payload) {
         LocalDateTime now = LocalDateTime.now();
-        Journal saveJournal = journalRepository.findByJournalRef(journalRef);
-        Journal output;
+        Journal journalToUpdate = journalRepository.findByJournalRef(journalRef);
 
-        saveJournal.setName(payload.getName());
-        saveJournal.setImg(payload.getImg());
-        saveJournal.setLastUpdated(now);
-        output = journalRepository.save(saveJournal);
+        if(journalToUpdate==null) return null;
+
+        journalToUpdate.setName(payload.getName());
+        journalToUpdate.setImg(payload.getImg());
+        journalToUpdate.setLastUpdated(now);
+        Journal output = journalRepository.save(journalToUpdate);
 
         return output;
     }

@@ -24,17 +24,17 @@ public class JournalEntryController {
 
     @PostMapping("/{journalRef}/journalEntries")
     @PreAuthorize("@securityService.ownsJournal(#journalRef)")
-    public ResponseEntity<String> saveJournalEntry (@PathVariable("journalRef") UUID journalRef,
+    public ResponseEntity<String> publishJournalEntry (@PathVariable("journalRef") UUID journalRef,
                                                     @Valid @RequestBody JournalEntry payload) {
         try {
-            JournalEntry saveJournalEntry = journalEntryService.save(journalRef,payload);
+            JournalEntry saveJournalEntry = journalEntryService.publishJournalEntry(journalRef,payload);
             return new ResponseEntity<>(
                     "{\"id\":\"" + saveJournalEntry.getEntryId() + "\"}",
                     HttpStatus.OK);
         }
         catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<String>(
+            return new ResponseEntity<>(
                     e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -49,10 +49,51 @@ public class JournalEntryController {
 
 
     @GetMapping("/{journalRef}/journalEntries/{journalEntryId}")
-    @PreAuthorize("@securityService.ownsJournal(#journalRef)")
-    public JournalEntry getJournalEntriesInJournal(@PathVariable("journalRef") UUID journalRef,
-                                                         @PathVariable("journalEntryId") UUID journalEntryId){
+    @PreAuthorize("@securityService.ownsJournal(#journalRef) && " +
+            "@securityService.ownsJournalEntry(#journalRef,#journalEntryId)")
+    public JournalEntry getJournalEntryById(@PathVariable("journalRef") UUID journalRef,
+                                            @PathVariable("journalEntryId") UUID journalEntryId){
         return journalEntryService.getJournalEntryById(journalEntryId);
     }
 
+
+    @PutMapping("/{journalRef}/journalEntries/{journalEntryId}")
+    @PreAuthorize("@securityService.ownsJournal(#journalRef) && " +
+            "@securityService.ownsJournalEntry(#journalRef,#journalEntryId)")
+    public ResponseEntity<String> updateJournalEntry(@PathVariable("journalRef") UUID journalRef,
+                                                      @PathVariable("journalEntryId") UUID journalEntryId,
+                                                     @Valid @RequestBody JournalEntry payload){
+        try {
+            JournalEntry updatedJournalEntry =journalEntryService.updateJournalEntry(
+                    journalEntryId, payload);
+            return new ResponseEntity<>(
+                    "{\"id\":\"" + updatedJournalEntry.getEntryId() + "\"}",
+                    HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(
+                    e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{journalRef}/journalEntries/{journalEntryId}")
+    @PreAuthorize("@securityService.ownsJournal(#journalRef) && " +
+            "@securityService.ownsJournalEntry(#journalRef,#journalEntryId)")
+    public ResponseEntity<String> deleteJournalEntry(@PathVariable("journalRef") UUID journalRef,
+                                                     @PathVariable("journalEntryId") UUID journalEntryId){
+        try {
+            JournalEntry updatedJournalEntry =journalEntryService.deleteJournalEntry(journalEntryId);
+            return new ResponseEntity<>(
+                    "{\"id\":\"" + updatedJournalEntry.getEntryId() + "\"}",
+                    HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(
+                    e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

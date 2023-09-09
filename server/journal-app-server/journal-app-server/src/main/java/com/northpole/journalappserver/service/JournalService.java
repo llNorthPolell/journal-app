@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JournalService {
-    Journal createJournal(Journal payload, String author);
+    Journal createJournal(String author, Journal payload);
 
     Journal getJournalById(UUID journalRef);
 
@@ -16,7 +16,7 @@ public interface JournalService {
 
     UUID getJournalRef(int journalId);
 
-    Journal updateJournal(UUID journalRef, String uid, Journal payload);
+    Journal updateJournal(UUID journalRef, String author, Journal payload);
 
     Journal deleteJournal(UUID journalRef);
 

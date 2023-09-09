@@ -18,4 +18,6 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Integer> {
     List<Objective> findAllByJournalId(@Param("journalId") int journalId);
 
     List<Objective> findAllByGoalId(@Param("goalId") UUID goalId);
+
+    List<Objective> findAllByGoalIdIn(@Param("goalList") Set<UUID> goalList);
 }

@@ -2,6 +2,8 @@ package com.northpole.journalappserver.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.northpole.journalappserver.entity.FlatRecord;
+import com.northpole.journalappserver.entity.JournalBodyItem;
 import com.northpole.journalappserver.entity.JournalEntry;
 import com.northpole.journalappserver.repository.JournalEntryRepository;
 import jakarta.transaction.Transactional;
@@ -36,7 +38,7 @@ public class JournalEntryServiceImpl implements JournalEntryService {
     
     @Override
     @Transactional
-    public JournalEntry save(UUID journalRef, JournalEntry payload) throws JsonProcessingException{
+    public JournalEntry publishJournalEntry(UUID journalRef, JournalEntry payload) throws JsonProcessingException{
         LocalDateTime now = LocalDateTime.now();
         UUID saveId = UUID.randomUUID();
         payload.setEntryId(saveId);
@@ -44,11 +46,11 @@ public class JournalEntryServiceImpl implements JournalEntryService {
         payload.setCreationTimestamp(now);
         payload.setLastUpdated(now);
         JournalEntry saveResult = journalEntryRepository.save(payload);
-        String extractAndSaveFlatRecordResult = journalEntryRecordService.save(payload);
+        List<FlatRecord> extractAndSaveFlatRecordResults = journalEntryRecordService.save(payload);
         String updateProgressResult = goalTrackerService.updateProgress(
-                extractAndSaveFlatRecordResult);
+                extractAndSaveFlatRecordResults);
 
-        if (saveResult==null || extractAndSaveFlatRecordResult==null || updateProgressResult==null)
+        if (saveResult==null || extractAndSaveFlatRecordResults.isEmpty() || updateProgressResult==null)
             return null;
 
         return saveResult;
@@ -73,11 +75,50 @@ public class JournalEntryServiceImpl implements JournalEntryService {
 
     @Override
     public JournalEntry getLastEntryInJournal(UUID journalRef) {
-        AggregationResults<JournalEntry> result = this.journalEntryRepository.findLastEntryInJournal(journalRef);
-        List<JournalEntry> resultList = result.getMappedResults();
-        if (resultList.isEmpty())
-            return null;
+        Optional<JournalEntry> result = this.journalEntryRepository.findLastEntryInJournal(journalRef);
+        if (result.isEmpty()) return null;
+        return result.get();
+    }
 
-        return resultList.get(0);
+    @Override
+    public JournalEntry updateJournalEntry(UUID journalEntryId, JournalEntry payload) throws JsonProcessingException {
+        LocalDateTime now = LocalDateTime.now();
+        Optional<JournalEntry> findJournalEntryToUpdate = journalEntryRepository.findById(journalEntryId);
+
+        if (findJournalEntryToUpdate.isEmpty()) return null;
+
+        JournalEntry journalEntryToUpdate=findJournalEntryToUpdate.get();
+        journalEntryToUpdate.setOverview(payload.getOverview());
+        journalEntryToUpdate.setSummary(payload.getSummary());
+        journalEntryToUpdate.setLastUpdated(now);
+
+        // replace journal body as on user will work with existing data fetched from the server when updating
+        journalEntryToUpdate.setJournalBodyItems(payload.getJournalBodyItems());
+
+        JournalEntry saveResult = journalEntryRepository.save(journalEntryToUpdate);
+        //TODO
+        //String extractAndUpdateFlatRecordResult = journalEntryRecordService.update(payload);
+        return saveResult;
+    }
+
+    @Override
+    public JournalEntry deleteJournalEntry(UUID journalEntryId) {
+        Optional<JournalEntry> findJournalEntryToDelete = journalEntryRepository.findById(journalEntryId);
+
+        if(findJournalEntryToDelete.isEmpty()) return null;
+
+        JournalEntry journalEntryToDelete = findJournalEntryToDelete.get();
+        journalEntryRepository.delete(journalEntryToDelete);
+
+        //TODO
+        //String extractAndDeleteFlatRecordResult = journalEntryRecordService.delete(journalEntryId);
+        return journalEntryToDelete;
+    }
+
+    @Override
+    public boolean ownsJournalEntry(UUID journalRef, UUID journalEntryId){
+        Optional<JournalEntry> checkJournalEntry = journalEntryRepository.findById(journalEntryId);
+        if (checkJournalEntry.isEmpty()) return false;
+        return checkJournalEntry.get().getJournal().equals(journalRef);
     }
 }

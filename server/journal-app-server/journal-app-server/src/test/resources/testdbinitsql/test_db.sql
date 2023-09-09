@@ -92,6 +92,16 @@ VALUES (
 	CURRENT_TIMESTAMP
 );
 
+INSERT INTO journal (journal_ref,name,author,img,creation_timestamp,last_updated)
+VALUES (
+    '030029cb-8257-4396-85fb-c034286bb916',
+	'to delete',
+	'northpole',
+	'https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/c1a2ba41-1911-48a3-b9d8-9e21e84eaf88.PNG?alt=media&token=f845a0be-6d50-4afc-aef1-be0d6b6ee011',
+	CURRENT_TIMESTAMP,
+	CURRENT_TIMESTAMP
+);
+
 --- dashboard_widget
 INSERT INTO dashboard_widget(journal, creation_timestamp, last_updated, type, position, title)
 VALUES (3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'last-entry', 0, 'Last Entry');

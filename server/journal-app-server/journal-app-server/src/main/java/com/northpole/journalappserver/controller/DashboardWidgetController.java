@@ -51,4 +51,47 @@ public class DashboardWidgetController {
         return dashboardWidgetService.getDashboardWidgetData(journalRef);
     }
 
+    @PutMapping("/{journalRef}/dashboard/{widgetId}")
+    @PreAuthorize("@securityService.ownsJournal(#journalRef) && " +
+            "@securityService.ownsDashboardWidget(#journalRef, #widgetId)")
+    public ResponseEntity<String> updateDashboardWidget(
+            @PathVariable("journalRef") UUID journalRef,
+            @PathVariable("widgetId") Integer widgetId,
+            @Valid @RequestBody DashboardWidget payload
+    ){
+        try {
+            DashboardWidget updateResult = dashboardWidgetService.updateDashboardWidget(widgetId, payload);
+
+            String output = "{\"id\":" + updateResult.getId() + "}";
+
+            return new ResponseEntity<>(output, HttpStatus.OK);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @DeleteMapping("/{journalRef}/dashboard/{widgetId}")
+    @PreAuthorize("@securityService.ownsJournal(#journalRef) && " +
+            "@securityService.ownsDashboardWidget(#journalRef, #widgetId)")
+    public ResponseEntity<String> deleteDashboardWidget(
+            @PathVariable("journalRef") UUID journalRef,
+            @PathVariable("widgetId") Integer widgetId
+    ){
+        try {
+            DashboardWidget deleteResult = dashboardWidgetService.deleteDashboardWidget(journalRef, widgetId);
+
+            String output = "{\"id\":" + deleteResult.getId() + "}";
+
+            return new ResponseEntity<>(output, HttpStatus.OK);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

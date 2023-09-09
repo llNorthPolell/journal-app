@@ -23,6 +23,8 @@ public class FlatRecord {
 
     private UUID journal;
 
+    private UUID journalEntry;
+
     private String topic;
 
     private String recKey;

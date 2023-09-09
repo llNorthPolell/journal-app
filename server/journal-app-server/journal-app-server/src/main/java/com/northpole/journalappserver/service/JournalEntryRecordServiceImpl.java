@@ -56,7 +56,7 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
 
 
     @Override
-    public String save(JournalEntry payload) throws JsonProcessingException {
+    public List<FlatRecord> save(JournalEntry payload){
         List<FlatRecord> recordsToSave = new ArrayList<>();
 
         for(JournalBodyItem j : payload.getJournalBodyItems()){
@@ -71,10 +71,8 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
         }
 
         List<FlatRecord> saveResults = flatRecordRepository.saveAll(recordsToSave);
-        String flatRecordJson = objectMapper.writeValueAsString(saveResults);
 
-        return "{\"count\":"+recordsToSave.size()+","+
-                    "\"flatRecords\":" +flatRecordJson+"}";
+        return saveResults;
 
     }
 

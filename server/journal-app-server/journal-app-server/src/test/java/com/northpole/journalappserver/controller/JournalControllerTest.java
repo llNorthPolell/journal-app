@@ -62,7 +62,7 @@ public class JournalControllerTest {
 
         expectedSaveSuccessResult = "{\"id\":\""+ MOCK_JOURNAL_REF + "\"}";
 
-        when(journalService.createJournal(any(Journal.class),anyString()))
+        when(journalService.createJournal(anyString(),any(Journal.class)))
                 .thenReturn(Journal.builder()
                         .journalId(1)
                         .journalRef(MOCK_JOURNAL_REF)
