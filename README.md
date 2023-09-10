@@ -1,8 +1,6 @@
 # journal-app
-Journal app built using React and hosted on Firebase. Prototype of the app can be accessed via https://journal-app-75df1.firebaseapp.com.
-
-Due to the limitations of Firebase, a Spring Boot backend is currently in development, and progress is stored in the monolith-server branch. Once the goal tracking/achievement system is completed, planning to host it on a free backend hosting service like Render.com. 
-
+Journal app built using React and Firebase. Note Firebase is being used to prototype the frontend application features. Prototype of the App can be accessed via https://journal-app-75df1.firebaseapp.com.
+Due to the limitations of Firebase, a Spring Boot backend has been developed (see Server folder), and the front end is currently undergoing migration to use this backend. 
 
 
 # Why use Journal App?
@@ -19,23 +17,21 @@ Do you live with piles of books scattered across the room? Tired of scrolling th
 - dynamic journal entry filtering
 
 ### Server
-- journal entry creation
-- fetch, compile and return dashboard widget data
-  
+- Google authentication (with JWTs)
+- journal management
+- journal entry management
+- dashboard management
+- goal tracking 
 
-## Work in Progress
-### Server
-- Goal Tracking / Achievement System
-- Updating Dashboard
-- Editing Journal Entries
 
 
 ## Known Issues
+### Client
 - ui responsiveness (working on main functionality first)
 
 
 ## Backlog
-- home page
+### Client
 - interactive widgets such as todo list, scribbleboard and personal kanban board
 - deletion of journal, journal entry and dashboard config
 - edit dashboard

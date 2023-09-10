@@ -1,0 +1,66 @@
+CREATE DATABASE journal_app;
+
+-- journal 
+CREATE TABLE journal
+(id SERIAL PRIMARY KEY NOT NULL,
+journal_ref UUID NOT NULL,
+name VARCHAR(255) NOT NULL,
+author VARCHAR(255) NOT NULL,
+img TEXT DEFAULT NULL,
+creation_timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+last_updated TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL
+);
+
+
+
+-- dashboard widget
+CREATE TABLE dashboard_widget
+(id SERIAL PRIMARY KEY NOT NULL,
+journal INTEGER REFERENCES journal NOT NULL,
+creation_timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+last_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+type VARCHAR(255) NOT NULL,
+position INTEGER NOT NULL,
+title VARCHAR(255) DEFAULT NULL
+);
+
+
+-- widget data config
+CREATE TABLE widget_data_config
+(id SERIAL PRIMARY KEY NOT NULL,
+widget INTEGER REFERENCES dashboard_widget NOT NULL,
+type VARCHAR(1) NOT NULL,
+label VARCHAR(255) NOT NULL,
+color VARCHAR(7) NOT NULL,
+rule VARCHAR(255) NOT NULL
+);
+
+
+
+-- objective
+CREATE TABLE objective 
+(id SERIAL PRIMARY KEY NOT NULL,
+goal UUID NOT NULL,
+journal INTEGER REFERENCES journal NOT NULL,
+icon VARCHAR(255),
+status VARCHAR(16),
+topic VARcHAR(255),
+description VARCHAR(255) NOT NULL,
+completion_criteria VARCHAR(255),
+creation_timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+last_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+date_completed TIMESTAMP WITHOUT TIME ZONE,
+deadline TIMESTAMP WITHOUT TIME ZONE
+);
+
+
+-- progress
+CREATE TABLE progress
+(id SERIAL PRIMARY KEY NOT NULL,
+objective INTEGER REFERENCES objective NOT NULL,
+rec_key VARCHAR(255) NOT NULL,
+current_value DOUBLE PRECISION DEFAULT 0,
+compare_type VARCHAR(3) NOT NULL,
+target_value DOUBLE PRECISION NOT NULL,
+last_checked_entry_date TIMESTAMP WITHOUT TIME ZONE
+);
