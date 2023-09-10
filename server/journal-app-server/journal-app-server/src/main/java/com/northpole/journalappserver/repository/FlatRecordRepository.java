@@ -45,4 +45,9 @@ public interface FlatRecordRepository extends MongoRepository<FlatRecord, UUID> 
 
     @Query(value = "{'journal':?0, 'topic':?1, 'recKey':?2}")
     List<FlatRecord> findAllByIndices(UUID journal, String topic, String recKey);
+
+
+    @Query(value = "{'journalEntry':?0}")
+    List<FlatRecord> findAllByJournalEntry(UUID journalEntry);
+
 }

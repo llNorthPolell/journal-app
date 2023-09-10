@@ -1,7 +1,6 @@
 package com.northpole.journalappserver.repository;
 
 import com.northpole.journalappserver.entity.*;
-import com.northpole.journalappserver.entity.Record;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,6 +34,13 @@ public class FlatRecordRepositoryIntegrationTest {
     private FlatRecordRepository flatRecordRepository;
 
     private final UUID MOCK_JOURNAL_REF=UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+    private final UUID MOCK_JOURNAL_ENTRY_ID=UUID.fromString("6d377a43-7100-4049-8e22-45055d09a869");
+    private final UUID MOCK_JOURNAL_ENTRY_ID2=UUID.fromString("08cfe10d-4ddb-4837-b1d4-a11e01ad36c6");
+    private final UUID MOCK_JOURNAL_ENTRY_ID3=UUID.fromString("44ff6a73-bafe-4943-a526-d0871715b310");
+
+    private final UUID MOCK_DELETE_JOURNAL_ENTRY_ID=UUID.fromString("17121fe0-43ff-4695-8d0b-918210b15140");
+
+    private List<FlatRecord> existingFlatRecordList;
 
     @Autowired
     public FlatRecordRepositoryIntegrationTest (
@@ -49,13 +56,14 @@ public class FlatRecordRepositoryIntegrationTest {
 
     @BeforeEach
     public void setupBeforeEachTest(){
-        List<FlatRecord> flatRecordList = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSz");
+        existingFlatRecordList=new ArrayList<>();
 
-        flatRecordList.add(
+        existingFlatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
                         .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_JOURNAL_ENTRY_ID2)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("3")
@@ -63,10 +71,11 @@ public class FlatRecordRepositoryIntegrationTest {
                         .build()
         );
 
-        flatRecordList.add(
+        existingFlatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
                         .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_JOURNAL_ENTRY_ID3)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("6")
@@ -74,10 +83,11 @@ public class FlatRecordRepositoryIntegrationTest {
                         .build()
         );
 
-        flatRecordList.add(
+        existingFlatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
                         .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_JOURNAL_ENTRY_ID3)
                         .topic("My first topic")
                         .recKey("a")
                         .recValue("6")
@@ -85,10 +95,11 @@ public class FlatRecordRepositoryIntegrationTest {
                         .build()
         );
 
-        flatRecordList.add(
+        existingFlatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
                         .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_JOURNAL_ENTRY_ID)
                         .topic("My first topic")
                         .recKey("targetA")
                         .recValue("2")
@@ -97,10 +108,11 @@ public class FlatRecordRepositoryIntegrationTest {
         );
 
 
-        flatRecordList.add(
+        existingFlatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
                         .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_JOURNAL_ENTRY_ID)
                         .topic("Second")
                         .recKey("b")
                         .recValue("asdfasdf")
@@ -108,10 +120,11 @@ public class FlatRecordRepositoryIntegrationTest {
                         .build()
         );
 
-        flatRecordList.add(
+        existingFlatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
                         .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_JOURNAL_ENTRY_ID)
                         .topic("My first topic")
                         .recKey("a")
                         .recValue("1")
@@ -119,10 +132,11 @@ public class FlatRecordRepositoryIntegrationTest {
                         .build()
         );
 
-        flatRecordList.add(
+        existingFlatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
                         .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_JOURNAL_ENTRY_ID)
                         .topic("Second")
                         .recKey("d")
                         .recValue("3")
@@ -130,10 +144,11 @@ public class FlatRecordRepositoryIntegrationTest {
                         .build()
         );
 
-        flatRecordList.add(
+        existingFlatRecordList.add(
                 FlatRecord.builder()
                         .id(UUID.randomUUID())
                         .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_JOURNAL_ENTRY_ID)
                         .topic("Second")
                         .recKey("c")
                         .recValue("5")
@@ -141,7 +156,30 @@ public class FlatRecordRepositoryIntegrationTest {
                         .build()
         );
 
-        flatRecordRepository.saveAll(flatRecordList);
+        existingFlatRecordList.add(
+                FlatRecord.builder()
+                        .id(UUID.randomUUID())
+                        .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_DELETE_JOURNAL_ENTRY_ID)
+                        .topic("DELETE")
+                        .recKey("deleted")
+                        .recValue("0")
+                        .dateOfEntry(LocalDateTime.parse("2022-08-22T04:00:00.000+00:00",formatter))
+                        .build()
+        );
+
+        existingFlatRecordList.add(
+                FlatRecord.builder()
+                        .id(UUID.randomUUID())
+                        .journal(MOCK_JOURNAL_REF)
+                        .journalEntry(MOCK_DELETE_JOURNAL_ENTRY_ID)
+                        .topic("DELETE")
+                        .recKey("deleted this too")
+                        .recValue("1")
+                        .dateOfEntry(LocalDateTime.parse("2022-08-22T04:00:00.000+00:00",formatter))
+                        .build()
+        );
+        flatRecordRepository.saveAll(existingFlatRecordList);
 
     }
 
@@ -161,6 +199,8 @@ public class FlatRecordRepositoryIntegrationTest {
         List<FlatRecord> resultList = result.getMappedResults();
 
         List<String> expected = new ArrayList<>();
+        expected.add("0");
+        expected.add("1");
         expected.add("6");
         expected.add("6");
         expected.add("3");
@@ -170,15 +210,48 @@ public class FlatRecordRepositoryIntegrationTest {
         expected.add("5");
         expected.add("3");
 
-        List<String> actual = new ArrayList<>();
-
-        for (FlatRecord r : resultList)
-            actual.add(r.getRecValue());
+        List<String> actual = resultList.stream()
+                .map(r->r.getRecValue())
+                .collect(Collectors.toList());
 
         assertEquals(expected.size(),actual.size());
 
         for (int i = 0; i < expected.size(); i++)
             assertEquals(expected.get(i),actual.get(i));
 
+    }
+
+    @Test
+    @DisplayName("Should return list of flat records related to journal entry")
+    public void findByJournalEntryId_IntegrationTest(){
+        List<FlatRecord> result = flatRecordRepository.findAllByJournalEntry(MOCK_JOURNAL_ENTRY_ID2);
+
+        assertNotNull(result);
+        assertEquals(1,result.size());
+
+        FlatRecord sampleResult = result.get(0);
+        assertEquals("My first topic",sampleResult.getTopic());
+        assertEquals("targetA",sampleResult.getRecKey());
+        assertEquals("3",sampleResult.getRecValue());
+
+    }
+
+
+    @Test
+    @DisplayName("Should delete the specified existing record")
+    public void deleteFlatRecordsByJournalEntry_IntegrationTest(){
+        final long count = flatRecordRepository.count();
+        List<FlatRecord> recordsToDelete = flatRecordRepository.findAllByJournalEntry(MOCK_DELETE_JOURNAL_ENTRY_ID);
+
+        assertNotNull(recordsToDelete);
+        assertEquals(2,recordsToDelete.size());
+
+        flatRecordRepository.deleteAll(recordsToDelete);
+
+        long newCount=flatRecordRepository.count();
+        assertEquals(count-2,newCount);
+
+        List<FlatRecord> deletedRecords = flatRecordRepository.findAllByJournalEntry(MOCK_DELETE_JOURNAL_ENTRY_ID);
+        assertTrue(deletedRecords.isEmpty());
     }
 }

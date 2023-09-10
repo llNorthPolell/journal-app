@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +42,7 @@ public class JournalEntryRecordServiceTest {
     private List<FlatRecord> mockFlatRecords;
 
     private final UUID MOCK_JOURNAL_REF=UUID.fromString("e958ac56-2f12-4d35-ba8e-979aca28b4a6");
+    private final UUID MOCK_JOURNAL_ENTRY_ID=UUID.fromString("08cfe10d-4ddb-4837-b1d4-a11e01ad36c6");
 
     @Autowired
     public JournalEntryRecordServiceTest(
@@ -176,8 +178,21 @@ public class JournalEntryRecordServiceTest {
                         .build()
         );
 
+        List<FlatRecord> mockFindAllByJournalEntryResult = new ArrayList<>();
+
+        mockFindAllByJournalEntryResult.add(
+                FlatRecord.builder()
+                        .id(UUID.randomUUID())
+                        .build()
+        );
+
+
+
         when(flatRecordRepository.saveAll(anyList())).thenReturn(mockFlatRecords);
+        when(flatRecordRepository.findAllByJournalEntry(any(UUID.class))).thenReturn(mockFindAllByJournalEntryResult);
         when(journalService.getJournalId(any(UUID.class))).thenReturn(3);
+
+        ReflectionTestUtils.setField(journalEntryRecordService, "flatRecordRepository", flatRecordRepository);
     }
 
     @Test
@@ -191,4 +206,26 @@ public class JournalEntryRecordServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Should call flatRecordRepository findAllByJournalEntry once, saveAll twice and " +
+            "deleteAll once to update")
+    public void updateRelatedFlatRecords_UnitTest(){
+        List<FlatRecord> results = journalEntryRecordService.updateRelatedFlatRecords(
+                MOCK_JOURNAL_ENTRY_ID, mockJournalEntry);
+
+        verify(flatRecordRepository, times(1)).findAllByJournalEntry(any(UUID.class));
+        verify(flatRecordRepository,times(1)).deleteAll(any(List.class));
+        verify(flatRecordRepository, times(1)).saveAll(anyList());
+    }
+
+    @Test
+    @DisplayName("Should call flatRecordRepository findAllByJournalEntry once and " +
+            "deleteAll once to delete")
+    public void deleteRelatedFlatRecords_UnitTest(){
+        List<FlatRecord> results = journalEntryRecordService.deleteRelatedFlatRecords(
+                MOCK_JOURNAL_ENTRY_ID);
+
+        verify(flatRecordRepository, times(1)).findAllByJournalEntry(any(UUID.class));
+        verify(flatRecordRepository, times(1)).deleteAll(anyList());
+    }
 }

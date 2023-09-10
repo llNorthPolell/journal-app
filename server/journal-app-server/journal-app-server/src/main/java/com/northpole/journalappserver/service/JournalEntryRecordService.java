@@ -11,4 +11,8 @@ public interface JournalEntryRecordService {
     List<FlatRecord> save(JournalEntry payload);
 
     List<FlatRecord> getDashboardData(UUID journalRef);
+
+    List<FlatRecord> updateRelatedFlatRecords(UUID journalEntryId, JournalEntry payload);
+
+    List<FlatRecord> deleteRelatedFlatRecords(UUID journalEntryId);
 }

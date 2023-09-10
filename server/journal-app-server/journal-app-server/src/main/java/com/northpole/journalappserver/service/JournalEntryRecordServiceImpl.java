@@ -8,11 +8,12 @@ import com.northpole.journalappserver.repository.FlatRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JournalEntryRecordServiceImpl implements JournalEntryRecordService {
@@ -35,23 +36,29 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
     }
 
     private List<FlatRecord> getFlattenedRecords(
-            UUID journal, LocalDateTime dateOfEntry, String topic, List<Record> recordList, List<FlatRecord> output) {
+            UUID journal, UUID journalEntry,LocalDateTime dateOfEntry,
+            String topic, List<Record> recordList, List<FlatRecord> output,
+            boolean newIdRequired) {
         if (recordList.isEmpty()) return output;
 
         Record input = recordList.remove(0);
 
         FlatRecord newFlatRecord = FlatRecord.builder()
                 .journal(journal)
-                .id(UUID.randomUUID())
+                .journalEntry(journalEntry)
                 .topic(topic)
                 .recKey(input.getRecKey())
                 .recValue(input.getRecValue())
                 .dateOfEntry(dateOfEntry)
                 .build();
 
+        if(newIdRequired)
+            newFlatRecord.setId(UUID.randomUUID());
+
         output.add(newFlatRecord);
 
-        return getFlattenedRecords(journal,dateOfEntry,topic,recordList,output);
+        return getFlattenedRecords(journal,journalEntry,dateOfEntry,
+                topic,recordList,output,newIdRequired);
     }
 
 
@@ -63,9 +70,11 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
             List<Record> recordList = new ArrayList<>(j.getRecordList());
             List<FlatRecord> newRecords = getFlattenedRecords(
                     payload.getJournal(),
+                    payload.getEntryId(),
                     payload.getDateOfEntry(),
                     j.getTopic(),recordList,
-                    new ArrayList<>());
+                    new ArrayList<>(),
+                    true);
 
             recordsToSave.addAll(newRecords);
         }
@@ -83,7 +92,45 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
         return results.getMappedResults();
     }
 
+    @Override
+    @Transactional
+    public List<FlatRecord> updateRelatedFlatRecords(UUID journalEntryId, JournalEntry payload) {
+        List<FlatRecord> recordsToDelete = flatRecordRepository.findAllByJournalEntry(journalEntryId);
+        if (recordsToDelete == null) return null;
+
+        List<FlatRecord> payloadRecords = new ArrayList<>();
+        for(JournalBodyItem j : payload.getJournalBodyItems()){
+            List<Record> recordList = new ArrayList<>(j.getRecordList());
+            List<FlatRecord> tempFlatRecords = getFlattenedRecords(
+                    payload.getJournal(),
+                    payload.getEntryId(),
+                    payload.getDateOfEntry(),
+                    j.getTopic(),recordList,
+                    new ArrayList<>(),
+                    true);
+
+            payloadRecords.addAll(tempFlatRecords);
+        }
+
+        flatRecordRepository.deleteAll(recordsToDelete);
+        List<FlatRecord> updateResults = flatRecordRepository.saveAll(payloadRecords);
 
 
+        return updateResults;
+
+    }
+
+
+    @Override
+    public List<FlatRecord> deleteRelatedFlatRecords(UUID journalEntryId){
+        List<FlatRecord> flatRecordsToDelete =
+                flatRecordRepository.findAllByJournalEntry(journalEntryId);
+
+        if(flatRecordsToDelete.isEmpty()) return null;
+
+        flatRecordRepository.deleteAll(flatRecordsToDelete);
+
+        return flatRecordsToDelete;
+    }
 
 }

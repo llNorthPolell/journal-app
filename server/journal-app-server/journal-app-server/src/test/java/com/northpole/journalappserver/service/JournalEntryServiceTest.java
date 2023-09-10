@@ -223,14 +223,18 @@ public class JournalEntryServiceTest {
         JournalEntry result = journalEntryService.updateJournalEntry(MOCK_NEW_JOURNAL_ENTRY_ID, new JournalEntry());
         verify(journalEntryRepository, times(1)).findById(any(UUID.class));
         verify(journalEntryRepository, times(1)).save(any(JournalEntry.class));
+        verify(journalEntryRecordService, times(1))
+                .updateRelatedFlatRecords(any(UUID.class), any(JournalEntry.class));
     }
 
     @Test
     @DisplayName("Should call journalEntryRepository.findById and journalEntryRepository.delete once when trying to delete an entry")
-    public void deleteJournalEntry_UnitTest() throws JsonProcessingException {
+    public void deleteJournalEntry_UnitTest() {
         JournalEntry result = journalEntryService.deleteJournalEntry(MOCK_NEW_JOURNAL_ENTRY_ID);
         verify(journalEntryRepository, times(1)).findById(any(UUID.class));
         verify(journalEntryRepository, times(1)).delete(any(JournalEntry.class));
+        verify(journalEntryRecordService,times(1))
+                .deleteRelatedFlatRecords(any(UUID.class));
     }
 
 

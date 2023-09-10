@@ -96,12 +96,15 @@ public class JournalEntryServiceImpl implements JournalEntryService {
         journalEntryToUpdate.setJournalBodyItems(payload.getJournalBodyItems());
 
         JournalEntry saveResult = journalEntryRepository.save(journalEntryToUpdate);
-        //TODO
-        //String extractAndUpdateFlatRecordResult = journalEntryRecordService.update(payload);
+
+        List<FlatRecord> updateRelatedFlatRecordResults = journalEntryRecordService
+                .updateRelatedFlatRecords(journalEntryId,payload);
+
         return saveResult;
     }
 
     @Override
+    @Transactional
     public JournalEntry deleteJournalEntry(UUID journalEntryId) {
         Optional<JournalEntry> findJournalEntryToDelete = journalEntryRepository.findById(journalEntryId);
 
@@ -110,8 +113,9 @@ public class JournalEntryServiceImpl implements JournalEntryService {
         JournalEntry journalEntryToDelete = findJournalEntryToDelete.get();
         journalEntryRepository.delete(journalEntryToDelete);
 
-        //TODO
-        //String extractAndDeleteFlatRecordResult = journalEntryRecordService.delete(journalEntryId);
+        List<FlatRecord> deletedFlatRecords=journalEntryRecordService
+                .deleteRelatedFlatRecords(journalEntryId);
+
         return journalEntryToDelete;
     }
 
