@@ -211,7 +211,7 @@ public class JournalEntryRecordServiceTest {
             "deleteAll once to update")
     public void updateRelatedFlatRecords_UnitTest(){
         List<FlatRecord> results = journalEntryRecordService.updateRelatedFlatRecords(
-                MOCK_JOURNAL_ENTRY_ID, mockJournalEntry);
+                MOCK_JOURNAL_REF,MOCK_JOURNAL_ENTRY_ID, mockJournalEntry);
 
         verify(flatRecordRepository, times(1)).findAllByJournalEntry(any(UUID.class));
         verify(flatRecordRepository,times(1)).deleteAll(any(List.class));

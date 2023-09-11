@@ -220,11 +220,11 @@ public class JournalEntryServiceTest {
     @Test
     @DisplayName("Should call journalEntryRepository.findById and journalEntryRepository.save once when trying to update entry")
     public void updateJournalEntry_UnitTest() throws JsonProcessingException {
-        JournalEntry result = journalEntryService.updateJournalEntry(MOCK_NEW_JOURNAL_ENTRY_ID, new JournalEntry());
+        JournalEntry result = journalEntryService.updateJournalEntry(MOCK_JOURNAL_REF, MOCK_NEW_JOURNAL_ENTRY_ID, new JournalEntry());
         verify(journalEntryRepository, times(1)).findById(any(UUID.class));
         verify(journalEntryRepository, times(1)).save(any(JournalEntry.class));
         verify(journalEntryRecordService, times(1))
-                .updateRelatedFlatRecords(any(UUID.class), any(JournalEntry.class));
+                .updateRelatedFlatRecords(any(UUID.class),any(UUID.class), any(JournalEntry.class));
     }
 
     @Test

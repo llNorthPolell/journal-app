@@ -65,7 +65,7 @@ public class JournalEntryController {
                                                      @Valid @RequestBody JournalEntry payload){
         try {
             JournalEntry updatedJournalEntry =journalEntryService.updateJournalEntry(
-                    journalEntryId, payload);
+                    journalRef,journalEntryId, payload);
             return new ResponseEntity<>(
                     "{\"id\":\"" + updatedJournalEntry.getEntryId() + "\"}",
                     HttpStatus.OK);

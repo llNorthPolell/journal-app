@@ -94,7 +94,7 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
 
     @Override
     @Transactional
-    public List<FlatRecord> updateRelatedFlatRecords(UUID journalEntryId, JournalEntry payload) {
+    public List<FlatRecord> updateRelatedFlatRecords(UUID journalRef, UUID journalEntryId, JournalEntry payload) {
         List<FlatRecord> recordsToDelete = flatRecordRepository.findAllByJournalEntry(journalEntryId);
         if (recordsToDelete == null) return null;
 
@@ -102,8 +102,8 @@ public class JournalEntryRecordServiceImpl implements JournalEntryRecordService 
         for(JournalBodyItem j : payload.getJournalBodyItems()){
             List<Record> recordList = new ArrayList<>(j.getRecordList());
             List<FlatRecord> tempFlatRecords = getFlattenedRecords(
-                    payload.getJournal(),
-                    payload.getEntryId(),
+                    journalRef,
+                    journalEntryId,
                     payload.getDateOfEntry(),
                     j.getTopic(),recordList,
                     new ArrayList<>(),

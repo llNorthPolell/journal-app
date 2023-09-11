@@ -1,6 +1,7 @@
 package com.northpole.journalappserver.repository;
 
 import com.northpole.journalappserver.entity.FlatRecord;
+import com.northpole.journalappserver.entity.RecordKey;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -50,4 +51,26 @@ public interface FlatRecordRepository extends MongoRepository<FlatRecord, UUID> 
     @Query(value = "{'journalEntry':?0}")
     List<FlatRecord> findAllByJournalEntry(UUID journalEntry);
 
+
+    @Aggregation(
+            pipeline = {
+                    """
+                            {
+                               $match: {journal:?0}
+                            }
+                            """,
+                    """
+                            {
+                                $group:{_id:{topic: "$topic", recKey: "$recKey"}}
+                            }
+                            """,
+                    """
+                            {
+                                $project: {_id:0,topic:"$_id.topic",recKey:"$_id.recKey"}
+                            }
+                            
+                            """
+            }
+    )
+    List<RecordKey> findRecordKeysInJournal(UUID journalRef);
 }

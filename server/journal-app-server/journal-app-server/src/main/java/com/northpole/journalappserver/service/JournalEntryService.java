@@ -18,7 +18,7 @@ public interface JournalEntryService {
 
     JournalEntry getLastEntryInJournal(UUID journalRef);
 
-    JournalEntry updateJournalEntry(UUID journalEntryId, JournalEntry payload) throws JsonProcessingException;
+    JournalEntry updateJournalEntry(UUID journalRef, UUID journalEntryId, JournalEntry payload) throws JsonProcessingException;
 
     JournalEntry deleteJournalEntry(UUID journalEntryId);
 

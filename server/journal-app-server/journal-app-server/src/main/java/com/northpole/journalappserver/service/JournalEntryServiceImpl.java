@@ -81,7 +81,7 @@ public class JournalEntryServiceImpl implements JournalEntryService {
     }
 
     @Override
-    public JournalEntry updateJournalEntry(UUID journalEntryId, JournalEntry payload) throws JsonProcessingException {
+    public JournalEntry updateJournalEntry(UUID journalRef, UUID journalEntryId, JournalEntry payload) throws JsonProcessingException {
         LocalDateTime now = LocalDateTime.now();
         Optional<JournalEntry> findJournalEntryToUpdate = journalEntryRepository.findById(journalEntryId);
 
@@ -98,7 +98,7 @@ public class JournalEntryServiceImpl implements JournalEntryService {
         JournalEntry saveResult = journalEntryRepository.save(journalEntryToUpdate);
 
         List<FlatRecord> updateRelatedFlatRecordResults = journalEntryRecordService
-                .updateRelatedFlatRecords(journalEntryId,payload);
+                .updateRelatedFlatRecords(journalRef,journalEntryId,payload);
 
         return saveResult;
     }

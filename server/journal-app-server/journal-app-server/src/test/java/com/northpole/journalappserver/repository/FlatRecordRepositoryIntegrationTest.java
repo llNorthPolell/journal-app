@@ -17,9 +17,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -253,5 +251,26 @@ public class FlatRecordRepositoryIntegrationTest {
 
         List<FlatRecord> deletedRecords = flatRecordRepository.findAllByJournalEntry(MOCK_DELETE_JOURNAL_ENTRY_ID);
         assertTrue(deletedRecords.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should return list of topic and recKey pairs under a specified journal")
+    public void findRecordKeysInJournal_IntegrationTest(){
+        List<RecordKey> recordKeys = flatRecordRepository.findRecordKeysInJournal(MOCK_JOURNAL_REF);
+
+        assertNotNull(recordKeys);
+        assertEquals(7,recordKeys.size());
+
+        Set<RecordKey> expectedKeys = new HashSet<>();
+        expectedKeys.add(RecordKey.builder().topic("My first topic").recKey("targetA").build());
+        expectedKeys.add(RecordKey.builder().topic("My first topic").recKey("a").build());
+        expectedKeys.add(RecordKey.builder().topic("Second").recKey("b").build());
+        expectedKeys.add(RecordKey.builder().topic("Second").recKey("d").build());
+        expectedKeys.add(RecordKey.builder().topic("Second").recKey("c").build());
+        expectedKeys.add(RecordKey.builder().topic("DELETE").recKey("deleted").build());
+        expectedKeys.add(RecordKey.builder().topic("DELETE").recKey("deleted this too").build());
+
+        for (RecordKey r : recordKeys)
+            assertTrue(expectedKeys.contains(r));
     }
 }

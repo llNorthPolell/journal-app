@@ -12,7 +12,7 @@ public interface JournalEntryRecordService {
 
     List<FlatRecord> getDashboardData(UUID journalRef);
 
-    List<FlatRecord> updateRelatedFlatRecords(UUID journalEntryId, JournalEntry payload);
+    List<FlatRecord> updateRelatedFlatRecords(UUID journalRef, UUID journalEntryId, JournalEntry payload);
 
     List<FlatRecord> deleteRelatedFlatRecords(UUID journalEntryId);
 }
