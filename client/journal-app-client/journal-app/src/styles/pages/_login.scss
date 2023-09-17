@@ -1,0 +1,27 @@
+.login-method{
+    margin-top: 2rem;
+    min-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &__list-box{
+        margin-top: 2rem;
+        min-width: 30%;
+        min-height: 15vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        border: var(--line);
+        border-radius: 2rem;
+        box-shadow: var(--shadow-light);
+    }
+
+    &__image{
+        display: block;
+        cursor: pointer;
+        width: 30rem;
+    }
+}

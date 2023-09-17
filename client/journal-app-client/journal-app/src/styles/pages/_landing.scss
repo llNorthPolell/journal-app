@@ -1,0 +1,81 @@
+.hero{
+    min-height:75vh;
+    background-image: 
+        linear-gradient(
+            to top right,
+            rgba(black,0.8),
+            rgba(black,0.5)
+        ),
+        url("https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/Home%20Page%2FHero.png?alt=media&token=516f553f-722a-4d5a-86fc-68bfa29d37b9");
+
+    background-size: cover;
+    background-position: top;
+
+    display:flex;
+    justify-content:center;
+    align-items: center;
+    flex-direction: column;
+    animation: fadein 0.5s ease-out;
+
+    &__text-box{
+        margin-left:5%;
+    }
+
+
+    &__btn{
+        background-color: var(--color-primary);
+    }
+}
+
+
+.about{
+    min-height:82vh;
+    display: flex;
+    justify-content: space-between;
+    align-items:center;
+    background-color: var(--grey-light-5);
+    overflow-x:hidden;
+    animation: fadein 0.5s ease-out;
+
+    &__text-box{
+        margin-left: 5rem;
+        flex: 0 0 50%;
+
+        display:flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    &__image{
+        opacity:0.65;
+        display: block;
+    }
+}
+
+.use-cases{
+    padding-top: 5rem;
+    background-color: var(--grey-light-3);
+
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+
+    &__row{
+        min-height:50vh;
+        display:flex;
+        flex-direction: row;
+        align-items: stretch;
+        justify-content: center;
+        animation: fadein 0.5s ease-out;
+    }
+
+    &__card{
+        width: 20%;
+        
+        border-radius:1rem;
+        padding: 0.5rem;
+        margin:3rem;
+        background-color: var(--grey-light-2);
+    }
+}
+

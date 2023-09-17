@@ -1,0 +1,37 @@
+.footer{
+    padding: 1rem 0;
+    background-color: var(--color-primary);
+    animation: fadein 0.5s ease-out;
+
+    &__nav{
+        margin-left:80%;
+        margin-right: 2rem;
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+        list-style-type: none;
+    }
+
+
+    &__nav-link{
+        &,
+        &:link,
+        &:visited{
+            text-decoration:none;
+            font-size: 1.6rem;
+            font-weight:300;
+            color:white;
+        }
+
+        &:hover{
+            text-decoration:underline;
+        }
+    }
+
+    &__legal{
+        font-size: 1.6rem;
+        font-weight:300;
+        color:white;
+    }
+    
+}

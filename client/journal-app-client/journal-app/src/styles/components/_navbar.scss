@@ -1,0 +1,88 @@
+.navbar {
+    height: 5rem;
+    background-color: var(--grey-light-2);
+    border-bottom:var(--line);
+    display:flex;
+    justify-content: space-between;
+    align-items: stretch;
+
+    &__logo{
+        padding: 0 2rem;
+        text-decoration: none;
+        font-size: 2.8rem;
+        font-weight:700;
+
+        &,
+        &:link,
+        &:visited{
+            color:var(--color-primary);
+        }
+
+        &:hover{
+            color:var(--color-primary-dark);
+        }
+    }
+
+
+
+    & > * {
+        height: 100%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        
+    }
+
+    &__journal-links{
+        margin-right:auto;
+
+        & > *{
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+    }
+    
+    &__item{
+        &:hover{
+            background-color: var(--color-primary-light);
+        }
+
+        &:active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+    }
+
+    &__link{
+        padding: 18% 2rem;
+        text-decoration: none;
+        font-size: 1.6rem;
+        font-weight:400;
+
+        &,
+        &:link,
+        &:visited{
+            color:var(--grey-dark-1);  
+        }
+
+    }
+
+    &__btn-link{
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        padding: 18% 2rem;
+        font-size: 1.6rem;
+        font-weight:400;
+        color:var(--grey-dark-1);
+
+        &:hover {
+            text-decoration: underline;
+        }
+    
+        &:active{
+            color: white;
+        }
+    }
+}

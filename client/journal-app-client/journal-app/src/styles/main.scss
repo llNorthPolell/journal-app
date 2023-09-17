@@ -1,0 +1,16 @@
+@import "base/animations";
+@import "base/base";
+@import "base/typography";
+
+// Pages
+@import "pages/home";
+@import "pages/login";
+
+
+//Layouts and Common Components
+@import "components/navbar";
+@import "components/footer";
+@import "layouts/layouts";
+@import "components/button";
+@import "components/card";
+@import "components/googlesignin"

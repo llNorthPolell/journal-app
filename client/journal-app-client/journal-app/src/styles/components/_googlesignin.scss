@@ -1,0 +1,14 @@
+.google-signin-btn{
+    height:6rem;
+    width:25rem;
+    background-image: 
+    url("/btn_google_signin_dark_normal_web.png");
+    background-size: cover;
+    border: none;
+    padding: 0;
+
+    &:active{
+        background-image: 
+        url("/btn_google_signin_dark_pressed_web.png");
+    }
+}

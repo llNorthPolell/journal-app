@@ -1,0 +1,80 @@
+.animated-entry-left{
+    animation: moveInLeft 1s ease-out;
+}
+
+.animated-entry-right{
+    animation: moveInRight 1s ease-out;
+}
+
+.animated-entry-top{
+    animation: moveInTop 1s ease-out;
+}
+
+.delay-1 {
+    animation-delay: 0.2s;
+    animation-fill-mode: backwards;
+}
+
+.delay-2{
+    animation-delay: 0.5s;
+    animation-fill-mode: backwards;
+}
+
+.delay-3{
+    animation-delay: 1s;
+    animation-fill-mode: backwards;
+}
+
+
+@keyframes moveInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-10rem);
+    }
+
+    80% {
+        transform: translateX(1rem);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0);
+    }
+}
+
+@keyframes moveInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(10rem);
+    }
+
+    80% {
+        transform: translateX(-1rem);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0);
+    }
+}
+
+@keyframes moveInTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-10rem);
+    }
+
+    80% {
+        transform: translateY(1rem);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0);
+    }
+}
+
+@keyframes fadein {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
