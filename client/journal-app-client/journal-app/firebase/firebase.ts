@@ -1,6 +1,5 @@
 import {initializeApp} from 'firebase/app';
 import {addDoc, collection, getFirestore, getDocs,getDoc, connectFirestoreEmulator } from 'firebase/firestore';
-import {GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult, connectAuthEmulator } from 'firebase/auth';
 import {getStorage,ref, getDownloadURL, uploadBytes, connectStorageEmulator } from 'firebase/storage';
 import {v4} from 'uuid'
 
@@ -16,20 +15,6 @@ const firebaseConfig={
 }
 
 const app = initializeApp(firebaseConfig);
-
-// AUTH
-export const auth = getAuth();
-export const googleAuthProvider = new GoogleAuthProvider();
-
-
-export function loginWithGoogle(){
-    signInWithRedirect(auth,googleAuthProvider);
-    return getRedirectResult(auth);
-}
-
-export function signOut(){
-    return auth.signOut();
-}
 
 
 // FIRESTORE
@@ -105,7 +90,6 @@ function shouldConnectToEmulatorHost(): boolean
 
 if (shouldConnectToEmulatorHost()){
     console.log("LOCALHOST DETECTED!!!!");
-    connectAuthEmulator(auth,"http://localhost:9099",{disableWarnings: true});
     connectFirestoreEmulator(db,"localhost",8080);
     connectStorageEmulator(storage,"localhost",9199);
 }
