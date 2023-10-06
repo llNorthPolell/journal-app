@@ -1,0 +1,17 @@
+.journals-screen{
+    min-height:90vh;
+}
+
+.create-journal-btn{
+    max-width:15rem;
+    background-color: var(--color-primary);
+    color:white;
+
+    &:hover{
+        background-color: var(--color-primary-dark);
+    }
+
+    &:active{
+        background-color: var(--color-primary-light);
+    }
+}   

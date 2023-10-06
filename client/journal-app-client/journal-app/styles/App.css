@@ -187,8 +187,17 @@ body {
     margin: 3rem;
     background-color: var(--grey-light-2); }
 
-.journals-page {
-  min-height: 95vh; }
+.journals-screen {
+  min-height: 90vh; }
+
+.create-journal-btn {
+  max-width: 15rem;
+  background-color: var(--color-primary);
+  color: white; }
+  .create-journal-btn:hover {
+    background-color: var(--color-primary-dark); }
+  .create-journal-btn:active {
+    background-color: var(--color-primary-light); }
 
 .login-method {
   margin-top: 2rem;

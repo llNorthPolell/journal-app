@@ -6,6 +6,7 @@ import { Metadata } from 'next';
 import { Roboto } from 'next/font/google'
 import '../styles/App.css';
 import ClientSessionProvider from '../providers/sessionProvider';
+import { Session } from 'next-auth';
 
 export const metadata: Metadata = {
     title: "Journal App",
@@ -25,10 +26,10 @@ const roboto = Roboto({
    
 
 
-export default function RootLayout ({children} : {children: React.ReactNode}){
+export default function RootLayout ({children, session} : {children: React.ReactNode, session: Session}){
     return (
         <>
-            <ClientSessionProvider>
+            <ClientSessionProvider session={session}>
                 <html>
                     <body>
                         <Navbar/>

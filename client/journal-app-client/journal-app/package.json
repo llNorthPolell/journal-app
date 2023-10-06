@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "compile:sass": "node-sass src/styles/main.scss src/styles/App.css",
-    "watch:sass": "node-sass src/styles/main.scss src/styles/App.css -w"
+    "compile:sass": "node-sass styles/main.scss styles/App.css",
+    "watch:sass": "node-sass styles/main.scss styles/App.css -w"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",

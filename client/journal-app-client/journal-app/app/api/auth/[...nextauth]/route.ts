@@ -4,7 +4,6 @@ import GoogleProvider from "next-auth/providers/google";
 
 
 export const authOptions : NextAuthOptions = {
-    secret: process.env.NEXTAUTH_SECRET,
     providers: [
         GoogleProvider(
             {
@@ -16,14 +15,14 @@ export const authOptions : NextAuthOptions = {
     session: { strategy: "jwt" },
     callbacks:{
         jwt: async ({token,user,account}) =>{
-            if (user && account)
+            if (user && account){
                 token.access_token=account.access_token;
-
+                token.id_token=account.id_token;
+            }
             return {...token,...user}
         },
         session: async ({session,token})=>{
             session.user=token;
-            session.access_token=token.access_token;
             return session;
         },
         redirect: async ({baseUrl}) => {
