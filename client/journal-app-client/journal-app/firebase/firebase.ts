@@ -1,6 +1,5 @@
 import {initializeApp} from 'firebase/app';
-import {addDoc, collection, getFirestore, getDocs,getDoc, connectFirestoreEmulator } from 'firebase/firestore';
-import {getStorage,ref, getDownloadURL, uploadBytes, connectStorageEmulator } from 'firebase/storage';
+import {getStorage,ref, getDownloadURL, uploadBytes, connectStorageEmulator, uploadBytesResumable } from 'firebase/storage';
 import {v4} from 'uuid'
 
 // INIT 
@@ -16,68 +15,29 @@ const firebaseConfig={
 
 const app = initializeApp(firebaseConfig);
 
-
-// FIRESTORE
-const db = getFirestore();
-/*export const journalRef = collection(db,process.env.REACT_APP_FIRESTORE_JOURNALS_COLLECTION);
-export const journalEntriesRef = collection(db,process.env.REACT_APP_FIRESTORE_JOURNAL_ENTRIES_COLLECTION);
-export const dashboardWidgetConfigRef = collection(db, process.env.REACT_APP_FIRESTORE_DASHBOARD_WIDGET_CONFIG_COLLECTION);
-export const goalsRef = collection(db,process.env.REACT_APP_FIRESTORE_GOALS_COLLECTION);*/
-/*
-export async function createDoc(collectionRef:string,payload:any){
-    let docPromise = await addDoc(collectionRef,payload);
-    return docPromise;
-}
-
-export async function getList(query:string) {
-    let output : any[]=[];
-    try{
-        let snapshot = await getDocs(query);
-        snapshot.docs.forEach((doc:any) => {
-            output.push({ ...doc.data(),key: doc.id });
-        });
-    }
-    catch (err:any) {
-        console.log(err.message);
-    }
-    return output;
-}
-
-export async function get(ref:string){
-    try{
-        let snapshot = await getDoc(ref);
-        return snapshot.data();
-    }
-    catch (err:any) {
-        console.log(err.message);
-    }
-}
-*/
-export {query,where,doc, updateDoc, arrayUnion, orderBy} from 'firebase/firestore';
-
 // STORAGE
 export const storage = getStorage();
 
 export async function getStorageDownloadURL(fileName : string) {
-    let fileRef = ref(storage,fileName);
-    let fileURL = null;
     try{
-        fileURL=await getDownloadURL(fileRef)
+        const fileRef = ref(storage,fileName);
+        const fileURL=await getDownloadURL(fileRef)
+        return fileURL;
     }
     catch(err : any){
         console.log(err.message)
+        return {};
     }
-    return fileURL;
+    
 } 
 
 
-export async function uploadFile(file : File){
-    let newFileName = v4()+"."+file.name.split('.').pop();
-    let newFileRef = ref(storage,newFileName);
-    let fileDownloadURL = null;
-    await uploadBytes(newFileRef,file);
-    fileDownloadURL = await getStorageDownloadURL(newFileName);
-    console.log("File " + file + " has been uploaded to " + fileDownloadURL);
+export async function uploadFile(originalFileName : string, fileBuffer : ArrayBuffer) : Promise<string|{}>{
+    const newFileName = v4()+"."+originalFileName.split('.').pop();
+    const newFileRef = ref(storage,newFileName);
+    await uploadBytes(newFileRef,fileBuffer);
+    const fileDownloadURL = await getStorageDownloadURL(newFileName);
+    console.log("File " + originalFileName + " has been uploaded to " + fileDownloadURL);
     return fileDownloadURL;
 }
 
@@ -90,7 +50,6 @@ function shouldConnectToEmulatorHost(): boolean
 
 if (shouldConnectToEmulatorHost()){
     console.log("LOCALHOST DETECTED!!!!");
-    connectFirestoreEmulator(db,"localhost",8080);
     connectStorageEmulator(storage,"localhost",9199);
 }
 

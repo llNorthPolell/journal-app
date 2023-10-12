@@ -6,8 +6,6 @@ import LogoutBtn from './logoutBtn';
 export default async function Navbar(){
     const session = await getServerSession(authOptions);
 
-    console.log(session);
-
     return (
         <nav className="navbar">
             <Link className="navbar__logo" href="/">

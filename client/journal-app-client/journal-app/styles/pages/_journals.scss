@@ -1,6 +1,23 @@
 .journals-screen{
     min-height:90vh;
+
+    padding: 3rem 0;
+
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+
 }
+
+.journals-menu{
+    width:80%;
+    min-height:4rem;
+    display:flex;
+    flex-direction:row;
+    justify-content: stretch;
+    align-items: center;
+}
+
 
 .create-journal-btn{
     max-width:15rem;
@@ -15,3 +32,45 @@
         background-color: var(--color-primary-light);
     }
 }   
+
+
+.journal-list{
+    display:flex;
+    flex-wrap: wrap;
+    width:80%;
+}
+
+
+.journal{
+    min-height: 30rem;
+    min-width: 20rem;
+    margin: 2rem 1rem;
+    padding: 1rem;  
+    background-color: white;
+    border-radius: 2rem;
+    box-shadow: 1rem 1rem 1rem rgba(0,0,0,0.25);
+    text-decoration: none;
+
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+ 
+    transition: all .25s;
+    
+    &__image-box{
+        display:flex;
+    }
+
+    &__image{
+        border-radius:2rem;
+    }
+
+    &__name-box{
+        display:flex;
+        color: black;
+    }
+
+    &__name{
+        color: black;
+    }
+}

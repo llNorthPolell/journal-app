@@ -1,0 +1,45 @@
+.form{
+
+
+    &__label{
+        margin-right: 2rem;
+        font-size:1.4rem;
+    }
+
+    &__input{
+        width: 80%;
+        margin: 2rem;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &--text{
+            width: 70%;
+            height: 3rem;
+        }
+
+        &--file{
+            width: 70%;
+        }
+    }
+
+    &__error{
+        color:red;
+        
+    }
+
+    &__submit-btn{
+        background-color: var(--color-primary);
+        color:white;
+
+        &:hover{
+            background-color: var(--color-primary-dark);
+        }
+
+        &:active{
+            background-color: var(--color-primary-light);
+        }
+    }
+
+}

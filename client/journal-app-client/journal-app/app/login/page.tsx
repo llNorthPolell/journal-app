@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import GoogleSignInBtn from '../../components/login/GoogleSignInBtn';
+import GoogleSignInBtn from '../../components/login/googleSignInBtn';
 
 
 function LoginPage() {

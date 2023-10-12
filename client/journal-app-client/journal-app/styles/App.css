@@ -120,13 +120,11 @@ body {
 
 .heading-secondary {
   font-size: 3.6rem;
-  font-weight: 700;
-  margin-bottom: 2rem; }
+  font-weight: 700; }
 
 .heading-tertiary {
   font-size: 2.4rem;
   font-weight: 400;
-  margin-bottom: 2rem;
   color: var(--grey-dark-1); }
 
 .paragraph {
@@ -188,7 +186,19 @@ body {
     background-color: var(--grey-light-2); }
 
 .journals-screen {
-  min-height: 90vh; }
+  min-height: 90vh;
+  padding: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+
+.journals-menu {
+  width: 80%;
+  min-height: 4rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-items: center; }
 
 .create-journal-btn {
   max-width: 15rem;
@@ -198,6 +208,34 @@ body {
     background-color: var(--color-primary-dark); }
   .create-journal-btn:active {
     background-color: var(--color-primary-light); }
+
+.journal-list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%; }
+
+.journal {
+  min-height: 30rem;
+  min-width: 20rem;
+  margin: 2rem 1rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 2rem;
+  box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all .25s; }
+  .journal__image-box {
+    display: flex; }
+  .journal__image {
+    border-radius: 2rem; }
+  .journal__name-box {
+    display: flex;
+    color: black; }
+  .journal__name {
+    color: black; }
 
 .login-method {
   margin-top: 2rem;
@@ -372,3 +410,86 @@ body {
   padding: 0; }
   .google-signin-btn:active {
     background-image: url("/btn_google_signin_dark_pressed_web.png"); }
+
+.modal {
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  animation: fadein 1s ease-out;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center; }
+  .modal__content {
+    max-height: 65vh;
+    width: 30%;
+    overflow-y: auto;
+    margin-top: 3rem;
+    padding: 0.2rem;
+    background-color: var(--grey-light-2);
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    align-self: flex-start; }
+  .modal__header {
+    width: 100%;
+    padding: 1rem;
+    border-bottom: var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+  .modal__body {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center; }
+  .modal__footer {
+    width: 100%;
+    padding: 1rem;
+    border-top: var(--line);
+    display: flex;
+    justify-content: flex-end; }
+  .modal__closeBtn {
+    border: 0;
+    padding: 1rem;
+    background-color: transparent; }
+    .modal__closeBtn > h3 {
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: var(--grey-dark-1); }
+    .modal__closeBtn:hover {
+      background-color: transparent; }
+      .modal__closeBtn:hover > h3 {
+        color: var(--color-primary); }
+
+.form__label {
+  margin-right: 2rem;
+  font-size: 1.4rem; }
+
+.form__input {
+  width: 80%;
+  margin: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+  .form__input--text {
+    width: 70%;
+    height: 3rem; }
+  .form__input--file {
+    width: 70%; }
+
+.form__error {
+  color: red; }
+
+.form__submit-btn {
+  background-color: var(--color-primary);
+  color: white; }
+  .form__submit-btn:hover {
+    background-color: var(--color-primary-dark); }
+  .form__submit-btn:active {
+    background-color: var(--color-primary-light); }

@@ -8,7 +8,14 @@ const nextConfig = {
         hostname: 'firebasestorage.googleapis.com',
         port: '',
         pathname: '/v0/b/journal-app-75df1.appspot.com/o/**'
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '9199',
+        pathname: '/v0/b/journal-app-75df1.appspot.com/o/**'
       }
+
     ]
   }
 }
