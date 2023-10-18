@@ -5,7 +5,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/bmp
 
 export const JournalSchema = z.object(
     {
-        name: z.string().trim().min(1).max(32),
+        name: z.string().trim().nonempty().max(32),
         img: z.any()
             .refine((files) => files?.length ===0 || files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
             .refine(

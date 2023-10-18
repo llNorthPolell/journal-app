@@ -1,5 +1,5 @@
 import {initializeApp} from 'firebase/app';
-import {getStorage,ref, getDownloadURL, uploadBytes, connectStorageEmulator, uploadBytesResumable } from 'firebase/storage';
+import {getStorage,ref, getDownloadURL, uploadBytes, connectStorageEmulator } from 'firebase/storage';
 import {v4} from 'uuid'
 
 // INIT 
@@ -37,7 +37,7 @@ export async function uploadFile(originalFileName : string, fileBuffer : ArrayBu
     const newFileRef = ref(storage,newFileName);
     await uploadBytes(newFileRef,fileBuffer);
     const fileDownloadURL = await getStorageDownloadURL(newFileName);
-    console.log("File " + originalFileName + " has been uploaded to " + fileDownloadURL);
+    console.log("firebase/firebase - File " + originalFileName + " has been uploaded to " + fileDownloadURL);
     return fileDownloadURL;
 }
 
@@ -49,7 +49,7 @@ function shouldConnectToEmulatorHost(): boolean
 
 
 if (shouldConnectToEmulatorHost()){
-    console.log("LOCALHOST DETECTED!!!!");
+    console.log("firebase/firebase - LOCALHOST DETECTED!!!!");
     connectStorageEmulator(storage,"localhost",9199);
 }
 

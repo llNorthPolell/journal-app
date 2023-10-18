@@ -31,7 +31,6 @@
     &:visited{
         border: var(--line);
         border-radius: 1rem;
-        padding: 1rem 2rem;
 
         text-decoration: none;
         font-size: 1.6rem;
@@ -44,14 +43,47 @@
     }
 
     &:hover{
-        transform: scale(1.05) translateY(-2px); 
-        box-shadow: 0 2.5rem 4rem rgba(black, .15);
+        border-color:var(--color-primary);
+        color:var(--color-primary);
     }
 
     &:active{
-        transform: scale(1.02) translateY(-1px);
-        background-color:var(--color-primary);
-        color:white;
-        box-shadow: 0 1rem 2rem rgba(black, .15);
+        border-color:var(--color-primary-light);
+        color:var(--color-primary-light);
     }
+
+
+    &--animated-hover{
+        &:link,
+        &:visited{
+            border: var(--line);
+            border-radius: 1rem;
+    
+            text-decoration: none;
+            font-size: 1.6rem;
+            font-weight:400;
+            margin-top: 3rem;
+            width:15rem;
+            color:var(--color-primary-dark);
+    
+            transition: all .2s;
+        }
+
+        &:hover{
+            transform: scale(1.05) translateY(-2px); 
+            box-shadow: 0 2.5rem 4rem rgba(black, .15);
+        }
+
+        &:active{
+            transform: scale(1.02) translateY(-1px);
+            background-color:var(--color-primary);
+            color:white;
+            box-shadow: 0 1rem 2rem rgba(black, .15);
+        }
+    }
+}
+
+.back-btn{
+    max-width: 8rem;
+    padding:1rem;
 }

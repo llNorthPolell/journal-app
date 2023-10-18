@@ -25,6 +25,10 @@
     --grey-dark-2: #777;
     --grey-dark-3: #999;
 
+    --danger: red;
+    --danger-dark: #660000;
+    --danger-light: #ff8181; 
+
     --font-primary: 'Roboto', sans-serif;
 
     --line: 1px solid var(--color-primary-dark);
@@ -60,4 +64,11 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
+}
+
+input, textarea{
+    border-radius: 5px;
+    border: var(--line);
+    padding: 1rem;
+    font-size: 1.5rem;
 }

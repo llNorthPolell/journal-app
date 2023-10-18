@@ -7,6 +7,8 @@ import { Roboto } from 'next/font/google'
 import '../styles/App.css';
 import ClientSessionProvider from '../providers/sessionProvider';
 import { Session } from 'next-auth';
+import "@fortawesome/fontawesome-svg-core/styles.css";
+
 
 export const metadata: Metadata = {
     title: "Journal App",

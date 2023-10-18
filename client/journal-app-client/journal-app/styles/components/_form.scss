@@ -1,8 +1,6 @@
 .form{
-
-
     &__label{
-        margin-right: 2rem;
+        margin: 0 2rem;
         font-size:1.4rem;
     }
 
@@ -14,6 +12,7 @@
         justify-content: space-between;
         align-items: center;
 
+
         &--text{
             width: 70%;
             height: 3rem;
@@ -22,10 +21,16 @@
         &--file{
             width: 70%;
         }
+
+        &--textarea{
+            width: 70%;
+            resize:vertical;
+        }
     }
 
+
     &__error{
-        color:red;
+        color:var(--danger);
         
     }
 
@@ -42,4 +47,81 @@
         }
     }
 
+
+    &__controls{
+        margin: 0 2rem;
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.form-child-list{
+    display:flex;
+    flex-direction: column;
+
+    &__add-btn{
+        min-width:12rem;
+        max-width:20rem;
+    }
+
+    &__header{
+        display:flex;
+        align-items: center;
+    }
+
+}
+
+
+.form-child{
+    margin: 3rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+
+    &--bordered{
+        margin: 3rem;
+        padding: 1rem;
+        border: var(--line);
+        border-radius: 3rem;
+    }
+
+
+    &--line{
+        display:flex;
+        align-items: center;
+    }
+
+    &__controls{
+        display:flex;
+        justify-content: flex-end;
+    }
+}
+
+.remove-btn{
+    background-color: transparent;
+
+    &:hover{
+        color:var(--danger);
+    }
+
+    &:active{
+        color:var(--danger-dark);
+    }
+}
+
+.add-btn{
+    background-color: transparent;
+
+    &:hover{
+        color:var(--color-primary);
+    }
+
+    &:active{
+        color:var(--color-primary-dark);
+    }
+}
+
+.search-bar{
+    min-width: 70%;
 }

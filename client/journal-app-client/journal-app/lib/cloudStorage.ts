@@ -9,14 +9,14 @@ export const uploadImage = async (file: Blob) => {
         const fileBuffer = await file.arrayBuffer();
         const savedFileURL = await uploadFile(file.name,fileBuffer);
         if (!savedFileURL){
-            console.log("Something went wrong. Image may have been saved, but was not able to fetch the URL. Returning defaul file URL instead.")
+            console.log("lib/cloudStorage - Something went wrong. Image may have been saved, but was not able to fetch the URL. Returning defaul file URL instead.")
             return defaultImgUrl;
         }
         return savedFileURL;
     }
     catch (error) {
-        console.log("Failed to upload file. Returning default file URL instead.");
-        console.log("Error: " + error);
+        console.log("lib/cloudStorage - Failed to upload file. Returning default file URL instead.");
+        console.log("lib/cloudStorage - Error: " + error);
         return defaultImgUrl;
     }
 }

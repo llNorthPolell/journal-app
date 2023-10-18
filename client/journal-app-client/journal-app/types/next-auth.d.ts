@@ -6,11 +6,17 @@ declare module 'next-auth' {
     user: User
     
   }
+
+  interface Account {
+    expires_in: number
+  }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     access_token?: Account.access_token;
     id_token? : Account.id_token;
+    expires: number;
+    refresh_token: Account.refresh_token;
   }
 }

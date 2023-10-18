@@ -1,14 +1,8 @@
-import type { NextApiRequest } from 'next'
 import {NextRequest, NextResponse} from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]/route'
 import { JournalAPIInputFormat } from '../../../models/journal'
 import {uploadImage, defaultImgUrl} from '../../../lib/cloudStorage';
-
-type JournalAppAPIPostResponse = {
-  message: string
-}
-
 
 const submitJournal = async (journal: JournalAPIInputFormat, id_token : string)=>{
     try {
@@ -39,7 +33,6 @@ export async function handler(
   req: NextRequest,
 ) {
     const journalForm = await req.formData();
-    const message=  "Received Form Submission: " + JSON.stringify(journalForm);
 
     const session = await getServerSession(authOptions);
     
@@ -62,24 +55,16 @@ export async function handler(
       img: saveImgUrl
     }
 
-    const result = await submitJournal(journalToSave, id_token);
-    
-    return NextResponse.json({message: result}, {status:200});
-
-/*
-    const journalToSave = {
-        name: journalForm.get('name'),
-        img: saveImgName
+    try {
+      const result = await submitJournal(journalToSave, id_token);
+      
+      return NextResponse.json({message: result}, {status:200});
     }
-
-    console.log("Saved journal as " + JSON.stringify(journalToSave));
-
-    return NextResponse.json({message: message}, {status:200});
-    /*const submitResult = await submitJournal(journalToSave, id_token);
-    if (submitResult)
-      return NextResponse.json({message: submitResult}, {status:200});
+    catch (error){
+      const message = "Failed to create journal or fetch journal details. Please try again later."
+      return NextResponse.json({message: message}, {status:500});
+    }
     
-    return NextResponse.json({message: "Failed to create journal or fetch journal details."}, {status:500});*/
 }
 
 export {handler as POST}

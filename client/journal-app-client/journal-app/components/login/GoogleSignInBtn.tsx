@@ -1,5 +1,6 @@
 'use client'
 import { signIn } from "next-auth/react";
+import Head from "next/head";
 import { useSearchParams } from "next/navigation";
 
 
@@ -16,8 +17,20 @@ export default function GoogleSignInBtn(){
 
 
     return (
-        <div className="login-method__item">
-            <button className="login-method__button google-signin-btn" onClick={handleClick}/>
-        </div>
+        <>
+            <Head>
+                <link
+                    rel="preload"
+                    href="/btn_google_signin_dark_normal_web.png"
+                    as="image"/>
+                <link
+                    rel="preload"
+                    href="/btn_google_signin_dark_pressed_web.png"
+                    as="image"/>
+            </Head>
+            <div className="login-method__item">
+                <button className="login-method__button google-signin-btn" onClick={handleClick}/>
+            </div>
+        </>
     )
 }

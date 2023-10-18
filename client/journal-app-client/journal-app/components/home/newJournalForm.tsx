@@ -5,6 +5,9 @@ import { JournalForm, JournalSchema } from '../../models/journal';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faX } from '@fortawesome/free-solid-svg-icons';
+import FormError from '../formError';
 
 
 const submitToApi = async (journalForm : JournalForm) =>{
@@ -53,9 +56,9 @@ function NewJournalForm() {
     const onSubmit: SubmitHandler<JournalForm> = async (journalToSave) => {
         reset();
         setShow(false);
-        console.log("Submit: " + JSON.stringify(journalToSave))
-        console.log("Errors:" + JSON.stringify(errors));
-        console.log("Is Valid: " + isValid);
+        console.log("components/newJournalForm - Submit: " + JSON.stringify(journalToSave))
+        console.log("components/newJournalForm - Errors:" + JSON.stringify(errors));
+        console.log("components/newJournalForm - Is Valid: " + isValid);
 
         await submitToApi(journalToSave)
 
@@ -74,7 +77,7 @@ function NewJournalForm() {
                                 <div className="modal__header">
                                     <h2 className="heading-tertiary">New Journal</h2>
                                     <button className="modal__closeBtn" onClick={handleClose}>
-                                        <h3>X</h3>
+                                        <h3><FontAwesomeIcon icon={faX} /></h3>
                                     </button>
                                 </div>
 
@@ -87,12 +90,7 @@ function NewJournalForm() {
                                             type="text"
                                             {...register("name")} />
                                     </div>
-                                    {
-                                        (errors.name) ?
-                                            <p className="form__error"> {errors.name.message} </p>
-                                            :
-                                            <></>
-                                    }
+                                    <FormError field={errors.name} message={errors.name?.message} />
 
                                     <div className="form__input">
                                         <label className="form__label">Journal Image</label>
@@ -102,12 +100,7 @@ function NewJournalForm() {
                                             type="file"
                                             {...register("img")} />
                                     </div>
-                                    {
-                                        (errors.img) ?
-                                            <p className="form__error"> {errors.img.message} </p>
-                                            :
-                                            <></>
-                                    }
+                                    <FormError field={errors.img} message={errors.img?.message} />
 
                                 </div>
 

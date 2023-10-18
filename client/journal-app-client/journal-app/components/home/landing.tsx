@@ -32,7 +32,7 @@ export default function Landing () {
                 You may set goals that are automatically tracked each time you create a new entry, display your progress with charts using your own metrics, and more! Click the link below
                 to learn more.
                 </p>
-                <Link className="about__link btn-link-outline animated-entry-left" href="#">Learn More &rarr; </Link>
+                <Link className="about__link btn-link-outline--animated-hover animated-entry-left" href="#">Learn More &rarr; </Link>
             </div>
             <Image src={"https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/Home%20Page%2FPlanner.png?alt=media&token=c55ca3b6-560a-4a3b-9310-f6996ffbcfd9"}
                 alt="Picture of Planner"
