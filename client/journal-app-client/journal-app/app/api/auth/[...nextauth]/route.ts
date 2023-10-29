@@ -77,15 +77,17 @@ export const authOptions : NextAuthOptions = {
                 console.log("auth/[....nextauth]/route - Account: "+ JSON.stringify(account));
                 console.log("auth/[....nextauth]/route - Expires: "+token.expires);
                 console.log("auth/[....nextauth]/route - Now: "+Date.now());
+
+                return {...token, ...user};
             }
             
 
             
             if (Date.now() < token.expires) {
-                return {...token,...user}
+                return token;
             }
 
-            return {...refreshGoogleToken(token),...user}
+            return refreshGoogleToken(token);
         },
         session: async ({session,token})=>{
             session.user=token;

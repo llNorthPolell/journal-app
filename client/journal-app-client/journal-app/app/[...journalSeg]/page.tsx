@@ -18,7 +18,7 @@ export default async function JournalMain({ params }: PageProps) {
     const journal = getJournalResult.contents;
 
     const getJournalEntriesResult = await getJournalEntriesInJournal(journalId,id_token);
-    const journalEntries = getJournalEntriesResult.contents;
+    let journalEntries = getJournalEntriesResult.contents;
 
     let screen = null;
 
@@ -28,13 +28,12 @@ export default async function JournalMain({ params }: PageProps) {
                 if (!journalSeg[2])
                     screen = <JournalEntriesScreen journalId={journalId} journalEntries={journalEntries}/>
                 else if (journalSeg[2]=="new")
-                    screen = <JournalEntryForm edit={true} journalId={journalId} />
+                    screen = <JournalEntryForm edit={true} journalId={journalId} journalEntries={journalEntries} />
                 else {
                     const journalEntry = journalEntries.find((journalEntry: JournalEntry) => journalEntry.entryId == journalSeg[2])
                     screen = <JournalEntryView journalEntry={journalEntry} journalId={journalId} />
                     //screen = <JournalEntryForm edit={true} journalEntry={journalEntry} journalId={journalId} />
                 }
-                    
                 
                 break;   
             default:

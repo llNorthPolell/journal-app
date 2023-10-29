@@ -9,6 +9,7 @@ import { getJournalsByAuthor } from '../../lib/journalAPI';
 
 export default async function Journals() {
   const session = await getServerSession(authOptions);
+  console.log(`components/journals - ${JSON.stringify(session)}`);
   const journals = (session?.user) ? await getJournalsByAuthor(session.user.id_token) : [];
 
   return (
@@ -16,11 +17,14 @@ export default async function Journals() {
       <NewJournalForm />
         <div className="journal-list">
           {
-            journals.map(
-              (journal: Journal) => (
-                <JournalCard key={journal.id} journal={journal} />
+            (journals && journals.length > 0)?
+              journals.map(
+                (journal: Journal) => (
+                  <JournalCard key={journal.id} journal={journal} />
+                )
               )
-            )
+              : 
+              <p>Timed out while trying to fetch journals...</p>
           }
         </div>
       </div>

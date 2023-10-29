@@ -11,29 +11,14 @@ import Link from "next/link";
 import FormError from "../../formError";
 import { useRouter } from "next/navigation";
 import {useEffect} from 'react';
+import { submitJournalEntry } from "../../../lib/journalEntriesAPI";
 
 interface JournalEntryFormProps{
     journalId: string,
     journalEntry? : JournalEntry,
+    journalEntries: JournalEntry[],
     edit: boolean
 }
-
-const submitToApi = async (journalId: string, journalEntryForm : JournalEntryForm) =>{
-    const url = '/api/entries';
-
-    const body = {journalEntryForm: {...journalEntryForm}, journalId: journalId}
-
-    const res = await fetch (
-        url,
-        {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body)
-        }
-    )
-    const resBody = await res.json();
-}
-
 
 export default function JournalEntryForm (props : JournalEntryFormProps){
     const router = useRouter();
@@ -54,8 +39,12 @@ export default function JournalEntryForm (props : JournalEntryFormProps){
 
 
     useEffect(()=>{
-        if (isSubmitSuccessful)
-            router.push(`/${props.journalId}/entries`)
+        const reloadAndRedirect = async () => {
+            if (isSubmitSuccessful){
+                router.push(`/${props.journalId}/entries`);
+            }
+        }
+        reloadAndRedirect();
     },[isSubmitSuccessful])
 
 
@@ -75,7 +64,7 @@ export default function JournalEntryForm (props : JournalEntryFormProps){
         console.log("Errors:" + JSON.stringify(errors));
         console.log("Is Valid: " + isValid);
 
-        await submitToApi(props.journalId, entryToSave)
+        await submitJournalEntry(props.journalId, entryToSave);
     }
 
 

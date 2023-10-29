@@ -8,26 +8,8 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import FormError from '../formError';
-
-
-const submitToApi = async (journalForm : JournalForm) =>{
-    const url = '/api/journals';
-    const formdata = new FormData();
-    formdata.set('name', journalForm.name);
-
-    if (journalForm.img)
-        formdata.set('img', journalForm.img[0]);
-
-    const res = await fetch (
-        url,
-        {
-            method: "POST",
-            body: formdata
-        }
-    )
-    const resBody = await res.json();
-}
-
+import { submitJournal } from '../../lib/journalAPI';
+import { defaultImgUrl, uploadImage } from '../../lib/cloudStorage';
 
 function NewJournalForm() {
     const router = useRouter();
@@ -53,16 +35,29 @@ function NewJournalForm() {
         setShow(true);
     };
 
-    const onSubmit: SubmitHandler<JournalForm> = async (journalToSave) => {
+    const onSubmit: SubmitHandler<JournalForm> = async (journalForm) => {
         reset();
         setShow(false);
-        console.log("components/newJournalForm - Submit: " + JSON.stringify(journalToSave))
+        console.log("components/newJournalForm - Submit: " + JSON.stringify(journalForm))
         console.log("components/newJournalForm - Errors:" + JSON.stringify(errors));
         console.log("components/newJournalForm - Is Valid: " + isValid);
 
-        await submitToApi(journalToSave)
+        const name = journalForm.name;
+        const image =(journalForm.img)?journalForm.img[0] as Blob: undefined;
+      
+      
+        let saveImgUrl : string = defaultImgUrl;
+        if (image){
+          saveImgUrl = await uploadImage(image) as string;
+          console.log("New image URL: " + saveImgUrl);
+        }
+      
+        const journalToSave = {
+          name: name,
+          img: saveImgUrl
+        }
 
-        router.refresh();
+        await submitJournal(journalToSave);
     }
 
 

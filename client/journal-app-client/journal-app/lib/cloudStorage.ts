@@ -3,7 +3,9 @@ import {uploadFile} from '../firebase/firebase'
 
 export const defaultImgUrl = "https://firebasestorage.googleapis.com/v0/b/journal-app-75df1.appspot.com/o/defaultImg.png?alt=media&token=caa93413-9a70-47df-978e-bc787ec05378";
 
-export const uploadImage = async (file: Blob) => {
+
+export const uploadImage = async (file?: Blob) => {
+    if (!file) return defaultImgUrl;
     try {
         console.log("Image to save: " + file.name);
         const fileBuffer = await file.arrayBuffer();
